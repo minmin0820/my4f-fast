@@ -11,7 +11,9 @@
 </head>
 <body>
 <div class="page-scroll"><main>
-<header><div class="header-line"><h1>麒麟「現世」</h1><span class="version-badge">Fast v4.2</span></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
+<header><div class="header-line"><h1>麒麟「現世」</h1><span class="version-badge">Fast v4.3</span></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
+
+<div id="syncPanel" style="margin:0 0 12px;padding:10px 11px;border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;font-size:13px;line-height:1.45"><div style="font-weight:850">⏳ Live Data Bridge — 確認中</div><div id="syncUpdated" style="margin-top:3px;color:#64748b">最新更新：—</div><div id="syncDetail" style="margin-top:2px;color:#64748b">Python正本との連携状態を確認しています</div></div>
 
 <section><h2>今月のアクション</h2><div id="action" class="action"></div><p id="actionDetail" class="muted"></p><p class="muted">現世ルール：天界Exactで10%未満のtickerは非保有 → survivor再正規化 → 5%刻み・合計100%。</p></section>
 
@@ -79,4 +81,24 @@
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
 <script src="app.js?v=20260919-14"></script>
+<script>
+(function(){
+ const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ fetch('kirin_snapshot.json?health='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(d=>{
+   if(d.schema_version!=='kirin-fast-1.0') throw Error('schema mismatch');
+   for(const k of ['execution','gods']){const a=Object.values(d[k]||{}).map(Number);if(!a.length||Math.abs(a.reduce((x,y)=>x+y,0)-100)>1e-6)throw Error(k+' audit failed');}
+   const t=d.sync?.generated_at_jst||d.sync?.generated_at||'—';
+   panel.style.background='#ecfdf5';panel.style.borderColor='#86efac';panel.style.color='#166534';
+   panel.firstElementChild.textContent='✅ Live Data Bridge — PASS';
+   updated.textContent='最新更新：'+t; updated.style.color='#166534';
+   detail.textContent='Snapshot取得・schema・配分100%監査 PASS ｜ '+(d.month||'—'); detail.style.color='#166534';
+ }).catch(e=>{
+   panel.style.background='#fef2f2';panel.style.borderColor='#fca5a5';panel.style.color='#991b1b';
+   panel.firstElementChild.textContent='❌ Live Data Bridge — ERROR';
+   updated.textContent='最新更新：確認できません'; updated.style.color='#991b1b';
+   detail.textContent='Snapshot連携エラー：'+e.message; detail.style.color='#991b1b';
+ });
+})();
+</script>
 </body></html>
