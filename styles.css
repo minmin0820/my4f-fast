@@ -210,3 +210,35 @@ main{padding-left:12px!important;padding-right:12px!important}
   .health .card *{font-size:9px!important}
   .donut{width:220px!important;height:220px!important}
 }
+
+/* v3.8 — typography rebalance after iPhone hard-fit.
+   Keep v3.7 width constraints; only improve readability. */
+@media(max-width:430px){
+  body{font-size:12px!important;line-height:1.45!important}
+
+  h1{font-size:20px!important;line-height:1.2!important}
+  h2{font-size:17px!important;line-height:1.25!important}
+  h3{font-size:14px!important;line-height:1.3!important}
+  h4{font-size:12px!important}
+
+  header p,.muted{font-size:10px!important;line-height:1.4!important}
+  .version-badge{font-size:9px!important}
+
+  .action strong{font-size:14px!important;line-height:1.4!important}
+  .action p,.rule,.rule *{font-size:10px!important;line-height:1.5!important}
+
+  .health .card *{font-size:10px!important}
+  .health .card strong{font-size:12px!important}
+  .risk .card,.signals .card{font-size:10px!important}
+  .risk .card strong,.signals .card strong{font-size:11px!important}
+
+  .sum .title{font-size:9px!important}
+  .sum p{font-size:9px!important}
+  .sum b{font-size:11px!important}
+  .bm strong{font-size:11px!important}
+
+  .row span,.row strong{font-size:9px!important}
+  .oos th,.oos td{font-size:9px!important;line-height:1.3!important}
+
+  details,summary{font-size:10px!important}
+}
