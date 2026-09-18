@@ -1,13 +1,14 @@
-# My4F Fast v3 — Streamlit fidelity pass
+# My4F Fast v3.1
 
-Display-only static frontend. Python/Streamlit remains the sole canonical research/calculation engine.
+Cache-busted UI correction.
 
-Changes from v2:
-- Mobile typography reduced to Streamlit-like density.
-- Horizontal scrolling intentionally allowed for wide signal/return structures instead of shrinking content.
-- Donut charts now render ticker/God name + percentage inside the chart.
-- Monthly return rows keep fixed columns so values do not disappear from narrow layouts.
-- Snapshot schema tagged `my4f-fast-kirin-v3`; no KIRIN strategy calculation was added to JavaScript.
-- Existing v2 snapshot values are preserved. Null source values remain `—` rather than being invented.
+- iPhoneでページ全体を720pxの固定コンテンツ幅として表示し、横スクロールを許可
+- v2の「スマホ幅へ押し込む」CSSを廃止
+- 文字サイズを縮小し、Streamlitに近い情報密度へ
+- ドーナツ内に ticker / Four Gods名 + 比率を直接表示
+- 月次リターンは5列固定で全列表示
+- CSS/JSファイル名を変更 + query versionを付け、GitHub Pages/Safariの古いCSSキャッシュを回避
+- kirin_snapshot.jsonの研究データは変更していない
+- snapshot内で null の値（2026-05/04 SPY/TQQQ）は捏造せず「—」表示
 
-Upload all five files to the root of the existing `my4f-fast` GitHub Pages repository and overwrite the existing files.
+Fast frontendには戦略計算ロジックを追加していません。

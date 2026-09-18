@@ -1,16 +1,44 @@
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>麒麟「現世」</title><link rel="stylesheet" href="styles.css"></head>
-<body><main>
-<header><h1>麒麟「現世」</h1><p>Monthly rebalance <span>｜</span> 2026-08+ Real Forward OOS</p></header>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>麒麟「現世」</title>
+<link rel="stylesheet" href="styles-v31.css?v=20260918-1">
+</head>
+<body>
+<div class="page-scroll"><main>
+<header><h1>麒麟「現世」</h1><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
+
 <section><h2>今月のアクション</h2><div id="action" class="action"></div><p id="actionDetail" class="muted"></p><p class="muted">現世ルール：天界Exactで10%未満のtickerは非保有 → survivor再正規化 → 5%刻み・合計100%。</p></section>
+
 <section><h2>健全性 G1 / G2 / P</h2><div id="health" class="health"></div></section>
-<section><h2>Allocation for <span id="allocMonth">2026-09</span></h2><h3>麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight">R289 Practical 10% ｜ ERC6_NORMAL</p><div id="execDonut" class="donut"></div><div id="execLegend" class="legend"></div><p class="muted">実運用：天界Exactで10%未満のtickerは0% → 残存tickerを再正規化 → 5%刻み・合計100%（R289）。</p>
-<h3>麒麟「天界」</h3><h4>Four Gods — <span id="godsMonth">2026-09</span></h4><p class="muted tight">ERC6_NORMAL</p><div id="godsDonut" class="donut"></div><div id="godsLegend" class="legend"></div></section>
-<section><h2>Forward OOS Monitor</h2><p class="muted">2026-08以降はReal Forward OOS。月ごとに凍結ルールのexactnessを記録し、Forward結果をDEVへ戻しません。</p><div class="scroll"><div class="table"><div>Month</div><div>Classification</div><div>DEV retune</div><div>2026-08</div><div>Real Forward OOS</div><div>NO</div><div>2026-09</div><div>Real Forward OOS</div><div>NO</div></div></div></section>
-<section><h2>4神 リスク状態</h2><div class="scroll"><div id="risk" class="risk"></div></div></section>
-<section><h2>KIRIN シグナル</h2><div class="scroll"><div id="signals" class="signals"></div></div><details><summary>運用・監査情報</summary><p>DEV=FROZEN。2026-08+はREAL FORWARD。Live ExecutionはR289 Practical 10%。</p></details></section>
-<section><h2>月次リターン</h2><p class="muted">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p><div class="scroll"><div id="summary" class="summary"></div></div><div class="scroll"><div id="bm" class="bm"></div></div><p class="muted">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
-<section><h2>直近12か月</h2><div class="scroll"><div id="months" class="months"></div></div></section>
-<section><h2>KIRIN Strategy Specification</h2><p class="muted">旧称 ERC6 + Attack75。将来の再実装でも同じ戦略を再現するための凍結仕様です。</p><details><summary>麒麟（KIRIN）の作り方 — Frozen specification</summary><p>Production = Frozen 4F EW。KIRIN本体はExactをcanonicalとして固定し、Live ExecutionはR289 Practical 10%をFreeze。R287はshadow control。2026-08+ Real Forward OOSでDEVルールは変更しません。</p></details></section>
+
+<section><h2>Allocation for <span id="allocMonth">2026-09</span></h2>
+<h3>麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight">R289 Practical 10% ｜ ERC6_NORMAL</p>
+<div id="execDonut" class="donut"></div><div id="execLegend" class="legend"></div>
+<p class="muted">実運用：天界Exactで10%未満のtickerは0% → 残存tickerを再正規化 → 5%刻み・合計100%（R289）。</p>
+<h3>麒麟「天界」</h3><h4>Four Gods — <span id="godsMonth">2026-09</span></h4><p class="muted tight">ERC6_NORMAL</p>
+<div id="godsDonut" class="donut"></div><div id="godsLegend" class="legend"></div></section>
+
+<section><h2>Forward OOS Monitor</h2><p class="muted">2026-08以降はReal Forward OOS。月ごとに凍結ルールのexactnessを記録し、Forward結果をDEVへ戻しません。</p>
+<table class="oos"><thead><tr><th>Month</th><th>Classification</th><th>DEV retune</th></tr></thead><tbody><tr><td>2026-08</td><td>Real Forward OOS</td><td>NO</td></tr><tr><td>2026-09</td><td>Real Forward OOS</td><td>NO</td></tr></tbody></table></section>
+
+<section><h2>4神 リスク状態</h2><div id="risk" class="risk"></div></section>
+<section><h2>KIRIN シグナル</h2><div id="signals" class="signals"></div><details><summary>運用・監査情報</summary><p>DEV=FROZEN。2026-08+はREAL FORWARD。Live ExecutionはR289 Practical 10%。</p></details></section>
+
+<section><h2>月次リターン</h2><p class="muted">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p>
+<div id="summary" class="summary"></div><div id="bm" class="bm"></div>
+<p class="muted">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
+
+<section><h2>直近12か月</h2><div id="months" class="months"></div></section>
+
+<section><h2>KIRIN Strategy Specification</h2><p class="muted">旧称 ERC6 + Attack75。将来の再実装でも同じ戦略を再現するための凍結仕様です。</p>
+<details><summary>麒麟（KIRIN）の作り方 — Frozen specification</summary><p>Production = Frozen 4F EW。KIRIN本体はExactをcanonicalとして固定し、Live ExecutionはR289 Practical 10%をFreeze。R287はshadow control。2026-08+ Real Forward OOSでDEVルールは変更しません。</p></details></section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
-</main><script src="app.js"></script></body></html>
+</main></div>
+<script src="app-v31.js?v=20260918-1"></script>
+</body></html>

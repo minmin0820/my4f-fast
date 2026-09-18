@@ -1,0 +1,36 @@
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:#292d38;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;-webkit-text-size-adjust:100%}
+body{overflow-x:auto}
+.page-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+main{width:720px;min-width:720px;margin:0 auto;padding:24px 24px 64px}
+header{padding:8px 0 20px}
+h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:800;letter-spacing:-.4px}
+header p,.muted{color:#8b8d93;font-size:12px;line-height:1.55;margin:0 0 13px}
+section{margin:22px 0 38px}
+h2{font-size:22px;line-height:1.2;margin:0 0 14px;font-weight:800}
+h3{font-size:18px;margin:25px 0 12px}
+h4{font-size:14px;margin:0 0 5px}.tight{margin-bottom:8px}
+.action{background:#e7f8ec;border-radius:12px;padding:14px 16px;color:#168b43;font-size:14px;line-height:1.45}
+.health{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.health .card,.risk .card,.signals .card{background:#f7f7f7;border-radius:15px;padding:13px 10px;text-align:center}
+.card .label{color:#8b8d93;font-size:11px}
+.dot{display:block;width:15px;height:15px;border-radius:50%;margin:11px auto}.green{background:#1fc96b}.orange{background:#df8200}
+.health small{color:#8b8d93;font-size:10px}
+.donut{width:330px;height:330px;margin:12px auto 4px}.donut svg{width:100%;height:100%;overflow:visible}
+.donut .slice-label{font-size:10px;font-weight:800;fill:#292d38;paint-order:stroke;stroke:#fff;stroke-width:2.5px;stroke-linejoin:round}
+.donut .center-title{font-size:13px;font-weight:800;fill:#292d38}.donut .center-sub{font-size:9px;fill:#8b8d93}
+.legend{display:flex;justify-content:center;flex-wrap:wrap;gap:7px 13px;font-size:11px;margin:4px 0 20px}
+.legend span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:4px}
+.oos{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #ddd;border-radius:10px;overflow:hidden;font-size:11px}
+.oos th,.oos td{padding:9px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;text-align:left}.oos th:last-child,.oos td:last-child{border-right:0}.oos tbody tr:last-child td{border-bottom:0}
+.risk{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.risk .card{min-height:75px}.risk b{display:block;font-size:12px;margin-top:9px}.on{color:#12934c}.off{color:#d87c00}
+.signals{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.signals .card{text-align:left;min-height:80px;padding:13px}.signals b{display:block;font-size:15px;margin-top:7px}.purple{color:#8038e6}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.sum{background:#f7f7f7;border-radius:15px;padding:13px;min-height:104px}.sum .title{color:#8b8d93;font-size:10px}.sum p{font-size:12px;margin:9px 0 0}.sum b{font-size:14px}
+.bm{border:1px solid #ddd;border-radius:15px;margin-top:10px;padding:13px;display:grid;grid-template-columns:55px 1fr 1fr;align-items:center;color:#8b8d93}.bm span{display:flex;flex-direction:column;gap:4px;font-size:10px}.bm strong{font-size:14px;color:#292d38}
+.months{width:100%}.month{border:1px solid #ddd;border-radius:15px;padding:13px;margin:0 0 10px;width:100%}
+.monthTop{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:800}
+.badge{font-size:9px;padding:4px 8px;border-radius:14px;background:#d9fae7;color:#118843}.badge.a{background:#ffe0df;color:#bd2929}.badge.b{background:#eee5ff;color:#7137db}
+.row{display:grid;grid-template-columns:58px 70px 90px 70px 90px;align-items:center;gap:12px;padding:9px 11px;margin-top:8px;font-size:11px}.row.k{background:#f7f7f7;border-radius:11px}.row .lab{color:#92949a;font-weight:700}.row .name{color:#92949a}.row strong{text-align:right;font-size:13px;font-variant-numeric:tabular-nums}
+details{border:1px solid #ddd;border-radius:10px;padding:11px 13px;font-size:11px;line-height:1.55}summary{cursor:pointer;font-weight:650}
+footer{color:#8b8d93;font-size:9px;margin-top:40px}
+@media(max-width:760px){main{margin:0;padding-left:18px;padding-right:18px}.page-scroll{overflow-x:auto} }
