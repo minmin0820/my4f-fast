@@ -200,5 +200,11 @@
     "real_forward_oos": "2026-08 onward",
     "forward_feedback_to_dev": "PROHIBITED",
     "forward_mode": "ERC6_NORMAL"
+  },
+  "sync": {
+    "generated_at": "2026-09-19T08:42:55+09:00",
+    "generated_at_jst": "2026-09-19 08:42:55 JST",
+    "source": "Streamlit / Python canonical",
+    "snapshot_audit": "PASS"
   }
 }
