@@ -38,3 +38,45 @@ footer{color:#8b8d93;font-size:9px;margin-top:40px}
 .header-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .header-line h1{margin-bottom:0}
 .version-badge{display:inline-flex;align-items:center;border:1px solid #d9dce1;background:#f6f7f8;color:#686c75;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:700;line-height:1.2;white-space:nowrap}
+
+/* v3.5: genuinely compact iPhone layout */
+@media(max-width:560px){
+  main{padding:10px 8px 32px!important}
+  header{margin-bottom:10px!important}
+  h1{font-size:19px!important;line-height:1.15!important}
+  h2{font-size:15px!important;line-height:1.2!important;margin:10px 0 7px!important}
+  h3{font-size:13px!important;line-height:1.2!important}
+  h4{font-size:11px!important}
+  p,span,td,th,button,summary{font-size:10px}
+  header p,.muted{font-size:9px!important}
+  .version-badge{font-size:8px!important;padding:2px 6px!important}
+
+  section,.action,.card,.month,details{border-radius:10px!important}
+  section{padding:10px!important;margin-bottom:9px!important}
+  .action{padding:9px!important;margin-bottom:9px!important}
+  .card{padding:8px!important}
+  .health,.risk,.signals,.summary{gap:6px!important}
+  .risk,.signals{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+  .donut{width:min(245px,72vw)!important;height:min(245px,72vw)!important}
+  .donut-wrap{margin:6px auto!important}
+  .legend{font-size:9px!important;gap:4px!important}
+
+  .summary{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .sum{padding:7px 3px!important}
+  .sum .title{font-size:8px!important}
+  .sum p{font-size:8px!important}
+  .sum b{font-size:10px!important}
+
+  .bm{grid-template-columns:28px minmax(0,1fr) minmax(0,1fr)!important;gap:4px!important;padding:7px!important}
+  .bm strong{font-size:10px!important}
+
+  .month{padding:8px!important;margin-bottom:7px!important}
+  .month .head{margin-bottom:5px!important}
+  .return-scroll .row{min-width:390px!important}
+  .row{padding:5px 4px!important}
+  .row span,.row strong{font-size:9px!important}
+
+  .oos{min-width:390px!important}
+  .oos th,.oos td{padding:5px 6px!important;font-size:9px!important}
+}
