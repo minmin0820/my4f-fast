@@ -1,8 +1,6 @@
-# My4F Fast v1
-GitHub Pages向け高速KIRIN UI。
+# My4F Fast v2
+KIRIN operational UI prototype matching the current Streamlit KIRIN page on iPhone.
 
-## 更新方法
-GitHub の `my4f-fast` repository で、同名の `index.html`, `styles.css`, `app.js`, `kirin_snapshot.json` をこのZIPのファイルで置換してください。
+Display-only static frontend. Python/Streamlit remains the canonical research/calculation engine.
 
-## 重要
-`kirin_snapshot.json` は現時点ではUI接続確認用スナップショットです。Python研究エンジンが正本で、次段階で自動exportへ接続します。
+Upload all files to the root of the existing `my4f-fast` GitHub Pages repository and overwrite v1.
