@@ -272,3 +272,78 @@ main{padding-left:12px!important;padding-right:12px!important}
   .oos th,.oos td{font-size:10px!important;line-height:1.35!important}
   details,summary{font-size:12px!important}
 }
+
+/* v4.0 — compact vertical rhythm from actual iPhone full-page screenshot.
+   Preserve v3.7+ hard-fit/no-horizontal-scroll behavior. */
+@media(max-width:430px){
+  main{padding:8px 10px 22px!important}
+
+  header{margin:0 0 18px!important;padding:0!important}
+  header p{margin:2px 0 0!important}
+
+  section{padding:8px!important;margin:0 0 14px!important}
+  h2{margin:0 0 7px!important}
+  h3{margin:6px 0 5px!important}
+  h4{margin:5px 0 4px!important}
+  p{margin-top:4px;margin-bottom:4px}
+
+  /* Action: remove large empty vertical gap */
+  .action{padding:8px!important;margin:0 0 14px!important}
+  .action + p,.rule{margin:5px 0!important}
+
+  /* Health / risk / signals: shorter cards */
+  .health,.risk,.signals,.summary{gap:5px!important}
+  .health .card,.risk .card,.signals .card{
+    padding:6px 5px!important;
+    min-height:0!important;
+    height:auto!important;
+  }
+  .health .card{aspect-ratio:auto!important}
+  .health .card p,.risk .card p,.signals .card p{margin:2px 0!important}
+
+  /* Allocation: major wasted-space reduction around donuts */
+  .allocation,.allocation-card,.chart-card{
+    padding-top:4px!important;
+    padding-bottom:6px!important;
+    margin-top:0!important;
+    margin-bottom:10px!important;
+    min-height:0!important;
+    height:auto!important;
+  }
+  .donut-wrap{
+    margin:2px auto 4px!important;
+    padding:0!important;
+    min-height:0!important;
+    height:auto!important;
+  }
+  .donut{
+    width:190px!important;
+    height:190px!important;
+    max-width:58vw!important;
+    max-height:58vw!important;
+    margin:2px auto!important;
+  }
+  .legend{margin:3px 0!important;padding:0!important;gap:3px!important}
+  .legend p,.legend span{margin:0!important}
+
+  /* Forward monitor and compact metric grids */
+  .oos-scroll{margin:3px 0 0!important}
+  .oos th,.oos td{padding:4px 3px!important}
+  .risk,.signals{margin-top:4px!important;margin-bottom:12px!important}
+
+  /* Monthly return summary */
+  .summary{margin-top:4px!important}
+  .sum{padding:6px 3px!important}
+  .sum p{margin:1px 0!important}
+  .bm{padding:6px!important;margin-top:5px!important}
+
+  /* Recent 12 months: much tighter cards without dropping data */
+  .months{margin-top:5px!important}
+  .month{padding:6px!important;margin-bottom:5px!important}
+  .month .head{margin-bottom:3px!important}
+  .return-scroll .row,.month .row{padding:3px 2px!important}
+  .month p{margin:1px 0!important}
+
+  details{margin-top:6px!important;padding:7px!important}
+  summary{padding:0!important}
+}
