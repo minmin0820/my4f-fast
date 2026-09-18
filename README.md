@@ -1,21 +1,8 @@
-# My4F Fast Prototype
+# My4F Fast v1
+GitHub Pages向け高速KIRIN UI。
 
-Static-first proof of concept for the KIRIN operational page.
+## 更新方法
+GitHub の `my4f-fast` repository で、同名の `index.html`, `styles.css`, `app.js`, `kirin_snapshot.json` をこのZIPのファイルで置換してください。
 
-## Why it is fast
-The browser loads HTML/CSS/JS once. UI interactions do not rerun the Python research engine. Data is read from a small `kirin_snapshot.json` file.
-
-## Local preview
-From this directory:
-
-    python -m http.server 8000
-
-Then open http://localhost:8000
-
-## Production migration
-1. Keep existing `app.py` and `research_archive.py` as the research engine / reference implementation.
-2. Add an exporter that writes the current frozen KIRIN snapshot to JSON after data refresh.
-3. Serve this frontend as a static site (Render/Vercel/Cloudflare Pages are all suitable patterns).
-4. Later replace the JSON file with a small API/DB only if needed.
-
-The included JSON is a UI demonstration snapshot, not a replacement for the canonical live calculations.
+## 重要
+`kirin_snapshot.json` は現時点ではUI接続確認用スナップショットです。Python研究エンジンが正本で、次段階で自動exportへ接続します。

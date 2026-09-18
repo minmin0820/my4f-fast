@@ -1,9 +1,9 @@
 const COLORS=['#38bdf8','#a78bfa','#34d399','#f59e0b','#fb7185','#22d3ee','#f97316'];
-async function load(){const d=await fetch('kirin_snapshot.json?ts='+Date.now()).then(r=>r.json());
- document.getElementById('action').innerHTML=`<strong>${d.action.status}</strong><p>${d.action.change}</p><p>${d.action.previous} → ${d.action.current}</p>`;
- document.getElementById('lights').innerHTML=d.health.map(x=>`<i class="dot ${x}"></i>`).join('');
- donut('gense',d.gense); donut('tenkai',d.tenkai);
- document.getElementById('returns').innerHTML=d.returns.map(m=>`<article class="month"><div class="top"><span>${m.month}</span><small>${m.mode}</small></div><div class="rows"><span>麒麟</span><b>${pct(m.tenkai)}</b><b>${pct(m.gense)}</b><span>BM</span><b>${pct(m.spy)}</b><b>${pct(m.tqqq)}</b></div></article>`).join('');}
-function pct(x){return (x>=0?'+':'')+x.toFixed(2)+'%'}
-function donut(id,a){let cur=0,stops=[],legend=[];Object.entries(a).forEach(([k,v],i)=>{let c=COLORS[i%COLORS.length],n=cur+v;stops.push(`${c} ${cur}% ${n}%`);legend.push(`<span class="pill">${k} ${v.toFixed(0)}%</span>`);cur=n});document.getElementById(id+'Donut').style.background=`conic-gradient(${stops.join(',')})`;document.getElementById(id+'Legend').innerHTML=legend.join('')}
+async function load(){try{const d=await fetch('kirin_snapshot.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.json()});
+document.getElementById('asof').textContent=`Monthly rebalance · as of ${d.asof}`;
+document.getElementById('action').innerHTML=`<strong>${d.action.status} — ${d.action.change}</strong><p>先月: ${d.action.previous}<br>今月: ${d.action.current}</p>`;
+document.getElementById('lights').innerHTML=d.health.map(x=>`<i class="dot ${x}"></i>`).join('');donut('gense',d.gense);donut('tenkai',d.tenkai);
+const sig=[['Defense A-state','OFF'],['ERC6 Spear','ACTIVE'],['Attack75 Turbo','OFF'],['DEV Status','FROZEN'],['OOS Status','REAL FORWARD'],['Execution','R289 10%']];document.getElementById('signals').innerHTML=sig.map(x=>`<div class="sig"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('');
+document.getElementById('returns').innerHTML=d.returns.map((m,i)=>`<article class="month"><div class="top"><span>${m.month}${i===0?' MTD':''}</span><small>${m.mode}</small></div><div class="rows"><span>麒麟</span><b>天界 ${pct(m.tenkai)}</b><b>現世 ${pct(m.gense)}</b><span>BM</span><b>SPY ${pct(m.spy)}</b><b>TQQQ ${pct(m.tqqq)}</b></div></article>`).join('');}catch(e){document.getElementById('action').innerHTML='<strong>データを読み込めませんでした</strong><p>kirin_snapshot.json を確認してください。</p>'}}
+function pct(x){return Number.isFinite(x)?(x>=0?'+':'')+x.toFixed(2)+'%':'—'}function donut(id,a){let cur=0,stops=[],legend=[];Object.entries(a).forEach(([k,v],i)=>{let c=COLORS[i%COLORS.length],n=cur+v;stops.push(`${c} ${cur}% ${n}%`);legend.push(`<span class="pill">${k} ${Number(v).toFixed(1)}%</span>`);cur=n});document.getElementById(id+'Donut').style.background=`conic-gradient(${stops.join(',')})`;document.getElementById(id+'Legend').innerHTML=legend.join('')}
 document.getElementById('refresh').onclick=load;load();
