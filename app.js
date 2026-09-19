@@ -477,3 +477,48 @@ document.addEventListener('DOMContentLoaded',()=>{
  }));
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 });
+
+
+/* v43 — Metrics market-regime table and benchmark-range chart.
+   Display-only analytics from canonical monthly returns. */
+(function(){
+ const buckets=[["≤ -8%",-1e9,-8],["-8 to -6%",-8,-6],["-6 to -4%",-6,-4],["-4 to -2%",-4,-2],["-2 to 0%",-2,0],["0 to 2%",0,2],["2 to 4%",2,4],["4 to 6%",4,6],["6 to 8%",6,8],["8 to 10%",8,10],["10 to 15%",10,15],["≥ 15%",15,1e9]];
+ const snap=()=>window.__my4fSnapshot||window.snapshotData||window.SNAPSHOT||null;
+ function names(root){
+   const all=Object.keys(snap()?.performance?.history||{});
+   const vals=[...root.querySelectorAll("select")].map(x=>x.value);
+   return [vals.find(x=>all.includes(x)&&x!=="SPY"&&x!=="TQQQ")||all.find(x=>x!=="SPY"&&x!=="TQQQ"),vals.find(x=>x==="SPY"||x==="TQQQ")||(all.includes("SPY")?"SPY":"TQQQ")];
+ }
+ function rows(p,b){
+   const H=snap()?.performance?.history||{}, pm=new Map((H[p]||[]).map(x=>[String(x[0]),+x[1]])), bm=new Map((H[b]||[]).map(x=>[String(x[0]),+x[1]]));
+   return [...pm].filter(([m,v])=>bm.has(m)&&isFinite(v)&&isFinite(bm.get(m))).map(([m,v])=>({m,p:v,b:bm.get(m),a:v-bm.get(m)}));
+ }
+ const regime=b=>b>=2?"Up Market":b<=-2?"Down Market":"Sideways";
+ const fmt=x=>isFinite(x)?`${x>=0?"+":""}${x.toFixed(2)}%`:"—";
+ function table(rs){
+   let A=0,B=0,N=0,S=0;
+   const body=["Up Market","Sideways","Down Market"].map(g=>{
+     const z=rs.filter(r=>regime(r.b)===g),a=z.filter(r=>r.a>0).length,b=z.length-a,s=z.reduce((q,r)=>q+r.a,0);
+     A+=a;B+=b;N+=z.length;S+=s;
+     return `<tr><td class="${g==="Up Market"?"up":g==="Down Market"?"down":""}">${g}</td><td>${a}</td><td>${b}</td><td>${z.length}</td><td>${z.length?Math.round(100*a/z.length):0}%</td><td>${fmt(z.length?s/z.length:NaN)}</td></tr>`;
+   }).join("");
+   return `<div class="v43-table-wrap"><table class="v43-market-table"><thead><tr><th>Market Type</th><th>Above<br>BM</th><th>Below<br>BM</th><th>Total</th><th>% Above</th><th>Avg Active</th></tr></thead><tbody>${body}<tr class="total"><td>Total</td><td>${A}</td><td>${B}</td><td>${N}</td><td>${N?Math.round(100*A/N):0}%</td><td>${fmt(N?S/N:NaN)}</td></tr></tbody></table></div>`;
+ }
+ function chart(rs,p,b){
+   const d=buckets.map(q=>{const z=rs.filter(r=>r.b>=q[1]&&r.b<q[2]);return {l:q[0],p:z.length?z.reduce((s,r)=>s+r.p,0)/z.length:NaN,b:z.length?z.reduce((s,r)=>s+r.b,0)/z.length:NaN,n:z.length}}).filter(x=>x.n);
+   if(!d.length)return "";
+   const W=720,H=330,L=42,R=10,T=16,B=78,M=Math.max(1,...d.flatMap(x=>[Math.abs(x.p),Math.abs(x.b)])),zero=T+(H-T-B)/2,sc=((H-T-B)/2-8)/M,step=(W-L-R)/d.length,bw=Math.min(16,step*.28);
+   let bars="",labs="";
+   d.forEach((x,i)=>{const c=L+step*(i+.5);[[x.p,-bw*.58,"port"],[x.b,bw*.58,"bm"]].forEach(([v,dx,cl])=>{const y=v>=0?zero-v*sc:zero;bars+=`<rect class="${cl}" x="${c+dx-bw/2}" y="${y}" width="${bw}" height="${Math.max(1,Math.abs(v*sc))}" rx="1"/>`});labs+=`<text x="${c}" y="${H-49}" transform="rotate(-45 ${c} ${H-49})" text-anchor="end">${x.l}</text>`});
+   return `<div class="v43-chart-wrap"><svg class="v43-chart" viewBox="0 0 ${W} ${H}"><line x1="${L}" y1="${zero}" x2="${W-R}" y2="${zero}"/>${bars}${labs}<text class="title" x="${W/2}" y="${H-7}" text-anchor="middle">Benchmark Return Range</text></svg><div class="v43-legend"><span><i class="port"></i>${p}</span><span><i class="bm"></i>${b}</span></div></div>`;
+ }
+ function enhance(){
+   const root=document.querySelector("#metricsPage,#metrics"); if(!root)return;
+   const [p,b]=names(root); if(!p||!b)return; const rs=rows(p,b); if(!rs.length)return;
+   let s=root.querySelector("#v43MarketPerformance"); if(!s){s=document.createElement("section");s.id="v43MarketPerformance";s.className="v43-market-section";root.appendChild(s)}
+   s.innerHTML=`<h2>Up vs. Down Market Performance <span>(${rs.length} months)</span></h2>${table(rs)}${chart(rs,p,b)}<p class="v43-note">BM ≥ +2% = Up / −2% &lt; BM &lt; +2% = Sideways / BM ≤ −2% = Down. Canonical monthly returnsからの表示用集計。</p>`;
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(enhance,300));
+ document.addEventListener("change",e=>{if(e.target.closest("#metricsPage,#metrics"))setTimeout(enhance,120)});
+ setTimeout(enhance,900);
+})();
