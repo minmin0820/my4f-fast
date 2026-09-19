@@ -1,4 +1,4 @@
-const CACHE_NAME='my4f-fast-v20260919-1436';
+const CACHE_NAME='my4f-fast-v20260919-scroll1';
 const CORE=['./','./index.html','./styles.css','./app.js'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE)))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
