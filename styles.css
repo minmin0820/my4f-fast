@@ -966,3 +966,43 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
  .dd-duration-grid{grid-template-columns:1fr}
  .dd-duration-grid small{font-size:14px}.dd-duration-grid b{font-size:22px}.dd-duration-grid span,.dd-duration-grid em{font-size:12px}
 }
+
+
+/* v6 — Bam-inspired readable mobile typography */
+@media(max-width:700px){
+  body{font-size:17px;line-height:1.5}
+  .analytics-page{font-size:17px}
+  .analytics-page h2{font-size:32px!important;line-height:1.12!important;letter-spacing:-.02em}
+  .analytics-page .sub{font-size:17px!important;line-height:1.5!important}
+  .subsection-title{font-size:27px!important}
+  .strategy-chip,.analytics-chips button,.bm-switch button{font-size:16px!important;font-weight:700!important;min-height:48px!important}
+  .analytics-table{font-size:17px!important}
+  .analytics-table th{font-size:15px!important}
+  .analytics-table td{font-size:17px!important}
+  .analytics-kpis small{font-size:15px!important}.analytics-kpis b{font-size:27px!important}
+  .compare-legend{font-size:16px!important}
+  .dd-worst-block h3{font-size:22px!important}
+  .dd-worst-head span,.dd-worst-row span,.dd-worst-row strong{font-size:12px!important}
+  .dd-worst-row strong{font-size:13px!important}
+  .dd-svg text{font-size:12px!important}
+  .dd-tip{font-size:14px!important}
+}
+
+/* Metrics: single selected portfolio vs benchmark */
+.metrics-toolbar{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;margin:10px 0 22px;flex-wrap:wrap}
+.metrics-toolbar label{display:flex;flex-direction:column;gap:7px;font-weight:700;color:#68788d;font-size:14px;flex:1 1 280px}
+.metrics-toolbar select{width:100%;min-height:52px;border:2px solid #0a78ad;border-radius:13px;background:#fff;padding:8px 42px 8px 14px;font-size:17px;font-weight:700;color:#152033}
+.metrics-title{font-size:26px;margin:10px 0 14px}
+.metrics-compare-table{width:100%;border-top:2px solid #1e2b3b}
+.metrics-row{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.8fr);align-items:center;gap:10px;min-height:66px;border-bottom:1.5px solid #263445;padding:10px 8px}
+.metrics-row>span{font-size:16px;line-height:1.35}.metrics-row>b{text-align:right;font-size:17px;font-weight:500;overflow-wrap:anywhere}
+.metrics-row.metrics-head{min-height:58px}.metrics-row.metrics-head>span,.metrics-row.metrics-head>b{font-size:16px;font-weight:800;color:#64748b}
+.metrics-row.metrics-head>b:nth-child(2){color:#0877a8}.metrics-row .neg{color:#d83d36}
+#metricsPage .analysis-period{text-align:center;font-size:16px;margin:24px 4px;color:#718096}
+@media(max-width:700px){
+ .metrics-toolbar{display:block}.metrics-toolbar .bm-switch{margin-top:12px}
+ .metrics-title{font-size:27px}
+ .metrics-row{grid-template-columns:minmax(0,1.2fr) minmax(0,.95fr) minmax(0,.72fr);gap:6px;min-height:76px;padding:11px 5px}
+ .metrics-row>span{font-size:16px}.metrics-row>b{font-size:16px}
+ .metrics-row.metrics-head>span,.metrics-row.metrics-head>b{font-size:15px}
+}
