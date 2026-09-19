@@ -2060,3 +2060,7 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     line-height:1.05!important;
   }
 }
+
+
+/* v38 — keep menu JS intact; hide only the obsolete JS-injected v34 badge. */
+.ui-update-badge{display:none!important;}
