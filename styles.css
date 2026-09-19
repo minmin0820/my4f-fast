@@ -1398,3 +1398,17 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   }
   #summaryPage table td{font-size:17px!important}
 }
+
+/* v16 — balanced numeric typography */
+@media(max-width:700px){
+  .dashboard-only .months .row strong{
+    font-size:16px!important;line-height:1!important;font-weight:750!important;
+    letter-spacing:-.15px!important;white-space:nowrap!important;
+    font-variant-numeric:tabular-nums!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td .ret-pos,
+  #monthlyReturnsPage .monthly-compare-table td .ret-neg{
+    font-size:17px!important;line-height:1!important;font-weight:750!important;
+    letter-spacing:-.2px!important;white-space:nowrap!important;
+  }
+}
