@@ -792,3 +792,22 @@ body.menu-open{overflow:hidden!important}
 body.fast-subpage header,body.fast-subpage footer{display:none}
 .app-page{margin-top:12px}
 #monthlyReturns.analytics-page,#rolling.analytics-page,#drawdowns.analytics-page,#annual.analytics-page,#metrics.analytics-page{min-height:70vh}
+
+/* v5.5 analytics expansion */
+.analytics-note,.analysis-period{font-size:12px;color:#718096;margin:7px 0 12px}
+.summary-compare-title{display:flex;gap:8px;align-items:center;margin:8px 0 12px;color:#0b7fac}
+.summary-compare-title span{color:#8795a8;font-weight:700}
+.summary-compare-table th:nth-child(n+2){background:#eefafa}
+.summary-compare-table td:nth-child(n+2){text-align:right;font-variant-numeric:tabular-nums}
+.analysis-period{text-align:center;font-weight:700}
+.subsection-title{margin:18px 0 10px;font-size:17px}
+.years-count{color:#75849a;font-weight:600}
+.monthly-full-scroll{max-height:72vh;overflow:auto}
+.monthly-full-scroll thead{position:sticky;top:0;z-index:2;background:#fff}
+.annual-chart-wrap{border:1px solid #d8ebe8;border-radius:14px;padding:10px;margin:10px 0 16px;background:#fbffff;overflow:hidden}
+.annual-bar-svg{width:100%;height:auto;display:block}
+.annual-bar-svg text{font-size:9px;fill:#738196}
+.annual-main-bar{fill:#13a9df}
+.annual-bm-bar{fill:#98a8bf}
+.annual-compare-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+#summaryPage,#monthlyReturns,#rolling,#drawdowns,#annual{min-height:75vh}

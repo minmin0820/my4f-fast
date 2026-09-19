@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260919-pages1">
+<link rel="stylesheet" href="styles.css?v=20260919-analytics55">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -22,6 +22,7 @@
   <div class="fast-menu-head"><strong>My4F Fast</strong><button id="fastMenuClose" type="button" aria-label="閉じる">×</button></div>
   <nav class="fast-menu-nav">
     <button type="button" data-target="top">Dashboard</button>
+    <button type="button" data-target="summaryPage">Summary</button>
     <button type="button" data-target="performance">Performance</button>
     <button type="button" data-target="metrics">Metrics</button>
     <button type="button" data-target="monthlyReturns">Monthly Returns</button>
@@ -77,6 +78,7 @@
 <div id="perfCards" class="perf-cards"></div>
 <details><summary>全系列の指標</summary><div id="perfTable" class="perf-table-wrap"></div></details></section>
 
+<section id="summaryPage" class="analytics-page fast-anchor app-page"><h2>Summary</h2><p class="sub">選択戦略とBenchmarkの共通期間サマリー。BMはSPY / TQQQを切替。</p><div id="summaryComparePage"></div></section>
 <section class="analytics-shell"><section id="metrics" class="analytics-page fast-anchor app-page"><h2>Metrics</h2><p class="sub">Python正本の全期間指標。</p><div id="metricsPage"></div></section>
 <section id="monthlyReturns" class="analytics-page fast-anchor app-page"><h2>Monthly Returns</h2><p class="sub">麒麟「現世」とBenchmarkの月次比較。BMはSPY / TQQQを切替。</p><div id="monthlyReturnsPage"></div></section>
 <section id="rolling" class="analytics-page fast-anchor app-page"><h2>Rolling Returns</h2><p class="sub">1Y累積 / 3Y・5Y年率。Current / Median / P10 / Min / Positive rate。</p><div id="rollingPage"></div></section>
@@ -125,7 +127,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260919-pages1"></script>
+<script src="app.js?v=20260919-analytics55"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');

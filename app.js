@@ -49,12 +49,14 @@ function bmSwitch(id,current,onChange){
 }
 function renderMonthlyReturnsPage(d,bm='SPY'){
  const root=document.getElementById('monthlyReturnsPage');if(!root)return;
- const rr=d?.returns||[],bi=bm==='TQQQ'?5:4;
+ const hist=d?.performance?.history||{},main='麒麟「現世」';
+ const mainRows=Array.isArray(hist[main])?hist[main]:[],bmRows=Array.isArray(hist[bm])?hist[bm]:[];
+ const bmMap=new Map(bmRows.map(x=>[String(x[0]),Number(x[1])]));
+ const rows=mainRows.map(x=>[String(x[0]),Number(x[1]),bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
  const cell=v=>Number.isFinite(Number(v))?`<span class="${Number(v)>=0?'ret-pos':'ret-neg'}">${pct(Number(v))}</span>`:'—';
- root.innerHTML=`<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>麒麟「現世」</b><span class="bm-pill">BM: ${bm}</span></div><div class="analytics-table-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>現世</th><th>${bm}</th><th>差</th></tr></thead><tbody>${rr.map(x=>{const s=Number(x[3]),bv=Number(x[bi]),dif=(Number.isFinite(s)&&Number.isFinite(bv))?s-bv:null;return`<tr><td>${esc(x[0])}</td><td>${cell(s)}</td><td>${cell(bv)}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
+ root.innerHTML=`<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>${esc(main)}</b><span class="bm-pill">BM: ${bm}</span></div><p class="analytics-note">表示可能な最古 ${rows[0]?.[0]||'—'} → ${rows.at(-1)?.[0]||'—'} ｜ ${rows.length} months</p><div class="analytics-table-scroll monthly-full-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>現世</th><th>${bm}</th><th>差</th></tr></thead><tbody>${[...rows].reverse().map(x=>{const dif=Number.isFinite(x[2])?x[1]-x[2]:null;return`<tr><td>${esc(x[0])}</td><td>${cell(x[1])}</td><td>${cell(x[2])}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
  bmSwitch('monthlyBmSwitch',bm,next=>{FAST_BM=next;renderMonthlyReturnsPage(d,next);renderFastAnalytics(d,next);});
 }
-
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
 function renderResearchPerformance(p){
  if(!p||!Array.isArray(p.series)||!p.series.length)return;
@@ -174,14 +176,13 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    b.innerHTML='<div id="rollingBmSwitch"></div><div id="rollingBmBody"></div>';
    bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
    const rollBody=b.querySelector('#rollingBmBody');
-   const stat=(x,k)=>x?.[k];
-   const statRow=(lab,key)=>`<tr><td>${lab}</td><td>${fmt(stat(r,key))}</td><td>${fmt(stat(bm,key))}</td></tr>`;
+   const stat=(obj,k)=>obj?.[k];
    rollBody.innerHTML=periods.filter(k=>r[k]).map(k=>{
      const x=r[k],y=bm[k],lab=k==='12'?'1Y':k==='36'?'3Y':'5Y';
      const rows=x.history||[], bmMap=new Map((y?.history||[]).map(z=>[z[0],z[1]]));
      const both=rows.map(z=>[z[0],z[1],bmMap.get(z[0])]).filter(z=>Number.isFinite(Number(z[1])));
      const compChart=compareChart(both,n,bmName);
-     return`<div class="rolling-block bm-compare"><div class="rolling-title-row"><h3>${lab}</h3><span class="bm-pill">BM: ${bmName}</span></div><div class="analytics-table-scroll"><table class="analytics-table rolling-compare-table"><thead><tr><th>Statistic</th><th>${E(n)}</th><th>${E(bmName)}</th></tr></thead><tbody>${statRow('Current','current')}${statRow('Median','median')}${statRow('P10','p10')}<tr><td>Min</td><td>${fmt(x.min)}</td><td>${fmt(y?.min)}</td></tr><tr><td>Positive</td><td>${Number.isFinite(+x.positive_rate)?(+x.positive_rate).toFixed(1)+'%':'—'}</td><td>${Number.isFinite(+y?.positive_rate)?(+y.positive_rate).toFixed(1)+'%':'—'}</td></tr></tbody></table></div>${compChart}</div>`;
+     return`<div class="rolling-block bm-compare"><div class="rolling-title-row"><h3>${lab}</h3><span class="bm-pill">BM: ${bmName}</span></div><div class="analytics-table-scroll"><table class="analytics-table rolling-compare-table"><thead><tr><th>Statistic</th><th>${E(n)}</th><th>${E(bmName)}</th></tr></thead><tbody><tr><td>Current</td><td>${fmt(stat(x,'current'))}</td><td>${fmt(stat(y,'current'))}</td></tr><tr><td>Median</td><td>${fmt(stat(x,'median'))}</td><td>${fmt(stat(y,'median'))}</td></tr><tr><td>P10</td><td>${fmt(stat(x,'p10'))}</td><td>${fmt(stat(y,'p10'))}</td></tr><tr><td>Min</td><td>${fmt(x.min)}</td><td>${fmt(y?.min)}</td></tr><tr><td>Positive</td><td>${Number.isFinite(+x.positive_rate)?(+x.positive_rate).toFixed(1)+'%':'—'}</td><td>${Number.isFinite(+y?.positive_rate)?(+y.positive_rate).toFixed(1)+'%':'—'}</td></tr></tbody></table></div>${compChart}</div>`;
    }).join('');
  });
  function compareChart(rows,mainName,bmName){
@@ -193,8 +194,72 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const line=col=>{let seg=[],s='';const flush=()=>{if(seg.length>1)s+=`<polyline points="${seg.join(' ')}" class="${col}"/>`;seg=[]};rows.forEach((r,i)=>{const v=Number(r[col==='main-line'?1:2]);Number.isFinite(v)?seg.push(`${X(i)},${Y(v)}`):flush()});flush();return s};
    return`<div class="compare-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="analytics-svg compare-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>${line('main-line')}${line('bm-line')}<text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows.at(-1)[0])}</text></svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
  }
- bind(document.getElementById('drawdownsPage'),(n,b)=>{const r=a[n]?.drawdown||[],w=r.length?Math.min(...r.map(x=>+x[1])):null;b.innerHTML=`<div class="analytics-kpis"><div><small>Worst</small><b>${fmt(w)}</b></div></div>${chart(r)}`});
- bind(document.getElementById('annualPage'),(n,b)=>{const r=a[n]?.annual||[];b.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table annual-table"><thead><tr><th>Year</th><th>${E(n)}</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td></tr>`).join('')}</tbody></table></div>`});
+
+ function commonMonthly(main,bmName){
+   const h=p?.history||{},mr=Array.isArray(h[main])?h[main]:[],br=Array.isArray(h[bmName])?h[bmName]:[];
+   const bmMap=new Map(br.map(x=>[String(x[0]),Number(x[1])/100]));
+   return mr.map(x=>[String(x[0]),Number(x[1])/100,bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2])).sort((a,b)=>a[0].localeCompare(b[0]));
+ }
+ function summaryStats(rows,col){
+   if(!rows.length)return null;
+   const rs=rows.map(x=>x[col]),wealth=[1];rs.forEach(r=>wealth.push(wealth.at(-1)*(1+r)));
+   const years=rows.length/12,cagr=(Math.pow(wealth.at(-1),1/years)-1)*100;
+   const mean=rs.reduce((s,v)=>s+v,0)/rs.length,variance=rs.reduce((s,v)=>s+(v-mean)**2,0)/Math.max(1,rs.length-1),vol=Math.sqrt(variance)*Math.sqrt(12)*100;
+   let peak=1,mdd=0;wealth.slice(1).forEach(w=>{peak=Math.max(peak,w);mdd=Math.min(mdd,w/peak-1)});
+   const annual={};rows.forEach(x=>{const y=x[0].slice(0,4);annual[y]=(annual[y]??1)*(1+x[col])});const yr=Object.values(annual).map(v=>(v-1)*100);
+   const rf=0,sh=(vol?mean*12*100/vol:0),downs=rs.filter(v=>v<0),downDev=Math.sqrt(downs.reduce((s,v)=>s+v*v,0)/Math.max(1,downs.length))*Math.sqrt(12)*100,sortino=downDev?mean*12*100/downDev:0;
+   return{start:rows[0][0],end:rows.at(-1)[0],months:rows.length,endBalance:100000*wealth.at(-1),cagr,vol,best:Math.max(...yr),worst:Math.min(...yr),mdd:mdd*100,sharpe:sh,sortino};
+ }
+ function corr(rows){
+   if(rows.length<2)return null;const a=rows.map(x=>x[1]),b=rows.map(x=>x[2]),ma=a.reduce((s,v)=>s+v,0)/a.length,mb=b.reduce((s,v)=>s+v,0)/b.length;
+   const num=a.reduce((s,v,i)=>s+(v-ma)*(b[i]-mb),0),da=Math.sqrt(a.reduce((s,v)=>s+(v-ma)**2,0)),db=Math.sqrt(b.reduce((s,v)=>s+(v-mb)**2,0));return da&&db?num/(da*db):null;
+ }
+ function money(v){if(!Number.isFinite(v))return'—';return v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0)}
+ function renderSummaryCompare(){
+   const root=document.getElementById('summaryComparePage');if(!root)return;const main='麒麟「現世」',rows=commonMonthly(main,bmName),s=summaryStats(rows,1),bs=summaryStats(rows,2),c=corr(rows);
+   if(!s||!bs){root.innerHTML='<div class="analytics-empty">データなし</div>';return}
+   const tr=(lab,a1,a2,cls='')=>`<tr><td>${lab}</td><td class="${cls}">${a1}</td><td class="${cls}">${a2}</td></tr>`;
+   root.innerHTML=`<div id="summaryBmSwitch"></div><div class="summary-compare-title"><b>${E(main)}</b><span>vs</span><b>${E(bmName)}</b></div><div class="analytics-table-scroll"><table class="analytics-table summary-compare-table"><thead><tr><th>Metric</th><th>${E(main)}</th><th>${E(bmName)}</th></tr></thead><tbody>
+   ${tr('Start Balance','$100,000','$100,000')}${tr('End Balance',money(s.endBalance),money(bs.endBalance))}
+   ${tr('Annualized Return (CAGR)',fmt(s.cagr),fmt(bs.cagr))}
+   ${tr('Standard Deviation',fmt(s.vol),fmt(bs.vol))}
+   ${tr('Best Year',fmt(s.best),fmt(bs.best))}
+   ${tr('Worst Year',fmt(s.worst),fmt(bs.worst))}
+   ${tr('Maximum Drawdown',fmt(s.mdd),fmt(bs.mdd))}
+   ${tr('Sharpe Ratio',Number(s.sharpe).toFixed(2),Number(bs.sharpe).toFixed(2))}
+   ${tr('Sortino Ratio',Number(s.sortino).toFixed(2),Number(bs.sortino).toFixed(2))}
+   ${tr('Benchmark Correlation',c==null?'—':c.toFixed(2),'1.00')}
+   </tbody></table></div><p class="analysis-period">Analysis Period: ${s.start} to ${s.end} (${s.months} months)</p>`;
+   bmSwitch('summaryBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
+ }
+ renderSummaryCompare();
+
+ function ddTroughs(rows){
+   const out=[];for(let i=0;i<rows.length;i++){const v=Number(rows[i][1]),prev=i?Number(rows[i-1][1]):0,next=i<rows.length-1?Number(rows[i+1][1]):0;if(v<0&&v<=prev&&v<=next)out.push(rows[i]);}
+   return out.sort((x,y)=>Number(x[1])-Number(y[1])).slice(0,10);
+ }
+ bind(document.getElementById('drawdownsPage'),(n,b)=>{
+   const r=a[n]?.drawdown||[],br=a[bmName]?.drawdown||[],bmMap=new Map(br.map(x=>[x[0],x[1]])),worst=ddTroughs(r);
+   b.innerHTML=`<div id="ddBmSwitch"></div><div class="analytics-kpis"><div><small>Worst ${E(n)}</small><b>${fmt(r.length?Math.min(...r.map(x=>+x[1])):null)}</b></div><div><small>Worst ${E(bmName)}</small><b>${fmt(br.length?Math.min(...br.map(x=>+x[1])):null)}</b></div></div>${compareChart(r.map(z=>[z[0],z[1],bmMap.get(z[0])]),n,bmName)}
+   <h3 class="subsection-title">Worst 10 Drawdowns</h3><div class="analytics-table-scroll"><table class="analytics-table"><thead><tr><th>Rank</th><th>Month</th><th>${E(n)}</th><th>${E(bmName)}</th></tr></thead><tbody>${worst.map((x,i)=>`<tr><td>${i+1}</td><td>${E(x[0])}</td><td class="ret-neg">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))<0?'ret-neg':'ret-pos'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   bmSwitch('ddBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
+ });
+
+ function annualBars(mainRows,bmRows,mainName,bmName){
+   const bmMap=new Map(bmRows.map(x=>[x[0],Number(x[1])])),rows=mainRows.map(x=>[x[0],Number(x[1]),bmMap.get(x[0])]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
+   if(!rows.length)return'<div class="analytics-empty">データなし</div>';
+   const W=760,H=300,L=46,R=12,T=16,B=40,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
+   let s=`<div class="annual-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="annual-bar-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>`;
+   rows.forEach((x,i)=>{const cx=L+group*(i+.5),y1=Y(x[1]),y2=Y(x[2]);s+=`<rect x="${cx-bw-1}" y="${Math.min(y1,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y1))}" class="annual-main-bar"/><rect x="${cx+1}" y="${Math.min(y2,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y2))}" class="annual-bm-bar"/>`;if(i%Math.max(1,Math.ceil(rows.length/8))===0)s+=`<text x="${cx}" y="${H-12}" text-anchor="middle">${E(x[0])}</text>`});
+   return s+`</svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
+ }
+ bind(document.getElementById('annualPage'),(n,b)=>{
+   const r=a[n]?.annual||[],br=a[bmName]?.annual||[],bmMap=new Map(br.map(x=>[x[0],x[1]]));
+   let wm=1,wb=1;const balance=new Map(),bbalance=new Map();[...r].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wm*=1+Number(x[1])/100;balance.set(x[0],wm*100000)});[...br].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wb*=1+Number(x[1])/100;bbalance.set(x[0],wb*100000)});
+   b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)} Return</th><th>Balance</th><th>${E(bmName)} Return</th><th>Balance</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td>${money(balance.get(x[0]))}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td><td>${money(bbalance.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   bmSwitch('annualBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
+ });
+
 }
 
 // Fast v5 menu / section navigation
@@ -204,7 +269,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
  const closeMenu=()=>{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');back.classList.remove('show');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');setTimeout(()=>{if(!menu.classList.contains('open'))back.hidden=true},180)};
 
- const pageIds=['performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
+ const pageIds=['summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
  const allPages=()=>pageIds.map(id=>document.getElementById(id)).filter(Boolean);
  const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
  function showFastPage(id){
