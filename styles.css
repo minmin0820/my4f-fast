@@ -1423,3 +1423,65 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     font-weight:400!important;
   }
 }
+
+/* v18 — unified typography scale across all pages
+   Same semantic role = same font size/weight everywhere. */
+:root{
+  --ui-page-title: 28px;
+  --ui-section-title: 22px;
+  --ui-card-title: 18px;
+  --ui-body: 16px;
+  --ui-value: 17px;
+  --ui-small: 14px;
+  --ui-weight-title: 700;
+  --ui-weight-body: 400;
+  --ui-weight-value: 400;
+}
+@media(max-width:700px){
+  /* Section/card headings */
+  main h2, .section-title, .analytics-title{
+    font-size:var(--ui-section-title)!important;
+    line-height:1.15!important;
+  }
+  main h3, .card-title{
+    font-size:var(--ui-card-title)!important;
+    line-height:1.2!important;
+  }
+
+  /* Allocation / Execution Holdings and equivalent cards */
+  #allocation h2, #allocation h3,
+  #allocation .title, #allocation .subtitle,
+  #execution h2, #execution h3,
+  #execution .title, #execution .subtitle,
+  [id*="allocation" i] h2, [id*="allocation" i] h3,
+  [id*="execution" i] h2, [id*="execution" i] h3{
+    font-size:var(--ui-card-title)!important;
+    line-height:1.2!important;
+  }
+
+  /* Normal text / labels */
+  main p, main label, main .label, main .meta{
+    font-size:var(--ui-body)!important;
+  }
+
+  /* Numeric values: same visual scale, regular weight */
+  main .value, main .metric-value, main .allocation-value,
+  main .holding-value, main .pct, main .percent{
+    font-size:var(--ui-value)!important;
+    font-weight:var(--ui-weight-value)!important;
+    line-height:1.05!important;
+    font-variant-numeric:tabular-nums!important;
+    white-space:nowrap!important;
+  }
+
+  /* Preserve the specifically tuned table values at the same value scale */
+  .dashboard-only .months .row strong{
+    font-size:var(--ui-value)!important;
+    font-weight:var(--ui-weight-value)!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td .ret-pos,
+  #monthlyReturnsPage .monthly-compare-table td .ret-neg{
+    font-size:var(--ui-value)!important;
+    font-weight:var(--ui-weight-value)!important;
+  }
+}
