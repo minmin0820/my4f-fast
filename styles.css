@@ -1485,3 +1485,126 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     font-weight:var(--ui-weight-value)!important;
   }
 }
+
+/* v19 — iPhone density + collision repair
+   Compact selectors, balanced text/value scale, no global horizontal scroll. */
+@media(max-width:700px){
+  /* 1) Balanced typography */
+  :root{
+    --ui-section-title: 21px;
+    --ui-card-title: 17px;
+    --ui-body: 15px;
+    --ui-value: 16px;
+  }
+
+  /* 3/5/6/7) Portfolio strategy chips: intentionally smaller + denser */
+  .perf-chip, .analytics-chip, .strategy-chip,
+  #rollingReturnsPage button[data-series],
+  #drawdownsPage button[data-series],
+  #annualReturnsPage button[data-series]{
+    font-size:14px!important;
+    line-height:1.05!important;
+    padding:9px 11px!important;
+    min-height:40px!important;
+    white-space:nowrap!important;
+  }
+  .perf-groups button, .group-tabs button{
+    font-size:14px!important;
+    padding:8px 11px!important;
+    min-height:38px!important;
+  }
+
+  /* 2/4) Tables: labels may use available width; numbers never collide/wrap */
+  .analytics-table, .metrics-table, .summary-table{
+    table-layout:fixed!important;
+    width:100%!important;
+  }
+  .analytics-table th, .analytics-table td,
+  .metrics-table th, .metrics-table td,
+  .summary-table th, .summary-table td{
+    font-size:14px!important;
+    line-height:1.15!important;
+    padding:10px 6px!important;
+    vertical-align:middle!important;
+  }
+  .analytics-table td:not(:first-child),
+  .metrics-table td:not(:first-child),
+  .summary-table td:not(:first-child){
+    font-size:15px!important;
+    font-weight:400!important;
+    white-space:nowrap!important;
+    text-align:right!important;
+    font-variant-numeric:tabular-nums!important;
+  }
+  .analytics-table th:not(:first-child),
+  .metrics-table th:not(:first-child),
+  .summary-table th:not(:first-child){
+    white-space:nowrap!important;
+    text-align:right!important;
+  }
+  .analytics-table th:first-child, .analytics-table td:first-child,
+  .metrics-table th:first-child, .metrics-table td:first-child,
+  .summary-table th:first-child, .summary-table td:first-child{
+    width:46%!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  /* Summary/metrics long metric labels: smaller so values do not overlap */
+  #summaryPage table td:first-child,
+  #metricsPage table td:first-child{
+    font-size:13px!important;
+    line-height:1.12!important;
+    padding-right:8px!important;
+  }
+
+  /* 6) Drawdown KPI cards: remove excessive vertical whitespace */
+  #drawdownsPage .kpi-grid,
+  #drawdownsPage .dd-kpis{
+    gap:10px!important;
+  }
+  #drawdownsPage .kpi,
+  #drawdownsPage .kpi-card,
+  #drawdownsPage .dd-kpi{
+    min-height:0!important;
+    padding:12px 14px!important;
+    margin:0!important;
+  }
+  #drawdownsPage .kpi .label,
+  #drawdownsPage .kpi-card .label,
+  #drawdownsPage .dd-kpi .label{
+    font-size:14px!important;
+    line-height:1.1!important;
+    margin-bottom:5px!important;
+  }
+  #drawdownsPage .kpi .value,
+  #drawdownsPage .kpi-card .value,
+  #drawdownsPage .dd-kpi .value{
+    font-size:19px!important;
+    line-height:1!important;
+    margin:0!important;
+  }
+  #drawdownsPage .kpi p,
+  #drawdownsPage .kpi-card p,
+  #drawdownsPage .dd-kpi p{
+    margin:5px 0 0!important;
+    line-height:1.1!important;
+    font-size:13px!important;
+  }
+
+  /* Allocation headings: date suffix should not look like a different typography system */
+  #allocation h2, #allocation h3,
+  [id*="allocation" i] h2, [id*="allocation" i] h3,
+  [id*="execution" i] h2, [id*="execution" i] h3{
+    font-size:19px!important;
+    line-height:1.15!important;
+  }
+  #allocation h2 small, #allocation h3 small,
+  [id*="allocation" i] h2 small, [id*="allocation" i] h3 small,
+  [id*="execution" i] h2 small, [id*="execution" i] h3 small{
+    font-size:14px!important;
+    vertical-align:baseline!important;
+  }
+
+  /* Keep page itself fixed: no horizontal page scrolling */
+  html, body, main{max-width:100%!important; overflow-x:hidden!important;}
+}
