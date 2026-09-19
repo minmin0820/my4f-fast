@@ -239,10 +239,88 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    return out.sort((x,y)=>Number(x[1])-Number(y[1])).slice(0,10);
  }
  bind(document.getElementById('drawdownsPage'),(n,b)=>{
-   const r=a[n]?.drawdown||[],br=a[bmName]?.drawdown||[],bmMap=new Map(br.map(x=>[x[0],x[1]])),worst=ddTroughs(r);
-   b.innerHTML=`<div id="ddBmSwitch"></div><div class="analytics-kpis"><div><small>Worst ${E(n)}</small><b>${fmt(r.length?Math.min(...r.map(x=>+x[1])):null)}</b></div><div><small>Worst ${E(bmName)}</small><b>${fmt(br.length?Math.min(...br.map(x=>+x[1])):null)}</b></div></div>${compareChart(r.map(z=>[z[0],z[1],bmMap.get(z[0])]),n,bmName)}
-   <h3 class="subsection-title">Worst 10 Drawdowns</h3><div class="analytics-table-scroll"><table class="analytics-table"><thead><tr><th>#</th><th>Month</th><th>${E(n)}</th><th>${E(bmName)}</th></tr></thead><tbody>${worst.map((x,i)=>`<tr><td>${i+1}</td><td>${E(x[0])}</td><td class="ret-neg">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))<0?'ret-neg':'ret-pos'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   const r=a[n]?.drawdown||[],br=a[bmName]?.drawdown||[];
+   function episodes(rows){
+     const z=rows.map(x=>[String(x[0]),Number(x[1])]).filter(x=>Number.isFinite(x[1])).sort((x,y)=>x[0].localeCompare(y[0]));
+     const out=[];let cur=null;
+     z.forEach(([m,v],i)=>{
+       if(v<0){
+         if(!cur)cur={start:m,startIndex:i,trough:m,troughIndex:i,troughVal:v,end:null,endIndex:null};
+         if(v<cur.troughVal){cur.trough=m;cur.troughIndex=i;cur.troughVal=v}
+       }else if(cur){
+         cur.end=m;cur.endIndex=i;out.push(cur);cur=null;
+       }
+     });
+     if(cur){cur.endIndex=z.length-1;out.push(cur)}
+     return out.map(e=>({
+       ...e,
+       ddLength:e.troughIndex-e.startIndex+1,
+       recovery:e.end==null?null:Math.max(0,e.endIndex-e.troughIndex),
+       underwater:e.end==null?(z.length-e.startIndex):(e.endIndex-e.startIndex)
+     })).sort((x,y)=>x.troughVal-y.troughVal);
+   }
+   const se=episodes(r),be=episodes(br),sWorst=se[0],bWorst=be[0];
+   const duration=x=>x==null?'Ongoing':`${x} mo`;
+   function durationCards(){
+     return `<div class="dd-duration-grid">
+       <div><small>Drawdown Length</small><b>${duration(sWorst?.ddLength)}</b><span>${E(n)}</span><em>${duration(bWorst?.ddLength)} · ${E(bmName)}</em></div>
+       <div><small>Recovery Time</small><b>${duration(sWorst?.recovery)}</b><span>${E(n)}</span><em>${duration(bWorst?.recovery)} · ${E(bmName)}</em></div>
+       <div><small>Underwater Period</small><b>${duration(sWorst?.underwater)}</b><span>${E(n)}</span><em>${duration(bWorst?.underwater)} · ${E(bmName)}</em></div>
+     </div>`;
+   }
+   function interactiveDD(){
+     const sm=new Map(r.map(x=>[String(x[0]),Number(x[1])])),bm=new Map(br.map(x=>[String(x[0]),Number(x[1])]));
+     const months=[...new Set([...sm.keys(),...bm.keys()])].sort();
+     if(!months.length)return'<div class="analytics-empty">データなし</div>';
+     const W=720,H=270,L=45,R=12,T=12,B=30,all=[...sm.values(),...bm.values()].filter(Number.isFinite),mn=Math.min(-1,...all),span=-mn||1;
+     const X=i=>L+(W-L-R)*i/Math.max(1,months.length-1),Y=v=>T+(H-T-B)*(1-v/mn);
+     const poly=(mp,cls)=>{let s='',seg=[];const flush=()=>{if(seg.length>1)s+=`<polyline points="${seg.join(' ')}" class="${cls}"/>`;seg=[]};months.forEach((m,i)=>{const v=mp.get(m);Number.isFinite(v)?seg.push(`${X(i)},${Y(v)}`):flush()});flush();return s};
+     return `<div class="dd-touch-chart" data-months='${E(JSON.stringify(months))}'>
+       <svg viewBox="0 0 ${W} ${H}" class="dd-svg">
+        <line x1="${L}" x2="${W-R}" y1="${Y(0)}" y2="${Y(0)}" class="zero"/>
+        ${poly(sm,'dd-main-line')}${poly(bm,'dd-bm-line')}
+        <line class="dd-cross" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}" visibility="hidden"/>
+        <circle class="dd-main-dot" r="4.5" visibility="hidden"/><circle class="dd-bm-dot" r="4.5" visibility="hidden"/>
+        <text x="${L}" y="${H-7}">${E(months[0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(months.at(-1))}</text>
+        <rect class="dd-hit" x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}"/>
+       </svg><div class="dd-tip" hidden></div>
+       <div class="compare-legend"><span class="main-key">${E(n)}</span><span class="bm-key">${E(bmName)}</span></div>
+     </div>`;
+   }
+   function worstBlock(title,eps){
+     return `<section class="dd-worst-block"><h3>${E(title)}</h3>
+       <div class="dd-worst-list"><div class="dd-worst-head"><span>#</span><span>Trough</span><span>MaxDD</span><span>Length</span><span>Recovery</span><span>Underwater</span></div>
+       ${eps.slice(0,10).map((e,i)=>`<div class="dd-worst-row"><span>${i+1}</span><span>${E(e.trough)}</span><strong>${fmt(e.troughVal)}</strong><span>${e.ddLength}m</span><span>${e.recovery==null?'Ongoing':e.recovery+'m'}</span><span>${e.underwater}m</span></div>`).join('')}</div>
+     </section>`;
+   }
+   b.innerHTML=`<div id="ddBmSwitch"></div>
+     <div class="dd-worst-cards"><div><small>Worst ${E(n)}</small><b>${fmt(sWorst?.troughVal)}</b></div><div><small>Worst ${E(bmName)}</small><b>${fmt(bWorst?.troughVal)}</b></div></div>
+     ${durationCards()}${interactiveDD()}
+     <h3 class="subsection-title">Worst 10 Drawdowns</h3>
+     ${worstBlock(n+' — Portfolio',se)}
+     ${worstBlock(bmName+' — Benchmark',be)}`;
    bmSwitch('ddBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
+
+   const wrap=b.querySelector('.dd-touch-chart'),svg=wrap?.querySelector('svg'),tip=wrap?.querySelector('.dd-tip');
+   if(svg&&wrap){
+     const sm=new Map(r.map(x=>[String(x[0]),Number(x[1])])),bm=new Map(br.map(x=>[String(x[0]),Number(x[1])]));
+     const months=[...new Set([...sm.keys(),...bm.keys()])].sort(),W=720,H=270,L=45,R=12,T=12,B=30;
+     const all=[...sm.values(),...bm.values()].filter(Number.isFinite),mn=Math.min(-1,...all);
+     const X=i=>L+(W-L-R)*i/Math.max(1,months.length-1),Y=v=>T+(H-T-B)*(1-v/mn);
+     const cross=svg.querySelector('.dd-cross'),sd=svg.querySelector('.dd-main-dot'),bd=svg.querySelector('.dd-bm-dot');
+     const show=e=>{
+       const q=svg.getBoundingClientRect(),local=(e.clientX-q.left)/q.width*W;
+       let i=Math.round((local-L)/(W-L-R)*(months.length-1));i=Math.max(0,Math.min(months.length-1,i));
+       const m=months[i],sv=sm.get(m),bv=bm.get(m),px=X(i);
+       cross.setAttribute('x1',px);cross.setAttribute('x2',px);cross.setAttribute('visibility','visible');
+       [[sd,sv],[bd,bv]].forEach(([dot,v])=>{if(Number.isFinite(v)){dot.setAttribute('cx',px);dot.setAttribute('cy',Y(v));dot.setAttribute('visibility','visible')}else dot.setAttribute('visibility','hidden')});
+       tip.innerHTML=`<b>${E(m)}</b><div><span>${E(n)}</span><strong>${fmt(sv)}</strong></div><div><span>${E(bmName)}</span><strong>${fmt(bv)}</strong></div>`;
+       tip.hidden=false;const pxCss=e.clientX-q.left;tip.style.left=Math.max(8,Math.min(wrap.clientWidth-tip.offsetWidth-8,pxCss-tip.offsetWidth/2))+'px';
+     };
+     svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);show(e)});
+     svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)show(e)});
+     svg.addEventListener('click',show);
+   }
  });
 
  function annualBars(mainRows,bmRows,mainName,bmName){
