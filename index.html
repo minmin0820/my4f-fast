@@ -7,6 +7,12 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <title>麒麟「現世」</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="My4F Fast">
+<link rel="manifest" href="manifest.webmanifest?v=20260919-1">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
 <link rel="stylesheet" href="styles.css?v=20260918-12">
 </head>
 <body>
@@ -100,5 +106,12 @@
    detail.textContent='Snapshot連携エラー：'+e.message; detail.style.color='#991b1b';
  });
 })();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
 </script>
 </body></html>
