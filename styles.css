@@ -885,3 +885,56 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   #annualPage .annual-compare-table td:nth-child(5){width:22%;text-align:right}
   #annualPage .annual-compare-table td{font-weight:600}
 }
+
+
+/* v5.7 — touch/scroll fix
+   Tables must never capture vertical page scrolling on iPhone.
+   Horizontal table scroll remains available only when content truly needs it. */
+.analytics-table-scroll,
+.monthly-full-scroll,
+.metrics-table-scroll,
+.table-scroll,
+.annual-table-scroll,
+.drawdown-table-scroll {
+  touch-action: pan-y pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+}
+
+/* Normal page gesture wins when touching cells/rows. */
+.analytics-table,
+.analytics-table th,
+.analytics-table td,
+.monthly-compare-table,
+.monthly-compare-table th,
+.monthly-compare-table td,
+.annual-compare-table,
+.annual-compare-table th,
+.annual-compare-table td {
+  touch-action: pan-y pan-x;
+}
+
+/* Never create a nested vertical scrolling area inside analytics pages. */
+#summaryPage .analytics-table-scroll,
+#monthlyReturnsPage .monthly-full-scroll,
+#drawdownsPage .analytics-table-scroll,
+#annualPage .analytics-table-scroll,
+#metricsPage .analytics-table-scroll {
+  max-height: none !important;
+  height: auto !important;
+  overflow-y: visible !important;
+}
+
+/* iOS: vertical page scrolling should remain smooth even when finger starts on table. */
+@media (max-width:700px){
+  .analytics-table-scroll,
+  .monthly-full-scroll,
+  .metrics-table-scroll,
+  .table-scroll,
+  .annual-table-scroll,
+  .drawdown-table-scroll{
+    position:relative;
+    touch-action:pan-y pan-x;
+  }
+}
