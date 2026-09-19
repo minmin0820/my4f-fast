@@ -668,3 +668,11 @@ body.menu-open{overflow:hidden!important}
 .analytics-table th,.analytics-table td{padding:9px 10px;border-bottom:1px solid #e3e5e8;white-space:nowrap;text-align:right}.analytics-table th:first-child,.analytics-table td:first-child{position:sticky;left:0;background:#fff;z-index:2;text-align:left;min-width:145px}
 .analytics-kpis{display:flex;gap:8px;overflow-x:auto;margin:8px 0}.analytics-kpis>div{flex:0 0 105px;background:#f6f6f7;border-radius:12px;padding:10px}.analytics-kpis small{display:block;color:#92969d;font-size:10px}.analytics-kpis b{font-size:16px}
 .rolling-block{margin:12px 0 22px}.analytics-svg{display:block;width:100%;height:auto;border:1px solid #e3e5e8;border-radius:14px;background:#fff}.analytics-svg .aline{fill:none;stroke:currentColor;stroke-width:2}.analytics-svg .zero{stroke:#c9cdd2;stroke-width:1;stroke-dasharray:4 4}.analytics-svg text{font-size:10px;fill:#8a9098}.analytics-empty{padding:18px;color:#8a9098}
+
+/* analytics fix v2: compact metrics + sortable headers */
+.metrics-table{min-width:660px}
+.metrics-table th:first-child,.metrics-table td:first-child{min-width:0!important;width:1%!important;padding-right:14px!important}
+.metrics-table th:not(:first-child),.metrics-table td:not(:first-child){padding-left:12px!important;padding-right:12px!important}
+.metric-sort{appearance:none;border:0;background:transparent;padding:0;margin:0;font:inherit;font-weight:800;color:inherit;white-space:nowrap;cursor:pointer}
+.metric-sort span{font-size:9px;margin-left:4px;color:#a0a5ad}.metric-sort.active span{color:#343a40}
+@media(max-width:600px){.metrics-table{min-width:620px}.metrics-table th,.metrics-table td{padding-top:9px!important;padding-bottom:9px!important}.metrics-table th:first-child,.metrics-table td:first-child{min-width:132px!important;max-width:132px!important;width:132px!important}}

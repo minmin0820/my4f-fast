@@ -115,12 +115,35 @@ function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMO
 }
 
 function renderFastAnalytics(d){
- const p=d?.performance,a=p?.analytics||{},ss=p?.series||[],names=ss.map(x=>x.name).filter(n=>a[n]);
+ const p=d?.performance,ss=p?.series||[];
+ let a=p?.analytics||{};
+ // Compatibility fallback for snapshots generated before analytics was added:
+ // derive display diagnostics only from the already-published frozen monthly history.
+ if(!Object.keys(a).length && Array.isArray(p?.history)){
+   const by={}; p.history.forEach(r=>Object.keys(r||{}).filter(k=>k!=='month').forEach(k=>{const v=Number(r[k]);if(Number.isFinite(v))(by[k]??=[]).push([String(r.month),v/100]);}));
+   Object.entries(by).forEach(([n,rows])=>{
+     rows.sort((x,y)=>x[0].localeCompare(y[0])); let w=1,peak=1; const dd=[],annual={},rolling={};
+     rows.forEach(([m,r])=>{w*=1+r;peak=Math.max(peak,w);dd.push([m,(w/peak-1)*100]);const y=m.slice(0,4);annual[y]=(annual[y]??1)*(1+r);});
+     [12,36,60].forEach(win=>{if(rows.length<win)return;const h=[];for(let i=win-1;i<rows.length;i++){let prod=1;for(let j=i-win+1;j<=i;j++)prod*=1+rows[j][1];const rr=(win===12?prod-1:Math.pow(prod,12/win)-1)*100;h.push([rows[i][0],rr]);}const vs=h.map(x=>x[1]).sort((x,y)=>x-y),q=.1*(vs.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=vs[lo]+(vs[hi]-vs[lo])*(q-lo);rolling[String(win)]={current:h.at(-1)[1],median:vs[Math.floor((vs.length-1)/2)],p10,min:vs[0],positive_rate:100*vs.filter(v=>v>0).length/vs.length,history:h};});
+     a[n]={annual:Object.entries(annual).map(([y,v])=>[y,(v-1)*100]),drawdown:dd,rolling};
+   });
+ }
+ const names=ss.map(x=>x.name).filter(n=>a[n]);
  const fmt=v=>(v==null||!Number.isFinite(Number(v)))?'—':`${Number(v)>=0?'+':''}${Number(v).toFixed(2)}%`;
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pick=id=>`<div class="analytics-chips">${names.map((n,i)=>`<button data-series="${E(n)}" class="${i?'':'active'}">${E(n)}</button>`).join('')}</div><div id="${id}Body"></div>`;
  const mt=document.getElementById('metricsPage');
- if(mt)mt.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>Sharpe</th><th>MaxDD</th><th>Calmar</th><th>Vol</th><th>Months</th></tr></thead><tbody>${ss.map(s=>`<tr><td>${E(s.name)}</td><td>${fmt(s.cagr)}</td><td>${Number(s.sortino).toFixed(2)}</td><td>${Number(s.sharpe).toFixed(2)}</td><td>${fmt(s.maxdd)}</td><td>${Number(s.calmar).toFixed(2)}</td><td>${fmt(s.vol)}</td><td>${s.months}</td></tr>`).join('')}</tbody></table></div>`;
+ const metricCols=[['name','Series'],['cagr','CAGR'],['sortino','Sortino'],['sharpe','Sharpe'],['maxdd','MaxDD'],['calmar','Calmar'],['volatility','Vol'],['months','Months']];
+ let metricSort={key:'name',dir:1};
+ function metricValue(s,k){return k==='name'?String(s.name??''):Number(s[k]);}
+ function drawMetrics(){
+   if(!mt)return;
+   const rows=[...ss].sort((a,b)=>{const av=metricValue(a,metricSort.key),bv=metricValue(b,metricSort.key);return metricSort.dir*(typeof av==='string'?av.localeCompare(bv,'ja'):(av-bv));});
+   const val=(s,k)=>k==='name'?E(s.name):(['cagr','maxdd','volatility'].includes(k)?fmt(s[k]):(['sortino','sharpe','calmar'].includes(k)?(Number.isFinite(Number(s[k]))?Number(s[k]).toFixed(2):'—'):(s[k]??'—')));
+   mt.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table metrics-table"><thead><tr>${metricCols.map(([k,l])=>`<th><button type="button" class="metric-sort ${metricSort.key===k?'active':''}" data-key="${k}">${l}<span>${metricSort.key===k?(metricSort.dir>0?'▲':'▼'):'↕'}</span></button></th>`).join('')}</tr></thead><tbody>${rows.map(s=>`<tr>${metricCols.map(([k])=>`<td>${val(s,k)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+   mt.querySelectorAll('.metric-sort').forEach(b=>b.onclick=()=>{const k=b.dataset.key;if(metricSort.key===k)metricSort.dir*=-1;else metricSort={key:k,dir:k==='name'?1:-1};drawMetrics();});
+ }
+ drawMetrics();
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
  function bind(root,fn){if(!root)return;root.innerHTML=pick(root.id);const body=root.querySelector(`#${root.id}Body`),bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}
  bind(document.getElementById('rollingPage'),(n,b)=>{const r=a[n]?.rolling||{};b.innerHTML=['12','36','60'].filter(k=>r[k]).map(k=>{const x=r[k],lab=k==='12'?'1Y':k==='36'?'3Y':'5Y';return`<div class="rolling-block"><h3>${lab}</h3><div class="analytics-kpis"><div><small>Current</small><b>${fmt(x.current)}</b></div><div><small>Median</small><b>${fmt(x.median)}</b></div><div><small>P10</small><b>${fmt(x.p10)}</b></div><div><small>Min</small><b>${fmt(x.min)}</b></div><div><small>Positive</small><b>${(+x.positive_rate).toFixed(1)}%</b></div></div>${chart(x.history)}</div>`}).join('')});
