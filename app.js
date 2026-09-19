@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  oldBadges.forEach(el=>el.remove());
  const uiBadge=document.createElement('div');
  uiBadge.id='my4fUiVersion';
- uiBadge.textContent='✓ v34 UI更新適用';
+ uiBadge.textContent='';
  uiBadge.style.cssText='display:inline-flex;align-items:center;margin:10px 16px 4px;padding:5px 10px;border:1.5px solid #67d995;border-radius:999px;background:#effcf4;color:#168443;font:700 13px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;letter-spacing:.01em;';
  document.body.insertBefore(uiBadge,document.body.firstChild);
  const btn=document.getElementById('fastMenuButton'),menu=document.getElementById('fastMenu'),back=document.getElementById('fastMenuBackdrop'),close=document.getElementById('fastMenuClose');

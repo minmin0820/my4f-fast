@@ -2064,3 +2064,21 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
 
 /* v38 — keep menu JS intact; hide only the obsolete JS-injected v34 badge. */
 .ui-update-badge{display:none!important;}
+
+
+/* v39 — suppress obsolete JS-injected update proof only; menu JS untouched. */
+html body .ui-update-badge,
+body > .ui-update-badge,
+main .ui-update-badge,
+#app .ui-update-badge,
+div.ui-update-badge{
+  display:none!important;
+  visibility:hidden!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  overflow:hidden!important;
+}
