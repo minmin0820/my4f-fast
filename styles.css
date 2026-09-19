@@ -761,3 +761,25 @@ body.menu-open{overflow:hidden!important}
   .analytics-page h2{font-size:22px!important}
   #annual .annual-table th,#annual .annual-table td{padding:9px 10px}
 }
+
+/* v5.2 Monthly / Rolling benchmark comparison */
+.monthly-compare-head,.rolling-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 10px}
+.monthly-compare-head>b{color:#087cad}
+.bm-pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#eef2f7;color:#66758a;font-size:11px;font-weight:800}
+.monthly-compare-table,.rolling-compare-table{min-width:0!important;width:100%;table-layout:fixed}
+.monthly-compare-table th,.monthly-compare-table td,.rolling-compare-table th,.rolling-compare-table td{padding:9px 7px!important;text-align:right}
+.monthly-compare-table th:first-child,.monthly-compare-table td:first-child,.rolling-compare-table th:first-child,.rolling-compare-table td:first-child{text-align:left;position:static!important;min-width:0!important;background:inherit!important}
+.monthly-compare-table th{background:#edf7fc}.rolling-compare-table th{background:#eaf8f6}
+.ret-pos{color:#087f60;font-weight:800}.ret-neg{color:#d64b43;font-weight:800}
+.compare-chart-wrap{margin-top:10px}.compare-svg .main-line{fill:none;stroke:#0ba5df;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.compare-svg .bm-line{fill:none;stroke:#98a6b9;stroke-width:2;stroke-dasharray:5 5;stroke-linejoin:round;stroke-linecap:round}
+.compare-legend{display:flex;justify-content:center;gap:18px;font-size:12px;font-weight:800;margin-top:5px}
+.compare-legend span:before{content:"";display:inline-block;width:18px;height:3px;margin-right:6px;vertical-align:middle;border-radius:4px}
+.compare-legend .main-key:before{background:#0ba5df}.compare-legend .bm-key:before{background:repeating-linear-gradient(90deg,#98a6b9 0 5px,transparent 5px 8px)}
+#rolling .rolling-block{border:1px solid #dcebea;border-radius:14px;padding:10px;margin:12px 0;background:#fbfffe}
+
+/* v5.3 Benchmark switch */
+.bm-switch{display:inline-flex;align-items:center;gap:3px;padding:3px;background:#edf2f6;border:1px solid #d9e1e8;border-radius:11px;margin:4px 0 10px}
+.bm-switch>span{padding:0 7px;font-size:11px;font-weight:850;color:#65758a}
+.bm-switch button{border:0;background:transparent;color:#66758a;font-weight:850;font-size:12px;padding:7px 11px;border-radius:8px}
+.bm-switch button.active{background:#087fae;color:#fff;box-shadow:0 2px 6px rgba(8,127,174,.2)}
