@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260919-perf1">
+<link rel="stylesheet" href="styles.css?v=20260919-perf2">
 </head>
 <body>
 <div class="page-scroll"><main>
@@ -44,7 +44,7 @@
 
 <section id="researchPerformance"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
 <div id="perfChips" class="perf-chips"></div>
-<div class="perf-controls"><div id="perfPeriods" class="perf-periods" aria-label="Chart period"></div><button id="perfLogToggle" class="perf-log-toggle" type="button" aria-pressed="false">LOG OFF</button></div>
+<div class="perf-controls"><div id="perfPeriods" class="perf-periods" aria-label="Chart period"><button type="button" class="perf-period" data-period="1Y">1Y</button><button type="button" class="perf-period" data-period="2Y">2Y</button><button type="button" class="perf-period" data-period="5Y">5Y</button><button type="button" class="perf-period" data-period="10Y">10Y</button><button type="button" class="perf-period active" data-period="ALL">ALL</button></div><button id="perfLogToggle" class="perf-log-toggle" type="button" aria-pressed="false">LOG OFF</button></div>
 <div id="perfChart" class="perf-chart"></div>
 <div id="perfMeta" class="muted"></div>
 <div id="perfCards" class="perf-cards"></div>
@@ -94,7 +94,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260919-perf1"></script>
+<script src="app.js?v=20260919-perf2"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');

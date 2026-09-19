@@ -45,10 +45,27 @@ function renderResearchPerformance(p){
  const pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
  const chips=document.getElementById('perfChips'), cards=document.getElementById('perfCards'), table=document.getElementById('perfTable'), meta=document.getElementById('perfMeta');
  const periods=document.getElementById('perfPeriods'), logBtn=document.getElementById('perfLogToggle');
- const periodDefs=[['1Y',12],['2Y',24],['5Y',60],['10Y',120],['ALL',null]];
- if(periods) periods.innerHTML=periodDefs.map(([k])=>`<button type="button" class="perf-period ${k===period?'active':''}" data-period="${k}">${k==='ALL'?'ALL':k}</button>`).join('');
- if(periods) periods.querySelectorAll('button').forEach(b=>b.onclick=()=>{period=b.dataset.period;periods.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.period===period));draw()});
- if(logBtn){logBtn.textContent='LOG OFF';logBtn.onclick=()=>{logScale=!logScale;logBtn.classList.toggle('active',logScale);logBtn.setAttribute('aria-pressed',String(logScale));logBtn.textContent=logScale?'LOG ON':'LOG OFF';draw()}}
+ if(periods){
+   periods.querySelectorAll('.perf-period').forEach(b=>{
+     b.classList.toggle('active',b.dataset.period===period);
+     b.addEventListener('click',()=>{
+       period=b.dataset.period||'ALL';
+       periods.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));
+       draw();
+     });
+   });
+ }
+ if(logBtn){
+   logBtn.textContent='LOG OFF';
+   logBtn.setAttribute('aria-pressed','false');
+   logBtn.addEventListener('click',()=>{
+     logScale=!logScale;
+     logBtn.classList.toggle('active',logScale);
+     logBtn.setAttribute('aria-pressed',String(logScale));
+     logBtn.textContent=logScale?'LOG ON':'LOG OFF';
+     draw();
+   });
+ }
  function draw(){
    chips.innerHTML=rows.map(r=>`<button class="perf-chip ${selected.has(r.name)?'active':''}" data-name="${esc(r.name)}">${esc(r.name)}</button>`).join('');
    chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
