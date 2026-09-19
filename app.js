@@ -22,7 +22,11 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  const actionText=changed===true?'🟠 保有アセット変更あり':changed===false?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 月次リバランス — 先月target確認待ち';
  document.getElementById('action').innerHTML=`<strong>${actionText}</strong>`;
  document.getElementById('actionDetail').textContent=`先月: ${d.action?.previous||'—'} → 今月: ${d.action?.current||'—'}`;
- document.getElementById('health').innerHTML=['G1','G2','P'].map((x,i)=>`<div class="card"><span class="label">${x}</span><i class="dot ${d.health?.[i]||'green'}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`).join('');
+ document.getElementById('health').innerHTML=['G1','G2','P'].map((x,i)=>{
+   const raw=String(d.health?.[i]??'green').toLowerCase();
+   const state=(raw.includes('orange')||raw.includes('🟠')||raw.includes('deterior'))?'orange':(raw.includes('yellow')||raw.includes('🟡')||raw.includes('mixed'))?'yellow':'green';
+   return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`;
+ }).join('');
  donut('exec',d.execution||{},'現世');donut('gods',d.gods||{},'天界');
  document.getElementById('risk').innerHTML=Object.entries(d.risk||{}).map(([k,v])=>`<div class="card"><span class="label">${esc(k)}</span><b class="${String(v).includes('ON')?'on':'off'}">● ${esc(v)}</b></div>`).join('');
  document.getElementById('signals').innerHTML=(d.signals||[]).map(([k,v])=>`<div class="card"><span class="label">${esc(k)}</span><b class="${['ACTIVE','NORMAL','FROZEN','REAL FORWARD','—'].includes(v)?'purple':''}">${esc(v)}</b></div>`).join('');

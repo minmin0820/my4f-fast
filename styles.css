@@ -509,3 +509,105 @@ html,body{overflow-x:hidden!important;max-width:100%!important}
 
 /* Keep charts/cards/body from causing page-level horizontal overflow. */
 .perf-chart,.perf-cards,.card,main,section{max-width:100%}
+
+/* v4.7 local-x-scroll fix */
+.health .dot{display:block!important;width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;border-radius:50%!important;margin:11px auto!important}
+.health .dot.green{background:#1fc96b!important}.health .dot.yellow{background:#e4b321!important}.health .dot.orange{background:#df8200!important}
+
+#perfTable{
+  position:relative!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:scroll!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+  overscroll-behavior-x:contain!important;
+}
+#perfTable .perf-table{
+  width:760px!important;
+  min-width:760px!important;
+  max-width:none!important;
+  table-layout:auto!important;
+}
+#perfTable .perf-table th,#perfTable .perf-table td{
+  min-width:110px!important;
+  white-space:nowrap!important;
+}
+#perfTable .perf-table th:first-child,#perfTable .perf-table td:first-child{
+  min-width:165px!important;width:165px!important;position:sticky!important;left:0!important;background:#fff!important;z-index:4!important;
+}
+details:has(#perfTable){overflow:visible!important}
+#perfTable::after{
+  content:"← 左右にスワイプ →";
+  position:sticky;left:8px;display:block;width:max-content;
+  margin:5px 0 1px;padding:2px 7px;border-radius:999px;
+  background:#f1f3f5;color:#7b818b;font-size:9px;font-weight:700;
+}
+
+/* v4.8 Local horizontal scrolling — useful dense components only.
+   Never enable page-level horizontal scrolling. */
+html,body{overflow-x:hidden!important}
+
+/* Strategy selector chips: keep readable labels, swipe locally when needed. */
+#perfChips{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:6px!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x!important;
+  scrollbar-width:none;
+}
+#perfChips::-webkit-scrollbar{display:none}
+#perfChips .perf-chip{flex:0 0 auto!important;white-space:nowrap!important}
+
+/* Comparison period row: swipe locally on narrow screens. */
+.perf-compare-head{min-width:0!important}
+.perf-periods{
+  flex-wrap:nowrap!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+  scrollbar-width:none;
+}
+.perf-periods::-webkit-scrollbar{display:none}
+.perf-period{flex:0 0 auto!important}
+
+/* Period-return legend can stay one readable row and swipe. */
+#perfPeriodReturns{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x!important;
+  scrollbar-width:none;
+}
+#perfPeriodReturns::-webkit-scrollbar{display:none}
+#perfPeriodReturns .perf-return-item{flex:0 0 auto!important;white-space:nowrap!important}
+
+/* Any future dense tab/chip/table row can opt in without affecting the page. */
+.local-x-scroll,.scroll-tabs,.scroll-chips,.scroll-table{
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x!important;
+}
+.scroll-tabs,.scroll-chips{display:flex!important;flex-wrap:nowrap!important}
+.scroll-tabs>*,.scroll-chips>*{flex:0 0 auto!important;white-space:nowrap!important}
+
+/* Do NOT scroll cards, prose, allocation donuts, health cards, or chart itself. */
+.health,.alloc-grid,.perf-cards,.summary-grid,.month,.card,.perf-chart{
+  max-width:100%!important;
+}
