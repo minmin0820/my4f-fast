@@ -61,7 +61,6 @@ function renderResearchPerformance(p){
    startSel.value='ALL';
    startSel.addEventListener('change',()=>{
      startYear=startSel.value;
-     if(startYear!=='ALL') period='ALL';
      draw();
    });
  }
@@ -76,10 +75,6 @@ function renderResearchPerformance(p){
  renderGroups();
  periods?.querySelectorAll('.perf-period').forEach(b=>b.addEventListener('click',()=>{
    period=b.dataset.period||'ALL';
-   if(period!=='ALL'){
-     startYear='ALL';
-     if(startSel) startSel.value='ALL';
-   }
    draw();
  }));
  logBtn?.addEventListener('click',()=>{logScale=true;draw()});linBtn?.addEventListener('click',()=>{logScale=false;draw()});
@@ -89,7 +84,7 @@ function renderResearchPerformance(p){
   chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
   periods?.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));if(startSel&&startSel.value!==startYear)startSel.value=startYear;logBtn?.classList.toggle('active',logScale);linBtn?.classList.toggle('active',!logScale);commonBtn?.classList.toggle('active',periodMode==='COMMON');fullBtn?.classList.toggle('active',periodMode==='FULL');
   const sr=rows.filter(r=>selected.has(r.name));cards.innerHTML=sr.map(r=>`<div class="perf-card"><div class="perf-name">${esc(r.name)}</div><div class="perf-metrics"><div class="perf-metric"><span>CAGR</span><b>${pp(r.cagr)}</b></div><div class="perf-metric"><span>Sortino</span><b>${fmt(r.sortino,3)}</b></div><div class="perf-metric"><span>MaxDD</span><b>${pp(r.maxdd)}</b></div><div class="perf-metric"><span>Sharpe</span><b>${fmt(r.sharpe,3)}</b></div><div class="perf-metric"><span>Calmar</span><b>${fmt(r.calmar,3)}</b></div><div class="perf-metric"><span>Months</span><b>${r.months}</b></div></div></div>`).join('');
-  const info=renderPerfChart([...selected],hist,period,logScale,periodMode,startYear);meta.textContent=info?`Chart period: ${info.start} → ${info.end} ｜ ${period}${startYear!=='ALL'?` ｜ From ${startYear}`:''} ｜ ${logScale?'LOG':'LINEAR'} ｜ ${periodMode==='COMMON'?'Common':'Full'} ｜ metrics below = full history`:'表示可能な履歴なし';
+  const info=renderPerfChart([...selected],hist,period,logScale,periodMode,startYear);meta.textContent=info?`Chart period: ${info.start} → ${info.end} ｜ ${period} ｜ From ${startYear} ｜ ${logScale?'LOG':'LINEAR'} ｜ ${periodMode==='COMMON'?'Common':'Full'} ｜ metrics below = full history`:'表示可能な履歴なし';
   if(returns)returns.innerHTML=info?info.returns.map((r,i)=>`<div class="perf-return-item"><span class="perf-dot" style="--dot:${info.colors[i]}"></span><b>${esc(r.name)}</b><strong>${r.value>=0?'+':''}${r.value.toFixed(1)}%</strong></div>`).join(''):'';
  }
  table.innerHTML=`<table class="perf-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>MaxDD</th><th>Calmar</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${pp(r.cagr)}</td><td>${fmt(r.sortino,2)}</td><td>${pp(r.maxdd)}</td><td>${fmt(r.calmar,2)}</td></tr>`).join('')}</tbody></table>`;draw();
@@ -98,8 +93,14 @@ function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMO
  const box=document.getElementById('perfChart');if(!box)return null;const palette=['#12a8df','#0a9b72','#8da0b8','#7b1fa2'];
  const maps=names.map(n=>[n,new Map((hist[n]||[]).map(x=>[x[0],Number(x[1])/100]))]).filter(x=>x[1].size);if(!maps.length)return null;
  let months=periodMode==='COMMON'?[...maps[0][1].keys()].filter(m=>maps.every(x=>x[1].has(m))).sort():[...new Set(maps.flatMap(x=>[...x[1].keys()]))].sort();
- if(startYear!=='ALL')months=months.filter(m=>String(m).slice(0,4)>=String(startYear));
- const count={'1Y':12,'2Y':24,'3Y':36,'5Y':60,'10Y':120}[period];if(count&&months.length>count)months=months.slice(-count);if(months.length<2)return null;
+ const count={'1Y':12,'2Y':24,'3Y':36,'5Y':60,'10Y':120}[period];
+ if(startYear!=='ALL'){
+   months=months.filter(m=>String(m).slice(0,4)>=String(startYear));
+   if(count&&months.length>count) months=months.slice(0,count);
+ }else if(count&&months.length>count){
+   months=months.slice(-count);
+ }
+ if(months.length<2)return null;
  const vals={};names.forEach(n=>{const mp=maps.find(x=>x[0]===n)?.[1];if(!mp)return;let w=100,started=false;vals[n]=months.map(m=>{if(!mp.has(m))return null;if(!started){started=true;return 100}w*=1+(Number.isFinite(mp.get(m))?mp.get(m):0);return w})});
  const all=Object.values(vals).flat().filter(v=>Number.isFinite(v)&&(!logScale||v>0));if(!all.length)return null;
  const rawLo=Math.min(...all),rawHi=Math.max(...all),tx=v=>logScale?Math.log(v):v,lo=tx(rawLo),hi=tx(rawHi),W=680,H=300,L=52,R=12,T=18,B=34,pw=W-L-R,ph=H-T-B,y=v=>T+(hi-tx(v))/(hi-lo||1)*ph,x=i=>L+i/(months.length-1)*pw;
