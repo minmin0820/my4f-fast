@@ -407,7 +407,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    }
    b.innerHTML=`<div id="ddBmSwitch"></div>
      <div class="dd-worst-cards"><div><small>Worst ${E(n)}</small><b>${fmt(sWorst?.troughVal)}</b></div><div><small>Worst ${E(bmName)}</small><b>${fmt(bWorst?.troughVal)}</b></div></div>
-     ${interactiveDD()}
+     ${durationCards()}${interactiveDD()}
      <h3 class="subsection-title">Worst 10 Drawdowns</h3>
      ${worstBlock(n+' — Portfolio',se)}
      ${worstBlock(bmName+' — Benchmark',be)}`;
@@ -438,7 +438,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function annualBars(mainRows,bmRows,mainName,bmName){
    const bmMap=new Map(bmRows.map(x=>[x[0],Number(x[1])])),rows=mainRows.map(x=>[x[0],Number(x[1]),bmMap.get(x[0])]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
    if(!rows.length)return'<div class="analytics-empty">データなし</div>';
-   const W=760,H=420,L=46,R=12,T=18,B=44,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
+   const W=760,H=300,L=46,R=12,T=16,B=40,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
    let s=`<div class="annual-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="annual-bar-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>`;
    rows.forEach((x,i)=>{const cx=L+group*(i+.5),y1=Y(x[1]),y2=Y(x[2]);s+=`<rect x="${cx-bw-1}" y="${Math.min(y1,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y1))}" class="annual-main-bar"/><rect x="${cx+1}" y="${Math.min(y2,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y2))}" class="annual-bm-bar"/>`;if(i%Math.max(1,Math.ceil(rows.length/8))===0)s+=`<text x="${cx}" y="${H-12}" text-anchor="middle">${E(x[0])}</text>`});
    return s+`</svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
@@ -446,7 +446,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  bind(document.getElementById('annualPage'),(n,b)=>{
    const r=a[n]?.annual||[],br=a[bmName]?.annual||[],bmMap=new Map(br.map(x=>[x[0],x[1]]));
    let wm=1,wb=1;const balance=new Map(),bbalance=new Map();[...r].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wm*=1+Number(x[1])/100;balance.set(x[0],wm*100000)});[...br].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wb*=1+Number(x[1])/100;bbalance.set(x[0],wb*100000)});
-   b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>Bal</th><th>${E(bmName)}<br>Return</th><th>Bal</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td>${money(balance.get(x[0]))}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td><td>${money(bbalance.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>${E(bmName)}<br>Return</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
    bmSwitch('annualBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  });
 
