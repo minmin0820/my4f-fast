@@ -1,15 +1,8 @@
-const CACHE_PREFIX = 'my4f-fast-';
-self.addEventListener('install', event => {
-  self.skipWaiting();
-});
-self.addEventListener('activate', event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k.startsWith(CACHE_PREFIX) || true).map(k => caches.delete(k)));
-    await self.clients.claim();
-  })());
-});
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request, {cache: 'no-store'}).catch(() => caches.match(event.request)));
-});
+const CACHE_NAME='my4f-fast-v20260919-1436';
+const CORE=['./','./index.html','./styles.css','./app.js'];
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(CORE)))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin)return;
+const fresh=u.pathname.endsWith('/')||['/index.html','/app.js','/styles.css','/kirin_snapshot.json'].some(x=>u.pathname.endsWith(x));
+if(fresh){e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const cp=r.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,cp));return r}).catch(()=>caches.match(e.request)));return}
+e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});
