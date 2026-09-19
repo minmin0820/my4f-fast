@@ -194,7 +194,9 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const am=mean(x),bmMean=mean(y),sx=sd(x),sy=sd(y),geo=n?Math.pow(x.reduce((p,r)=>p*(1+r),1),1/n)-1:NaN;
    const annual=x.length?Math.pow(x.reduce((p,r)=>p*(1+r),1),12/n)-1:NaN;
    const annBm=y.length?Math.pow(y.reduce((p,r)=>p*(1+r),1),12/n)-1:NaN;
-   const down=x.filter(v=>v<0),downBm=y.filter(v=>v<0),downDev=Math.sqrt(mean(down.map(v=>v*v))),downDevBm=Math.sqrt(mean(downBm.map(v=>v*v)));
+   const down=x.filter(v=>v<0),downBm=y.filter(v=>v<0);
+   // Sortino canonical definition: MAR=0, downside deviation uses ALL months; positive months contribute 0.
+   const downDev=Math.sqrt(mean(x.map(v=>Math.min(v,0)**2))),downDevBm=Math.sqrt(mean(y.map(v=>Math.min(v,0)**2)));
    const beta=covariance(x,y)/(sy**2),alpha=(am-beta*bmMean)*12,rho=metricCorr(x,y),r2=rho*rho;
    const ddx=ddEpisodeFromReturns(rows,1),ddy=ddEpisodeFromReturns(rows,2);
    const years={}; rows.forEach(r=>{const yy=r[0].slice(0,4);(years[yy]??=[1,1]);years[yy][0]*=1+r[1];years[yy][1]*=1+r[2]});
@@ -229,29 +231,21 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    if(!portfolios.includes(METRIC_PORTFOLIO))METRIC_PORTFOLIO=portfolios[0];
    const M=calcMetrics(METRIC_PORTFOLIO,bmName),A=M.main,B=M.bm;
    const pct=v=>Number.isFinite(v)?`${v>=0?'+':''}${(v*100).toFixed(2)}%`:'N/A',num=v=>Number.isFinite(v)?v.toFixed(2):'N/A',mo=v=>v==null?'Ongoing':`${v} months`;
-   const rows=[
-    ['Arithmetic Mean (monthly)',pct(A.am),pct(B.am)],['Arithmetic Mean (annualized)',pct(A.annMean),pct(B.annMean)],
-    ['Geometric Mean (monthly)',pct(A.geo),pct(B.geo)],['Geometric Mean (annualized)',pct(A.annual),pct(B.annual)],
-    ['Standard Deviation (monthly)',pct(A.sdm),pct(B.sdm)],['Standard Deviation (annualized)',pct(A.sda),pct(B.sda)],
-    ['Downside Deviation (monthly)',pct(A.downDev),pct(B.downDev)],['Best Year',pct(A.best),pct(B.best)],['Worst Year',pct(A.worst),pct(B.worst)],
-    ['Maximum Drawdown',pct(A.mdd),pct(B.mdd)],['MDD Date',A.dd.maxDate||'N/A',B.dd.maxDate||'N/A'],
-    ['Drawdown Length',mo(A.dd.worst?.length),mo(B.dd.worst?.length)],['Recovery Time',mo(A.dd.worst?.recovery),mo(B.dd.worst?.recovery)],
-    ['Underwater Period',mo(A.dd.worst?.underwater),mo(B.dd.worst?.underwater)],['Avg Underwater Period',mo(Number.isFinite(A.dd.avgUnder)?A.dd.avgUnder.toFixed(1):null),mo(Number.isFinite(B.dd.avgUnder)?B.dd.avgUnder.toFixed(1):null)],
-    ['PTU(%)',num(A.ptu),num(B.ptu)],['Peak Date',A.dd.worst?.peakDate||'N/A',B.dd.worst?.peakDate||'N/A'],['Trough Date',A.dd.worst?.troughDate||'N/A',B.dd.worst?.troughDate||'N/A'],['Recovery Date',A.dd.worst?.recoveryDate||'Ongoing',B.dd.worst?.recoveryDate||'Ongoing'],
-    ['Benchmark Correlation',num(A.rho),num(B.rho)],['Beta',num(A.beta),num(B.beta)],['Alpha (annualized)',pct(A.alpha),pct(B.alpha)],['R²',pct(A.r2),pct(B.r2)],
-    ['Sharpe Ratio',num(A.sharpe),num(B.sharpe)],['Sortino Ratio',num(A.sortino),num(B.sortino)],['Calmar Ratio',num(A.calmar),num(B.calmar)],['Analytical Value-at-Risk (5%)',pct(A.var95),pct(B.var95)],
-    ['Upside Capture Ratio (%)',num(A.upCap),num(B.upCap)],['Downside Capture Ratio (%)',num(A.downCap),num(B.downCap)],['Up/Down Spread',num(A.spread),num(B.spread)],['Up/Down Ratio',num(A.upDown),num(B.upDown)],
-    ['Positive Periods',A.positive,B.positive],['Gain/Loss Ratio',num(A.gainLoss),num(B.gainLoss)],['Skewness',num(A.skew),num(B.skew)],['Excess Kurtosis',num(A.kurt),num(B.kurt)],
-    ['Volatility Drag',pct(A.volDrag),pct(B.volDrag)],['Max Consecutive Loss',String(A.maxLoss),String(B.maxLoss)],['Max Run-up',`${A.runup>=0?'+':''}${A.runup.toFixed(2)}%`,`${B.runup>=0?'+':''}${B.runup.toFixed(2)}%`],
-    ['New High Frequency',`${A.newHigh.toFixed(2)}%`,`${B.newHigh.toFixed(2)}%`],['Active Return',pct(A.active),'N/A'],['Tracking Error',pct(A.te),'N/A'],['Information Ratio',num(A.info),'N/A']
-   ];
-   mt.innerHTML=`<div class="metrics-toolbar">
-     <label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label>
-     <div id="metricsBmSwitch"></div></div>
-     <h3 class="metrics-title">Risk and Return Metrics</h3>
-     <div class="metrics-compare-table"><div class="metrics-row metrics-head"><span>Metric</span><b>${E(METRIC_PORTFOLIO)}</b><b>${E(bmName)}</b></div>
-     ${rows.map(([l,x,y])=>`<div class="metrics-row"><span>${E(l)}</span><b class="${String(x).startsWith('-')?'neg':''}">${E(x)}</b><b class="${String(y).startsWith('-')?'neg':''}">${E(y)}</b></div>`).join('')}</div>
-     <div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
+   const metricRow=([l,x,y])=>`<div class="metrics-row"><span>${E(l)}</span><b class="${String(x).startsWith('-')?'neg':''}">${E(x)}</b><b class="${String(y).startsWith('-')?'neg':''}">${E(y)}</b></div>`;
+   const section=(title,rows,open=false)=>`<details class="metric-section" ${open?'open':''}><summary>${E(title)}<span>${rows.length} metrics</span></summary><div class="metrics-compare-table"><div class="metrics-row metrics-head"><span>Metric</span><b>${E(METRIC_PORTFOLIO)}</b><b>${E(bmName)}</b></div>${rows.map(metricRow).join('')}</div></details>`;
+   const core=[['CAGR',pct(A.annual),pct(B.annual)],['Sharpe',num(A.sharpe),num(B.sharpe)],['Sortino',num(A.sortino),num(B.sortino)],['Max DD',pct(A.mdd),pct(B.mdd)],['Calmar',num(A.calmar),num(B.calmar)],['Volatility',pct(A.sda),pct(B.sda)]];
+   const returns=[['Arithmetic Mean (monthly)',pct(A.am),pct(B.am)],['Arithmetic Mean (annualized)',pct(A.annMean),pct(B.annMean)],['Geometric Mean (monthly)',pct(A.geo),pct(B.geo)],['Geometric Mean (annualized)',pct(A.annual),pct(B.annual)],['Best Year',pct(A.best),pct(B.best)],['Worst Year',pct(A.worst),pct(B.worst)],['Positive Periods',A.positive,B.positive],['Gain/Loss Ratio',num(A.gainLoss),num(B.gainLoss)],['New High Frequency',`${A.newHigh.toFixed(2)}%`,`${B.newHigh.toFixed(2)}%`]];
+   const risk=[['Standard Deviation (monthly)',pct(A.sdm),pct(B.sdm)],['Standard Deviation (annualized)',pct(A.sda),pct(B.sda)],['Downside Deviation (monthly, MAR=0)',pct(A.downDev),pct(B.downDev)],['Sharpe Ratio',num(A.sharpe),num(B.sharpe)],['Sortino Ratio (MAR=0)',num(A.sortino),num(B.sortino)],['Analytical Value-at-Risk (5%)',pct(A.var95),pct(B.var95)],['Skewness',num(A.skew),num(B.skew)],['Excess Kurtosis',num(A.kurt),num(B.kurt)],['Volatility Drag',pct(A.volDrag),pct(B.volDrag)],['Max Consecutive Loss',String(A.maxLoss),String(B.maxLoss)]];
+   const draw=[['Maximum Drawdown',pct(A.mdd),pct(B.mdd)],['MDD Date',A.dd.maxDate||'N/A',B.dd.maxDate||'N/A'],['Peak Date',A.dd.worst?.peakDate||'N/A',B.dd.worst?.peakDate||'N/A'],['Trough Date',A.dd.worst?.troughDate||'N/A',B.dd.worst?.troughDate||'N/A'],['Recovery Date',A.dd.worst?.recoveryDate||'Ongoing',B.dd.worst?.recoveryDate||'Ongoing'],['Drawdown Length',mo(A.dd.worst?.length),mo(B.dd.worst?.length)],['Recovery Time',mo(A.dd.worst?.recovery),mo(B.dd.worst?.recovery)],['Underwater Period',mo(A.dd.worst?.underwater),mo(B.dd.worst?.underwater)],['Avg Underwater Period',mo(Number.isFinite(A.dd.avgUnder)?A.dd.avgUnder.toFixed(1):null),mo(Number.isFinite(B.dd.avgUnder)?B.dd.avgUnder.toFixed(1):null)],['PTU(%)',num(A.ptu),num(B.ptu)],['Calmar Ratio',num(A.calmar),num(B.calmar)]];
+   const benchmark=[['Benchmark Correlation',num(A.rho),num(B.rho)],['Beta',num(A.beta),num(B.beta)],['Alpha (annualized)',pct(A.alpha),pct(B.alpha)],['R²',pct(A.r2),pct(B.r2)],['Active Return',pct(A.active),'N/A'],['Tracking Error',pct(A.te),'N/A'],['Information Ratio',num(A.info),'N/A']];
+   const capture=[['Upside Capture Ratio (%)',num(A.upCap),num(B.upCap)],['Downside Capture Ratio (%)',num(A.downCap),num(B.downCap)],['Up/Down Spread',num(A.spread),num(B.spread)],['Up/Down Ratio',num(A.upDown),num(B.upDown)],['Max Run-up',`${A.runup>=0?'+':''}${A.runup.toFixed(2)}%`,`${B.runup>=0?'+':''}${B.runup.toFixed(2)}%`]];
+   const regimes=[['Up Market',v=>v>0.02],['Sideways',v=>v>=-0.02&&v<=0.02],['Down Market',v=>v<-0.02]].map(([label,test])=>{const rr=M.rows.filter(r=>test(r[2]));return [label,rr.length,rr.length?mean(rr.map(r=>r[1])):NaN,rr.length?mean(rr.map(r=>r[2])):NaN]});
+   const regimeTable=`<div class="metric-regime"><h3>Up vs. Down Market Performance</h3><p class="analytics-note">Benchmark monthly return: Up &gt; +2%, Sideways −2% to +2%, Down &lt; −2%.</p><div class="regime-grid"><div class="regime-head">Market</div><div class="regime-head">Months</div><div class="regime-head">${E(METRIC_PORTFOLIO)}</div><div class="regime-head">${E(bmName)}</div>${regimes.map(r=>`<div>${E(r[0])}</div><div>${r[1]}</div><div class="${r[2]<0?'neg':'pos'}">${pct(r[2])}</div><div class="${r[3]<0?'neg':'pos'}">${pct(r[3])}</div>`).join('')}</div></div>`;
+   mt.innerHTML=`<div class="metrics-toolbar"><label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label><div id="metricsBmSwitch"></div></div>
+     <div class="metrics-definition">Common period · Monthly returns · RF/MAR 0% · Sortino downside deviation = √mean(min(r,0)²)</div>
+     <h3 class="metrics-title">Core Metrics</h3><div class="metric-kpi-grid">${core.map(([l,x,y])=>`<div class="metric-kpi"><span>${E(l)}</span><b>${E(x)}</b><small>${E(bmName)} ${E(y)}</small></div>`).join('')}</div>
+     ${section('Return',returns,true)}${section('Risk & Downside',risk,true)}${section('Drawdown',draw)}${section('Benchmark & Alpha',benchmark)}${section('Market Capture',capture)}
+     ${regimeTable}<div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
    mt.querySelector('#metricsPortfolio').onchange=e=>{METRIC_PORTFOLIO=e.target.value;drawMetrics()};
    bmSwitch('metricsBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
  }
@@ -319,7 +313,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const mean=rs.reduce((s,v)=>s+v,0)/rs.length,variance=rs.reduce((s,v)=>s+(v-mean)**2,0)/Math.max(1,rs.length-1),vol=Math.sqrt(variance)*Math.sqrt(12)*100;
    let peak=1,mdd=0;wealth.slice(1).forEach(w=>{peak=Math.max(peak,w);mdd=Math.min(mdd,w/peak-1)});
    const annual={};rows.forEach(x=>{const y=x[0].slice(0,4);annual[y]=(annual[y]??1)*(1+x[col])});const yr=Object.values(annual).map(v=>(v-1)*100);
-   const rf=0,sh=(vol?mean*12*100/vol:0),downs=rs.filter(v=>v<0),downDev=Math.sqrt(downs.reduce((s,v)=>s+v*v,0)/Math.max(1,downs.length))*Math.sqrt(12)*100,sortino=downDev?mean*12*100/downDev:0;
+   const rf=0,sh=(vol?mean*12*100/vol:0),downDev=Math.sqrt(rs.reduce((s,v)=>s+Math.min(v,0)**2,0)/Math.max(1,rs.length))*Math.sqrt(12)*100,sortino=downDev?mean*12*100/downDev:0;
    return{start:rows[0][0],end:rows.at(-1)[0],months:rows.length,endBalance:100000*wealth.at(-1),cagr,vol,best:Math.max(...yr),worst:Math.min(...yr),mdd:mdd*100,sharpe:sh,sortino};
  }
  function corr(rows){

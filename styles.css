@@ -2088,3 +2088,30 @@ div.ui-update-badge{
 
 /* v41 — legacy injected badge removed from JS. */
 #my4fUiVersion,.ui-update-badge{display:none!important;}
+
+/* v42 — Metrics refresh, Bam-inspired structure, iPhone-first */
+#metrics .metrics-definition{font-size:10px;line-height:1.45;color:#66758a;background:#f5f9fc;border:1px solid #dce8ef;border-radius:9px;padding:7px 9px;margin:6px 0 10px}
+#metrics .metric-kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:7px 0 12px}
+#metrics .metric-kpi{min-width:0;border:1px solid #dfe8ee;border-radius:11px;padding:9px;background:#fbfdff}
+#metrics .metric-kpi span{display:block;font-size:10px;color:#6b7788;font-weight:750}
+#metrics .metric-kpi b{display:block;font-size:19px;line-height:1.15;margin:3px 0;color:#172033;font-variant-numeric:tabular-nums}
+#metrics .metric-kpi small{display:block;font-size:9px;color:#8491a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#metrics .metric-section{border:1px solid #e1e7ec;border-radius:11px;margin:7px 0;background:#fff;overflow:hidden}
+#metrics .metric-section>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 11px;font-size:13px;font-weight:850;cursor:pointer}
+#metrics .metric-section>summary::-webkit-details-marker{display:none}
+#metrics .metric-section>summary span{font-size:9px;color:#8a96a6;font-weight:700}
+#metrics .metric-section[open]>summary{border-bottom:1px solid #e8edf1;background:#f8fbfd}
+#metrics .metrics-compare-table{width:100%;overflow:hidden}
+#metrics .metrics-row{display:grid!important;grid-template-columns:minmax(0,42%) minmax(0,29%) minmax(0,29%)!important;align-items:center;min-height:42px;padding:7px 8px!important;gap:3px;border-bottom:1px solid #edf0f2;font-size:10px!important}
+#metrics .metrics-row>span{min-width:0;line-height:1.25;overflow-wrap:anywhere}
+#metrics .metrics-row>b{min-width:0;text-align:right;font-size:10px!important;line-height:1.2;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#metrics .metrics-row.metrics-head{min-height:35px;background:#f4f9fc;color:#617187;font-weight:800}
+#metrics .metrics-row.metrics-head>b{color:#137ca9}
+#metrics .metric-regime{margin:13px 0 6px}
+#metrics .metric-regime h3{font-size:16px;margin:0 0 3px}
+#metrics .regime-grid{display:grid;grid-template-columns:1.15fr .55fr .9fr .8fr;border-top:1px solid #dce3e8;border-left:1px solid #dce3e8;border-radius:9px;overflow:hidden}
+#metrics .regime-grid>div{min-width:0;padding:8px 4px;border-right:1px solid #dce3e8;border-bottom:1px solid #dce3e8;text-align:right;font-size:9px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#metrics .regime-grid>div:nth-child(4n+1){text-align:left;font-weight:750}
+#metrics .regime-head{background:#f4f7fa;color:#68778a;font-weight:800!important}
+#metrics .regime-grid .pos{color:#0b8a72}.regime-grid .neg{color:#d84b42}
+@media(max-width:700px){#metrics{overflow-x:hidden!important}#metricsPage{max-width:100%!important;overflow-x:hidden!important}#metrics .metrics-toolbar{gap:5px!important}#metrics .metrics-toolbar label{min-width:0!important;flex:1 1 auto!important}#metrics #metricsPortfolio{max-width:100%!important;font-size:11px!important}}
