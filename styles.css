@@ -1983,3 +1983,32 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     letter-spacing:-.15px!important;
   }
 }
+
+/* v32 — Research Performance selector compactness.
+   Keep selection logic unchanged; only reduce the controls inside the collapsible picker. */
+@media (max-width:700px){
+  .perf-picker{margin:5px 0 7px!important;padding:8px!important}
+  .perf-picker-title{font-size:12px!important;line-height:1.15!important;margin-bottom:5px!important}
+  .perf-picker-title span{font-size:9px!important}
+  .perf-group-tabs{gap:4px!important;padding-bottom:4px!important}
+  .perf-group-tab{
+    min-height:28px!important;height:28px!important;
+    padding:4px 9px!important;font-size:11px!important;line-height:18px!important;
+    border-radius:999px!important;width:auto!important;min-width:0!important;
+  }
+  .perf-group-panel{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;margin:2px 0 6px!important;
+  }
+  .perf-group-item{
+    min-height:28px!important;height:28px!important;
+    padding:3px 5px!important;font-size:11px!important;line-height:20px!important;
+    border-radius:7px!important;overflow:hidden!important;text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .perf-start-row{gap:5px!important;margin:5px 0 1px!important;font-size:11px!important}
+  #perfStartYear{
+    min-height:30px!important;height:30px!important;min-width:82px!important;
+    padding:3px 23px 3px 8px!important;font-size:11px!important;border-width:1.5px!important;
+  }
+}
