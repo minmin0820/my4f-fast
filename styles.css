@@ -669,10 +669,95 @@ body.menu-open{overflow:hidden!important}
 .analytics-kpis{display:flex;gap:8px;overflow-x:auto;margin:8px 0}.analytics-kpis>div{flex:0 0 105px;background:#f6f6f7;border-radius:12px;padding:10px}.analytics-kpis small{display:block;color:#92969d;font-size:10px}.analytics-kpis b{font-size:16px}
 .rolling-block{margin:12px 0 22px}.analytics-svg{display:block;width:100%;height:auto;border:1px solid #e3e5e8;border-radius:14px;background:#fff}.analytics-svg .aline{fill:none;stroke:currentColor;stroke-width:2}.analytics-svg .zero{stroke:#c9cdd2;stroke-width:1;stroke-dasharray:4 4}.analytics-svg text{font-size:10px;fill:#8a9098}.analytics-empty{padding:18px;color:#8a9098}
 
-/* analytics fix v2: compact metrics + sortable headers */
-.metrics-table{min-width:660px}
-.metrics-table th:first-child,.metrics-table td:first-child{min-width:0!important;width:1%!important;padding-right:14px!important}
-.metrics-table th:not(:first-child),.metrics-table td:not(:first-child){padding-left:12px!important;padding-right:12px!important}
-.metric-sort{appearance:none;border:0;background:transparent;padding:0;margin:0;font:inherit;font-weight:800;color:inherit;white-space:nowrap;cursor:pointer}
-.metric-sort span{font-size:9px;margin-left:4px;color:#a0a5ad}.metric-sort.active span{color:#343a40}
-@media(max-width:600px){.metrics-table{min-width:620px}.metrics-table th,.metrics-table td{padding-top:9px!important;padding-bottom:9px!important}.metrics-table th:first-child,.metrics-table td:first-child{min-width:132px!important;max-width:132px!important;width:132px!important}}
+
+/* v5.1 Analytics visual polish + Annual Returns mobile fix */
+.analytics-page{
+  padding:18px 14px 20px;
+  border:1px solid #e5eaf0;
+  border-radius:18px;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);
+  box-shadow:0 5px 18px rgba(15,23,42,.045);
+}
+.analytics-page h2{
+  display:flex;align-items:center;gap:9px;
+  font-size:24px!important;color:#172033;
+}
+.analytics-page h2::before{
+  content:"";width:5px;height:24px;border-radius:999px;background:#0b8fc2;flex:0 0 auto;
+}
+#rolling h2::before{background:#0ea5a4}
+#drawdowns h2::before{background:#e76f51}
+#annual h2::before{background:#7c5ce5}
+#metrics h2::before{background:#1687c9}
+
+.analytics-chips button{
+  background:#f7f9fc;border-color:#dce3eb;color:#526174;
+}
+.analytics-chips button.active{
+  background:#126f9c;border-color:#126f9c;color:#fff;
+  box-shadow:0 3px 9px rgba(18,111,156,.18);
+}
+#rolling .analytics-chips button.active{background:#087f7d;border-color:#087f7d}
+#drawdowns .analytics-chips button.active{background:#c95d45;border-color:#c95d45}
+#annual .analytics-chips button.active{background:#6d52c7;border-color:#6d52c7}
+
+.analytics-kpis>div{
+  border:1px solid #e4e9ef;
+  background:#f7fafc;
+}
+.analytics-kpis>div:nth-child(1){background:#eef8ff}
+.analytics-kpis>div:nth-child(2){background:#eefbf7}
+.analytics-kpis>div:nth-child(3){background:#f5f1ff}
+.analytics-kpis>div:nth-child(4){background:#fff5ef}
+.analytics-kpis>div:nth-child(5){background:#f2f8ef}
+
+#rolling .analytics-svg{color:#087f7d;background:#fbfffe;border-color:#d9efeb}
+#drawdowns .analytics-svg{color:#d0644d;background:#fffdfc;border-color:#f1ddd7}
+
+.metrics-table thead th{background:#eef7fc}
+.metrics-table tbody tr:nth-child(even) td{background:#fafcff}
+.metrics-table tbody tr:nth-child(even) td:first-child{background:#fafcff}
+.metric-sort.active{color:#0879ad}
+
+/* Annual Returns has only 2 columns: keep both visible on iPhone, no 720px forced width. */
+#annual .analytics-table-scroll{overflow-x:hidden}
+#annual .annual-table{
+  width:100%;
+  min-width:0;
+  table-layout:fixed;
+  border-collapse:separate;
+  border-spacing:0;
+  border:1px solid #e4e6ee;
+  border-radius:14px;
+  overflow:hidden;
+}
+#annual .annual-table th,
+#annual .annual-table td{
+  width:50%;
+  padding:10px 12px;
+  text-align:right;
+  border-bottom:1px solid #eceef3;
+}
+#annual .annual-table th{
+  background:#f1edff;
+  color:#514287;
+  font-weight:850;
+}
+#annual .annual-table th:first-child,
+#annual .annual-table td:first-child{
+  position:static;
+  min-width:0;
+  width:50%;
+  text-align:left;
+  background:inherit;
+}
+#annual .annual-table tbody tr:nth-child(odd){background:#fcfbff}
+#annual .annual-table tbody tr:last-child td{border-bottom:0}
+#annual .annual-table td.ret-pos{color:#07825f;font-weight:850}
+#annual .annual-table td.ret-neg{color:#c84d45;font-weight:850}
+
+@media(max-width:430px){
+  .analytics-page{padding:15px 11px 18px;border-radius:16px}
+  .analytics-page h2{font-size:22px!important}
+  #annual .annual-table th,#annual .annual-table td{padding:9px 10px}
+}
