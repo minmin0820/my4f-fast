@@ -37,7 +37,8 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  window.__MY4F_SNAPSHOT__=d;
  renderResearchPerformance(d.performance);
  renderFastAnalytics(d);
-  renderMonthlyCompare(d,'SPY');
+  document.getElementById('months').innerHTML=(d.returns||[]).map(x=>`<article class="month"><div class="monthTop"><span>${esc(x[0])}</span><span class="badge ${x[1]=='A-STATE'?'a':String(x[1]).includes('BOOSTER')?'b':''}">${esc(x[1])}</span></div><div class="return-scroll"><div class="row k"><span class="lab">麒麟</span><span class="name">天界</span><strong>${pct(x[2])}</strong><span class="name">現世</span><strong>${pct(x[3])}</strong></div><div class="row"><span class="lab">BM</span><span class="name">SPY</span><strong>${pct(x[4])}</strong><span class="name">TQQQ</span><strong>${pct(x[5])}</strong></div></div></article>`).join('');
+  renderMonthlyReturnsPage(d,FAST_BM);
 }).catch(e=>document.body.insertAdjacentHTML('afterbegin',`<div style="padding:10px;background:#ffecec;color:#a00;font:12px sans-serif">Snapshot load error: ${esc(e.message)}</div>`));
 
 let FAST_BM='SPY';
@@ -46,12 +47,12 @@ function bmSwitch(id,current,onChange){
  el.innerHTML=`<div class="bm-switch"><span>BM</span><button type="button" data-bm="SPY" class="${current==='SPY'?'active':''}">SPY</button><button type="button" data-bm="TQQQ" class="${current==='TQQQ'?'active':''}">TQQQ</button></div>`;
  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{FAST_BM=b.dataset.bm;onChange(FAST_BM);});
 }
-function renderMonthlyCompare(d,bm='SPY'){
- const root=document.getElementById('months');if(!root)return;
+function renderMonthlyReturnsPage(d,bm='SPY'){
+ const root=document.getElementById('monthlyReturnsPage');if(!root)return;
  const rr=d?.returns||[],bi=bm==='TQQQ'?5:4;
  const cell=v=>Number.isFinite(Number(v))?`<span class="${Number(v)>=0?'ret-pos':'ret-neg'}">${pct(Number(v))}</span>`:'—';
  root.innerHTML=`<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>麒麟「現世」</b><span class="bm-pill">BM: ${bm}</span></div><div class="analytics-table-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>現世</th><th>${bm}</th><th>差</th></tr></thead><tbody>${rr.map(x=>{const s=Number(x[3]),bv=Number(x[bi]),dif=(Number.isFinite(s)&&Number.isFinite(bv))?s-bv:null;return`<tr><td>${esc(x[0])}</td><td>${cell(s)}</td><td>${cell(bv)}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
- bmSwitch('monthlyBmSwitch',bm,next=>{FAST_BM=next;renderMonthlyCompare(d,next);renderFastAnalytics(d,next);});
+ bmSwitch('monthlyBmSwitch',bm,next=>{FAST_BM=next;renderMonthlyReturnsPage(d,next);renderFastAnalytics(d,next);});
 }
 
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
@@ -171,7 +172,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const r=a[n]?.rolling||{},bm=a[bmName]?.rolling||{};
    const periods=['12','36','60'];
    b.innerHTML='<div id="rollingBmSwitch"></div><div id="rollingBmBody"></div>';
-   bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyCompare(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
+   bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
    const rollBody=b.querySelector('#rollingBmBody');
    const stat=(x,k)=>x?.[k];
    const statRow=(lab,key)=>`<tr><td>${lab}</td><td>${fmt(stat(r,key))}</td><td>${fmt(stat(bm,key))}</td></tr>`;
@@ -202,10 +203,27 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(!btn||!menu||!back)return;
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
  const closeMenu=()=>{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');back.classList.remove('show');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');setTimeout(()=>{if(!menu.classList.contains('open'))back.hidden=true},180)};
+
+ const pageIds=['performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
+ const allPages=()=>pageIds.map(id=>document.getElementById(id)).filter(Boolean);
+ const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
+ function showFastPage(id){
+   const dashboard=id==='top'||id==='allocation'||id==='forward';
+   allPages().forEach(el=>el.classList.toggle('page-active',!dashboard&&el.id===id));
+   document.querySelectorAll('.analytics-shell').forEach(el=>el.style.display=dashboard?'none':'contents');
+   dashboardNodes().forEach(el=>el.style.display=dashboard?'':'none');
+   const perf=document.getElementById('performance'); if(perf&&!dashboard)perf.style.display=id==='performance'?'':'none';
+   allPages().forEach(el=>{if(!dashboard)el.style.display=el.id===id?'':'none';});
+   document.querySelector('header').style.display=dashboard?'':'none';
+   document.querySelector('footer').style.display=dashboard?'':'none';
+   window.scrollTo({top:0,behavior:'smooth'});
+ }
+ window.showFastPage=showFastPage;
+ showFastPage('top');
  btn.addEventListener('click',openMenu);close?.addEventListener('click',closeMenu);back.addEventListener('click',closeMenu);
  menu.querySelectorAll('[data-target]').forEach(x=>x.addEventListener('click',()=>{
-   const id=x.dataset.target,el=document.getElementById(id);closeMenu();
-   setTimeout(()=>{el?.scrollIntoView({behavior:'smooth',block:'start'});if(id)history.replaceState(null,'','#'+id)},80);
+   const id=x.dataset.target;closeMenu();
+   setTimeout(()=>{showFastPage(id);if(id)history.replaceState(null,'','#'+id)},80);
  }));
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 });

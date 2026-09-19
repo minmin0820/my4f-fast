@@ -783,3 +783,12 @@ body.menu-open{overflow:hidden!important}
 .bm-switch>span{padding:0 7px;font-size:11px;font-weight:850;color:#65758a}
 .bm-switch button{border:0;background:transparent;color:#66758a;font-weight:850;font-size:12px;padding:7px 11px;border-radius:8px}
 .bm-switch button.active{background:#087fae;color:#fff;box-shadow:0 2px 6px rgba(8,127,174,.2)}
+
+/* v5.4 Independent page navigation */
+.app-page{display:none}
+.app-page.page-active{display:block}
+.analytics-shell{display:none}
+.dashboard-only{display:block}
+body.fast-subpage header,body.fast-subpage footer{display:none}
+.app-page{margin-top:12px}
+#monthlyReturns.analytics-page,#rolling.analytics-page,#drawdowns.analytics-page,#annual.analytics-page,#metrics.analytics-page{min-height:70vh}

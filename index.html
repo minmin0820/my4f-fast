@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260919-bmswitch1">
+<link rel="stylesheet" href="styles.css?v=20260919-pages1">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -24,10 +24,10 @@
     <button type="button" data-target="top">Dashboard</button>
     <button type="button" data-target="performance">Performance</button>
     <button type="button" data-target="metrics">Metrics</button>
+    <button type="button" data-target="monthlyReturns">Monthly Returns</button>
     <button type="button" data-target="rolling">Rolling Returns</button>
     <button type="button" data-target="drawdowns">Drawdowns</button>
     <button type="button" data-target="annual">Annual Returns</button>
-    <button type="button" data-target="returns">Monthly Returns</button>
     <button type="button" data-target="allocation">Allocation & Signals</button>
     <div id="forward" class="fast-anchor"></div><button type="button" data-target="forward">Forward OOS Monitor</button>
     <button type="button" data-target="specification">Strategy Specification</button>
@@ -59,8 +59,9 @@
 <section><h2>月次リターン</h2><p class="muted">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p>
 <div id="summary" class="summary"></div><div id="bm" class="bm"></div>
 <p class="muted">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
+<section class="dashboard-only"><h2>直近12か月</h2><div id="months" class="months"></div></section>
 
-<section id="researchPerformance" id="performance"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
+<section id="performance" class="app-page"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
 <div id="perfChips" class="perf-chips"></div>
 <div class="perf-picker">
   <div class="perf-picker-title">Select Portfolios <span>(max 4)</span></div>
@@ -76,14 +77,14 @@
 <div id="perfCards" class="perf-cards"></div>
 <details><summary>全系列の指標</summary><div id="perfTable" class="perf-table-wrap"></div></details></section>
 
-<section><section id="metrics" class="analytics-page fast-anchor"><h2>Metrics</h2><p class="sub">Python正本の全期間指標。</p><div id="metricsPage"></div></section>
-<section id="rolling" class="analytics-page fast-anchor"><h2>Rolling Returns</h2><p class="sub">1Y累積 / 3Y・5Y年率。Current / Median / P10 / Min / Positive rate。</p><div id="rollingPage"></div></section>
-<section id="drawdowns" class="analytics-page fast-anchor"><h2>Drawdowns</h2><p class="sub">Python正本で生成した月次Drawdown系列。</p><div id="drawdownsPage"></div></section>
-<section id="annual" class="analytics-page fast-anchor"><h2>Annual Returns</h2><p class="sub">Python正本の年次複利リターン。</p><div id="annualPage"></div></section>
-<div id="returns" class="fast-anchor"></div><h2>直近12か月</h2><div id="months" class="months"></div></section>
+<section class="analytics-shell"><section id="metrics" class="analytics-page fast-anchor app-page"><h2>Metrics</h2><p class="sub">Python正本の全期間指標。</p><div id="metricsPage"></div></section>
+<section id="monthlyReturns" class="analytics-page fast-anchor app-page"><h2>Monthly Returns</h2><p class="sub">麒麟「現世」とBenchmarkの月次比較。BMはSPY / TQQQを切替。</p><div id="monthlyReturnsPage"></div></section>
+<section id="rolling" class="analytics-page fast-anchor app-page"><h2>Rolling Returns</h2><p class="sub">1Y累積 / 3Y・5Y年率。Current / Median / P10 / Min / Positive rate。</p><div id="rollingPage"></div></section>
+<section id="drawdowns" class="analytics-page fast-anchor app-page"><h2>Drawdowns</h2><p class="sub">Python正本で生成した月次Drawdown系列。</p><div id="drawdownsPage"></div></section>
+<section id="annual" class="analytics-page fast-anchor app-page"><h2>Annual Returns</h2><p class="sub">Python正本の年次複利リターン。</p><div id="annualPage"></div></section>
+</section>
 
-<section>
-<div id="specification" class="fast-anchor"></div><h2>KIRIN Strategy Specification</h2>
+<section id="specification" class="app-page"><h2>KIRIN Strategy Specification</h2>
 <p class="muted">旧称 ERC6 + Attack75。将来の再実装でも同じ戦略を再現するための凍結仕様です。</p>
 <details>
 <summary>麒麟（KIRIN）の作り方 — Frozen specification</summary>
@@ -124,7 +125,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260919-bmswitch1"></script>
+<script src="app.js?v=20260919-pages1"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
