@@ -811,3 +811,77 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
 .annual-bm-bar{fill:#98a8bf}
 .annual-compare-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
 #summaryPage,#monthlyReturns,#rolling,#drawdowns,#annual{min-height:75vh}
+
+/* v5.6 — mobile readability / Bam-reference sizing */
+@media (max-width: 700px){
+  body{font-size:17px;line-height:1.48}
+  .analytics-page{padding:16px 14px}
+  .analytics-page h2{font-size:30px;line-height:1.15;margin-bottom:8px}
+  .analytics-page .sub{font-size:15px;line-height:1.5}
+  .analytics-table{font-size:16px}
+  .analytics-table th{font-size:15px;padding:15px 12px}
+  .analytics-table td{font-size:16px;padding:15px 12px}
+  .analytics-note,.analysis-period{font-size:14px;line-height:1.5}
+  .strategy-chip,.bm-switch button{font-size:15px;min-height:46px;padding:10px 16px}
+  .analytics-kpis>div{padding:16px}
+  .analytics-kpis small{font-size:14px}
+  .analytics-kpis b{font-size:25px}
+  .subsection-title{font-size:25px;line-height:1.2}
+  .compare-legend{font-size:15px}
+  .summary-compare-title{font-size:21px;gap:10px;flex-wrap:wrap}
+
+  /* Summary: all 3 columns must fit viewport; no clipped value columns */
+  #summaryPage .analytics-table-scroll{overflow-x:hidden;width:100%}
+  #summaryPage .summary-compare-table{width:100%;min-width:0;table-layout:fixed}
+  #summaryPage .summary-compare-table th:first-child,
+  #summaryPage .summary-compare-table td:first-child{width:46%;text-align:left}
+  #summaryPage .summary-compare-table th:nth-child(2),
+  #summaryPage .summary-compare-table td:nth-child(2),
+  #summaryPage .summary-compare-table th:nth-child(3),
+  #summaryPage .summary-compare-table td:nth-child(3){width:27%;text-align:right}
+  #summaryPage .summary-compare-table th,
+  #summaryPage .summary-compare-table td{white-space:normal;overflow-wrap:anywhere;padding:14px 7px}
+  #summaryPage .summary-compare-table th{font-size:13px}
+  #summaryPage .summary-compare-table td{font-size:15px}
+  #summaryPage .summary-compare-table td:not(:first-child){font-size:16px;font-weight:700}
+
+  /* Monthly: page scrolls normally; table itself is not trapped in a fixed-height pane */
+  #monthlyReturnsPage .monthly-full-scroll{max-height:none!important;height:auto!important;overflow-x:auto!important;overflow-y:visible!important;-webkit-overflow-scrolling:touch}
+  #monthlyReturnsPage .monthly-full-scroll thead{position:static!important}
+  #monthlyReturnsPage .monthly-compare-table{min-width:560px}
+  #monthlyReturnsPage .monthly-compare-table th,
+  #monthlyReturnsPage .monthly-compare-table td{font-size:16px;padding:14px 12px}
+
+  /* Drawdown Worst10: fit all four columns on iPhone */
+  #drawdownsPage .analytics-table-scroll{overflow-x:hidden;width:100%}
+  #drawdownsPage .analytics-table{width:100%;min-width:0;table-layout:fixed}
+  #drawdownsPage .analytics-table th,
+  #drawdownsPage .analytics-table td{padding:13px 6px;font-size:14px;white-space:normal;overflow-wrap:anywhere}
+  #drawdownsPage .analytics-table th:first-child,
+  #drawdownsPage .analytics-table td:first-child{width:12%}
+  #drawdownsPage .analytics-table th:nth-child(2),
+  #drawdownsPage .analytics-table td:nth-child(2){width:24%}
+  #drawdownsPage .analytics-table th:nth-child(3),
+  #drawdownsPage .analytics-table td:nth-child(3){width:32%;text-align:right}
+  #drawdownsPage .analytics-table th:nth-child(4),
+  #drawdownsPage .analytics-table td:nth-child(4){width:32%;text-align:right}
+
+  /* Annual: Bam-like large chart; table is readable without horizontal clipping */
+  #annualPage .annual-chart-wrap{padding:12px 6px;margin-top:14px}
+  #annualPage .annual-bar-svg{min-height:250px}
+  #annualPage .analytics-table-scroll{overflow-x:hidden;width:100%}
+  #annualPage .annual-compare-table{width:100%;min-width:0;table-layout:fixed}
+  #annualPage .annual-compare-table th,
+  #annualPage .annual-compare-table td{padding:13px 5px;font-size:13px;white-space:normal;overflow-wrap:anywhere}
+  #annualPage .annual-compare-table th:first-child,
+  #annualPage .annual-compare-table td:first-child{width:14%;text-align:left}
+  #annualPage .annual-compare-table th:nth-child(2),
+  #annualPage .annual-compare-table td:nth-child(2){width:22%;text-align:right}
+  #annualPage .annual-compare-table th:nth-child(3),
+  #annualPage .annual-compare-table td:nth-child(3){width:20%;text-align:right}
+  #annualPage .annual-compare-table th:nth-child(4),
+  #annualPage .annual-compare-table td:nth-child(4){width:22%;text-align:right}
+  #annualPage .annual-compare-table th:nth-child(5),
+  #annualPage .annual-compare-table td:nth-child(5){width:22%;text-align:right}
+  #annualPage .annual-compare-table td{font-weight:600}
+}
