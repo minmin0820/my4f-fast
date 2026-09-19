@@ -46938,6 +46938,7 @@ def _kirin_quantize_5pct(allocation):
 
 
 from kirin_fast_bridge import build_snapshot, dumps_snapshot
+from kirin_fast_publish import publish_snapshot
 
 
 def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
@@ -47194,12 +47195,40 @@ def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
                 "calmar": float(_met.get("Calmar", np.nan)) if np.isfinite(_met.get("Calmar", np.nan)) else None,
             })
             _perf_history[_name] = [[str(_m), round(float(_v)*100, 8)] for _m,_v in _sr.items()]
+        _perf_analytics = {}
+        for _name in _perf_names:
+            if _name not in _perf_base.columns: continue
+            _sr = pd.Series(_perf_base[_name]).dropna().astype(float).sort_index()
+            if len(_sr) < 2: continue
+            _wealth = (1.0 + _sr).cumprod()
+            _dd = _wealth.div(_wealth.cummax()).sub(1.0)
+            _annual = (1.0 + _sr).groupby(_sr.index.year).prod().sub(1.0)
+            _rolling = {}
+            for _months in (12, 36, 60):
+                if len(_sr) < _months: continue
+                _prod = (1.0 + _sr).rolling(_months).apply(np.prod, raw=True)
+                _rr = (_prod.sub(1.0) if _months == 12 else _prod.pow(12.0/_months).sub(1.0)).dropna()
+                if len(_rr):
+                    _rolling[str(_months)] = {
+                        "current": float(_rr.iloc[-1])*100.0,
+                        "median": float(_rr.median())*100.0,
+                        "p10": float(_rr.quantile(0.10))*100.0,
+                        "min": float(_rr.min())*100.0,
+                        "positive_rate": float((_rr > 0).mean())*100.0,
+                        "history": [[str(_m), round(float(_v)*100.0,8)] for _m,_v in _rr.items()],
+                    }
+            _perf_analytics[_name] = {
+                "annual": [[str(int(_y)), round(float(_v)*100.0,8)] for _y,_v in _annual.items()],
+                "drawdown": [[str(_m), round(float(_v)*100.0,8)] for _m,_v in _dd.items()],
+                "rolling": _rolling,
+            }
         _fast_performance = {
             "source": "Research Performance / frozen Python lineage",
             "metric_basis": "Monthly returns / 0RF",
             "sample_policy": "Each series uses its own maximum valid history in headline metrics; chart common-aligns selected series.",
-            "series": _perf_series,
-            "history": _perf_history,
+            "series": _perf_series, "history": _perf_history,
+            "analytics": _perf_analytics,
+            "analytics_source": "Python canonical / frozen monthly series",
         }
 
         _fast_snapshot=build_snapshot(
@@ -47218,9 +47247,70 @@ def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
             forward_mode=z.get("forward_mode",""),
             performance=_fast_performance,
         )
+        # Fast bridge freshness metadata (display/operations only; no strategy logic).
+        _fast_now_jst = pd.Timestamp.now(tz="Asia/Tokyo")
+        _fast_snapshot["sync"] = {
+            "generated_at": _fast_now_jst.isoformat(timespec="seconds"),
+            "generated_at_jst": _fast_now_jst.strftime("%Y-%m-%d %H:%M:%S JST"),
+            "source": "Streamlit / Python canonical",
+            "snapshot_audit": "PASS",
+        }
         _fast_json=dumps_snapshot(_fast_snapshot)
+
+        # Optional secure auto-publish to My4F Fast. The token is read only
+        # from Streamlit server-side secrets and is never embedded in JS/JSON.
+        _fast_publish = {"status": "disabled"}
+        try:
+            _fast_token = str(st.secrets.get("MY4F_FAST_GITHUB_TOKEN", "")).strip()
+            if _fast_token:
+                _fast_publish = publish_snapshot(_fast_json, _fast_token)
+        except Exception as _pub_e:
+            _fast_publish = {"status": "error", "message": str(_pub_e)}
+
+        # Always-visible operator status. Snapshot validity and GitHub publish
+        # state are shown separately to avoid claiming end-to-end success early.
+        _pub_status = _fast_publish.get("status")
+        _snapshot_sha = __import__("hashlib").sha256(_fast_json).hexdigest()
+        if _pub_status in ("updated", "created", "unchanged"):
+            _sync_title = "✅ My4F Fast Sync — PASS"
+            _sync_note = "GitHubへ更新済み" if _pub_status in ("updated", "created") else "GitHubと同一 — 更新不要"
+            _sync_bg, _sync_border, _sync_fg = "#ecfdf5", "#86efac", "#166534"
+        elif _pub_status == "error":
+            _sync_title = "❌ My4F Fast Sync — ERROR"
+            _sync_note = "GitHubへの自動更新に失敗"
+            _sync_bg, _sync_border, _sync_fg = "#fef2f2", "#fca5a5", "#991b1b"
+        else:
+            _sync_title = "⚠️ My4F Fast Sync — SETUP REQUIRED"
+            _sync_note = "自動更新OFF — Streamlit secret未設定"
+            _sync_bg, _sync_border, _sync_fg = "#fffbeb", "#fcd34d", "#92400e"
+
+        st.markdown(
+            f'<div style="margin:12px 0 8px;padding:11px 12px;border:1px solid {_sync_border};border-radius:12px;background:{_sync_bg};color:{_sync_fg};overflow-wrap:anywhere">'
+            f'<div style="font-size:1rem;font-weight:850">{_sync_title}</div>'
+            f'<div style="font-size:.82rem;font-weight:700;margin-top:3px">{_sync_note}</div>'
+            f'<div style="font-size:.72rem;margin-top:5px;opacity:.82">Snapshot audit: PASS ・ {opm} ・ SHA {_snapshot_sha[:12]}</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
         with st.expander("My4F Fast Live Data Bridge", expanded=False):
             st.caption("Python正本から生成した表示専用snapshot。Fast側では戦略計算を行いません。")
+            st.success("① Snapshot schema / allocation total audit: PASS")
+            if _pub_status == "updated":
+                st.success("② GitHub publish: PASS — UPDATED")
+            elif _pub_status == "created":
+                st.success("② GitHub publish: PASS — CREATED")
+            elif _pub_status == "unchanged":
+                st.success("② GitHub publish: PASS — UP TO DATE")
+            elif _pub_status == "error":
+                st.error("② GitHub publish: ERROR")
+                st.caption(_fast_publish.get("message", ""))
+            else:
+                st.warning("② GitHub publish: SETUP REQUIRED — Streamlit secret未設定")
+            st.caption(f"対象: my4f-fast / kirin_snapshot.json ・ Snapshot SHA-256: {_snapshot_sha}")
+            if _fast_publish.get("commit"):
+                st.caption(f"GitHub commit: {_fast_publish.get('commit')}")
+            st.caption("※ PASSはsnapshot生成とGitHub反映まで。GitHub Pagesの配信反映には短い遅延が生じる場合があります。")
             st.download_button(
                 "kirin_snapshot.json をダウンロード",
                 data=_fast_json,
@@ -47229,7 +47319,6 @@ def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
                 key="kirin_fast_snapshot_download",
                 use_container_width=True,
             )
-            st.success("Snapshot schema / allocation total audit: PASS")
     except Exception as e:
         st.warning("月次リターン表示を構築できませんでした。"); st.caption(str(e))
 

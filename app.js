@@ -35,6 +35,7 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  const by=d.benchmarks?.ytd||{};
  document.getElementById('bm').innerHTML=`<b>BM</b><span>SPY YTD<strong>${pct(by.SPY)}</strong></span><span>TQQQ YTD<strong>${pct(by.TQQQ)}</strong></span>`;
  renderResearchPerformance(d.performance);
+ renderFastAnalytics(d);
   document.getElementById('months').innerHTML=(d.returns||[]).map(x=>`<article class="month"><div class="monthTop"><span>${esc(x[0])}</span><span class="badge ${x[1]=='A-STATE'?'a':String(x[1]).includes('BOOSTER')?'b':''}">${esc(x[1])}</span></div><div class="return-scroll"><div class="row k"><span class="lab">麒麟</span><span class="name">天界</span><strong>${pct(x[2])}</strong><span class="name">現世</span><strong>${pct(x[3])}</strong></div><div class="row"><span class="lab">BM</span><span class="name">SPY</span><strong>${pct(x[4])}</strong><span class="name">TQQQ</span><strong>${pct(x[5])}</strong></div></div></article>`).join('');
 }).catch(e=>document.body.insertAdjacentHTML('afterbegin',`<div style="padding:10px;background:#ffecec;color:#a00;font:12px sans-serif">Snapshot load error: ${esc(e.message)}</div>`));
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
@@ -112,3 +113,31 @@ function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMO
  svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);showAt(e.clientX)});svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)showAt(e.clientX)});svg.addEventListener('click',e=>showAt(e.clientX));
  const returns=names.map(n=>{const a=(vals[n]||[]).filter(Number.isFinite);return{name:n,value:a.length?(a.at(-1)/a[0]-1)*100:0}});return{start:months[0],end:months.at(-1),returns,colors:names.map((_,i)=>palette[i%4])};
 }
+
+function renderFastAnalytics(d){
+ const p=d?.performance,a=p?.analytics||{},ss=p?.series||[],names=ss.map(x=>x.name).filter(n=>a[n]);
+ const fmt=v=>(v==null||!Number.isFinite(Number(v)))?'—':`${Number(v)>=0?'+':''}${Number(v).toFixed(2)}%`;
+ const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const pick=id=>`<div class="analytics-chips">${names.map((n,i)=>`<button data-series="${E(n)}" class="${i?'':'active'}">${E(n)}</button>`).join('')}</div><div id="${id}Body"></div>`;
+ const mt=document.getElementById('metricsPage');
+ if(mt)mt.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>Sharpe</th><th>MaxDD</th><th>Calmar</th><th>Vol</th><th>Months</th></tr></thead><tbody>${ss.map(s=>`<tr><td>${E(s.name)}</td><td>${fmt(s.cagr)}</td><td>${Number(s.sortino).toFixed(2)}</td><td>${Number(s.sharpe).toFixed(2)}</td><td>${fmt(s.maxdd)}</td><td>${Number(s.calmar).toFixed(2)}</td><td>${fmt(s.vol)}</td><td>${s.months}</td></tr>`).join('')}</tbody></table></div>`;
+ function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
+ function bind(root,fn){if(!root)return;root.innerHTML=pick(root.id);const body=root.querySelector(`#${root.id}Body`),bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}
+ bind(document.getElementById('rollingPage'),(n,b)=>{const r=a[n]?.rolling||{};b.innerHTML=['12','36','60'].filter(k=>r[k]).map(k=>{const x=r[k],lab=k==='12'?'1Y':k==='36'?'3Y':'5Y';return`<div class="rolling-block"><h3>${lab}</h3><div class="analytics-kpis"><div><small>Current</small><b>${fmt(x.current)}</b></div><div><small>Median</small><b>${fmt(x.median)}</b></div><div><small>P10</small><b>${fmt(x.p10)}</b></div><div><small>Min</small><b>${fmt(x.min)}</b></div><div><small>Positive</small><b>${(+x.positive_rate).toFixed(1)}%</b></div></div>${chart(x.history)}</div>`}).join('')});
+ bind(document.getElementById('drawdownsPage'),(n,b)=>{const r=a[n]?.drawdown||[],w=r.length?Math.min(...r.map(x=>+x[1])):null;b.innerHTML=`<div class="analytics-kpis"><div><small>Worst</small><b>${fmt(w)}</b></div></div>${chart(r)}`});
+ bind(document.getElementById('annualPage'),(n,b)=>{const r=a[n]?.annual||[];b.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table annual-table"><thead><tr><th>Year</th><th>${E(n)}</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td>${fmt(x[1])}</td></tr>`).join('')}</tbody></table></div>`});
+}
+
+// Fast v5 menu / section navigation
+document.addEventListener('DOMContentLoaded',()=>{
+ const btn=document.getElementById('fastMenuButton'),menu=document.getElementById('fastMenu'),back=document.getElementById('fastMenuBackdrop'),close=document.getElementById('fastMenuClose');
+ if(!btn||!menu||!back)return;
+ const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
+ const closeMenu=()=>{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');back.classList.remove('show');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');setTimeout(()=>{if(!menu.classList.contains('open'))back.hidden=true},180)};
+ btn.addEventListener('click',openMenu);close?.addEventListener('click',closeMenu);back.addEventListener('click',closeMenu);
+ menu.querySelectorAll('[data-target]').forEach(x=>x.addEventListener('click',()=>{
+   const id=x.dataset.target,el=document.getElementById(id);closeMenu();
+   setTimeout(()=>{el?.scrollIntoView({behavior:'smooth',block:'start'});if(id)history.replaceState(null,'','#'+id)},80);
+ }));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+});
