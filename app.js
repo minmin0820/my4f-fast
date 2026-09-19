@@ -374,13 +374,6 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    }
    const se=episodes(r),be=episodes(br),sWorst=se[0],bWorst=be[0];
    const duration=x=>x==null?'Ongoing':`${x} mo`;
-   function durationCards(){
-     return `<div class="dd-duration-grid">
-       <div><small>Drawdown Length</small><b>${duration(sWorst?.ddLength)}</b><span>${E(n)}</span><em>${duration(bWorst?.ddLength)} · ${E(bmName)}</em></div>
-       <div><small>Recovery Time</small><b>${duration(sWorst?.recovery)}</b><span>${E(n)}</span><em>${duration(bWorst?.recovery)} · ${E(bmName)}</em></div>
-       <div><small>Underwater Period</small><b>${duration(sWorst?.underwater)}</b><span>${E(n)}</span><em>${duration(bWorst?.underwater)} · ${E(bmName)}</em></div>
-     </div>`;
-   }
    function interactiveDD(){
      const sm=new Map(r.map(x=>[String(x[0]),Number(x[1])])),bm=new Map(br.map(x=>[String(x[0]),Number(x[1])]));
      const months=[...new Set([...sm.keys(),...bm.keys()])].sort();
@@ -408,7 +401,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    }
    b.innerHTML=`<div id="ddBmSwitch"></div>
      <div class="dd-worst-cards"><div><small>Worst ${E(n)}</small><b>${fmt(sWorst?.troughVal)}</b></div><div><small>Worst ${E(bmName)}</small><b>${fmt(bWorst?.troughVal)}</b></div></div>
-     ${durationCards()}${interactiveDD()}
+     ${interactiveDD()}
      <h3 class="subsection-title">Worst 10 Drawdowns</h3>
      ${worstBlock(n+' — Portfolio',se)}
      ${worstBlock(bmName+' — Benchmark',be)}`;
