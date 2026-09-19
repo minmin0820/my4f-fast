@@ -455,13 +455,6 @@ function renderFastAnalytics(d,bmName=FAST_BM){
 // Fast v5 menu / section navigation
 document.addEventListener('DOMContentLoaded',()=>{
  // Visible build marker: confirms the browser is running this exact UI update.
- const oldBadges=[...document.querySelectorAll('body *')].filter(el=>/v\d+.*UI更新適用/.test((el.textContent||'').trim()) && el.children.length===0);
- oldBadges.forEach(el=>el.remove());
- const uiBadge=document.createElement('div');
- uiBadge.id='my4fUiVersion';
- uiBadge.remove();
- uiBadge.style.cssText='display:inline-flex;align-items:center;margin:10px 16px 4px;padding:5px 10px;border:1.5px solid #67d995;border-radius:999px;background:#effcf4;color:#168443;font:700 13px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;letter-spacing:.01em;';
- document.body.insertBefore(uiBadge,document.body.firstChild);
  const btn=document.getElementById('fastMenuButton'),menu=document.getElementById('fastMenu'),back=document.getElementById('fastMenuBackdrop'),close=document.getElementById('fastMenuClose');
  if(!btn||!menu||!back)return;
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};

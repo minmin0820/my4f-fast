@@ -2085,3 +2085,6 @@ div.ui-update-badge{
 
 /* v40 — obsolete empty update badge must occupy zero space. */
 .ui-update-badge:empty{display:none!important;border:0!important;margin:0!important;padding:0!important;width:0!important;height:0!important;}
+
+/* v41 — legacy injected badge removed from JS. */
+#my4fUiVersion,.ui-update-badge{display:none!important;}
