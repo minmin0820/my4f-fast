@@ -1806,77 +1806,83 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   }
 }
 
-/* v6.1 — Drawdowns compact mobile layout (2026-09-19)
-   Explicitly overrides earlier v6 mobile rules. */
-@media (max-width:700px){
-  #drawdownsPage .analytics-chips{
-    gap:5px!important;
-    padding:1px 0 5px!important;
-    margin:0!important;
-  }
-  #drawdownsPage .analytics-chips button{
+
+/* v23 — unified compact selector controls (iPhone)
+   Selection UI is secondary to data: smaller type, tighter padding, no page-wide horizontal scroll. */
+@media(max-width:700px){
+  /* Research Performance: group filters + portfolio choices */
+  .perf-groups button,
+  .perf-chip{
     font-size:12px!important;
     line-height:1!important;
-    min-height:32px!important;
     padding:6px 9px!important;
-  }
-  #drawdownsPage .bm-switch{
-    margin:5px 0 8px!important;
-  }
-  #drawdownsPage .bm-switch button{
-    font-size:14px!important;
-    min-height:38px!important;
-    padding:7px 12px!important;
-  }
-
-  #drawdownsPage .dd-worst-cards{
-    gap:8px!important;
-    margin:8px 0!important;
-  }
-  #drawdownsPage .dd-worst-cards>div{
-    border-radius:14px!important;
-    padding:9px 10px!important;
-  }
-  #drawdownsPage .dd-worst-cards small{
-    font-size:11px!important;
-    line-height:1.15!important;
-  }
-  #drawdownsPage .dd-worst-cards b{
-    font-size:19px!important;
-    line-height:1.05!important;
-    margin-top:4px!important;
-  }
-
-  #drawdownsPage .dd-duration-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    gap:6px!important;
-    margin:7px 0 10px!important;
-  }
-  #drawdownsPage .dd-duration-grid>div{
-    min-height:0!important;
-    border-radius:12px!important;
-    padding:8px 7px!important;
-  }
-  #drawdownsPage .dd-duration-grid small{
-    font-size:10px!important;
-    line-height:1.12!important;
-    min-height:22px!important;
-    overflow-wrap:normal!important;
-  }
-  #drawdownsPage .dd-duration-grid b{
-    font-size:17px!important;
-    line-height:1!important;
-    margin-top:4px!important;
+    min-height:32px!important;
+    height:auto!important;
+    border-radius:17px!important;
     white-space:nowrap!important;
   }
-  #drawdownsPage .dd-duration-grid span,
-  #drawdownsPage .dd-duration-grid em{
-    font-size:9.5px!important;
-    line-height:1.12!important;
-    margin-top:3px!important;
-    white-space:normal!important;
+  .perf-groups{
+    gap:6px!important;
+    margin-block:7px!important;
   }
-  #drawdownsPage .dd-touch-chart{
-    margin:8px 0 12px!important;
+  .perf-chips{
+    gap:6px!important;
+  }
+
+  /* Rolling / Drawdowns / Annual portfolio chips */
+  .analytics-chip,
+  .strategy-chip,
+  .analytics-chips button,
+  #rollingReturnsPage button[data-series],
+  #drawdownsPage button[data-series],
+  #annualReturnsPage button[data-series],
+  #rollingPage button[data-series],
+  #drawdownsPage button[data-series],
+  #annualPage button[data-series]{
+    font-size:12px!important;
+    line-height:1!important;
+    padding:6px 9px!important;
+    min-height:32px!important;
+    height:auto!important;
+    border-radius:17px!important;
+    white-space:nowrap!important;
+  }
+  .analytics-chips,
+  .strategy-chips{
+    gap:6px!important;
+    margin-top:7px!important;
+    margin-bottom:7px!important;
+  }
+
+  /* BM / SPY / TQQQ selectors on Summary, Metrics, Monthly, Rolling,
+     Drawdowns and Annual pages */
+  .bm-switch button,
+  .bm-toggle button,
+  .benchmark-toggle button,
+  #summaryPage .bm-switch button,
+  #metricsPage .bm-switch button,
+  #monthlyReturnsPage .bm-switch button,
+  #rollingPage .bm-switch button,
+  #drawdownsPage .bm-switch button,
+  #annualPage .bm-switch button{
+    font-size:13px!important;
+    line-height:1!important;
+    padding:7px 11px!important;
+    min-height:34px!important;
+    height:auto!important;
+  }
+  .bm-switch,
+  .bm-toggle,
+  .benchmark-toggle{
+    min-height:0!important;
+  }
+
+  /* Metrics portfolio select: reduce control typography/height too */
+  #metricsPage select,
+  #metricsPage .portfolio-select{
+    font-size:14px!important;
+    min-height:40px!important;
+    padding-top:7px!important;
+    padding-bottom:7px!important;
   }
 }
