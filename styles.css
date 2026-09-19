@@ -1006,3 +1006,71 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
  .metrics-row>span{font-size:16px}.metrics-row>b{font-size:16px}
  .metrics-row.metrics-head>span,.metrics-row.metrics-head>b{font-size:15px}
 }
+
+
+/* v7 — unified mobile readability: Metrics page is the size reference */
+@media(max-width:700px){
+  body{font-size:18px!important;line-height:1.5!important}
+  .page,.analytics-page,.card,.panel{font-size:18px!important}
+
+  h1{font-size:34px!important;line-height:1.12!important}
+  h2,.analytics-page h2{font-size:32px!important;line-height:1.14!important}
+  h3,.subsection-title{font-size:26px!important;line-height:1.2!important}
+  h4{font-size:22px!important}
+
+  p,.sub,.analytics-page .sub,.note,.muted,.meta{font-size:17px!important;line-height:1.5!important}
+
+  button,.btn,.strategy-chip,.analytics-chips button,.bm-switch button,
+  select,input,label{font-size:17px!important}
+  .strategy-chip,.analytics-chips button,.bm-switch button{min-height:50px!important}
+
+  .kpi small,.analytics-kpis small{font-size:16px!important}
+  .kpi b,.analytics-kpis b{font-size:27px!important}
+
+  table,.analytics-table{font-size:17px!important}
+  th,.analytics-table th{font-size:16px!important}
+  td,.analytics-table td{font-size:17px!important;line-height:1.4!important}
+
+  .compare-legend,.chart-legend,.legend{font-size:17px!important}
+
+  /* Worst 10: Bam-style readable rows without overflowing the phone width */
+  .dd-worst-block h3{font-size:25px!important;margin:24px 4px 12px!important}
+  .dd-worst-table{border-radius:16px!important;overflow:hidden!important}
+  .dd-worst-head,.dd-worst-row{
+    grid-template-columns:7% 19% 20% 16% 18% 20%!important;
+    min-height:72px!important;
+  }
+  .dd-worst-head{min-height:62px!important}
+  .dd-worst-head span{
+    font-size:13px!important;
+    line-height:1.15!important;
+    font-weight:800!important;
+    padding:8px 2px!important;
+  }
+  .dd-worst-row span{
+    font-size:16px!important;
+    line-height:1.2!important;
+    padding:10px 2px!important;
+    white-space:normal!important;
+  }
+  .dd-worst-row strong{
+    font-size:16px!important;
+    line-height:1.2!important;
+    padding:10px 2px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+  }
+
+  /* Keep the detailed Metrics page as the reference density */
+  .metrics-row{min-height:78px!important}
+  .metrics-row>span{font-size:17px!important;line-height:1.4!important}
+  .metrics-row>b{font-size:17px!important;line-height:1.35!important}
+  .metrics-row.metrics-head>span,.metrics-row.metrics-head>b{font-size:16px!important}
+  #metricsPage .analysis-period{font-size:17px!important}
+
+  /* Annual/monthly/rolling/summary readability */
+  .annual-table td,.annual-table th,
+  .monthly-table td,.monthly-table th,
+  .rolling-table td,.rolling-table th,
+  .summary-table td,.summary-table th{font-size:17px!important}
+}

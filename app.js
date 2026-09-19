@@ -209,7 +209,16 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const maxLossRun=arr=>{let m=0,c=0;arr.forEach(v=>{c=v<0?c+1:0;m=Math.max(m,c)});return m};
    const newHighFreq=arr=>{let w=1,pk=1,c=0;arr.forEach(v=>{w*=1+v;if(w>=pk){pk=w;c++}});return 100*c/arr.length};
    const runup=arr=>100*(arr.reduce((p,v)=>p*(1+v),1)-1);
-   const ptu=arr=>100*arr.filter(v=>v>0).length/arr.length;
+   const ptu=arr=>{
+     if(!arr.length)return NaN;
+     let wealth=1,peak=1,under=0;
+     arr.forEach(v=>{
+       wealth*=1+v;
+       if(wealth+1e-12<peak)under++;
+       else peak=Math.max(peak,wealth);
+     });
+     return 100*under/arr.length;
+   };
    return {rows,n,start:rows[0]?.[0],end:rows.at(-1)?.[0],
     main:{am,annMean:am*12,geo,annual,sdm:sx,sda:sx*Math.sqrt(12),downDev,best,worst,mdd:ddx.maxDD,dd:ddx,ptu:ptu(x),rho,beta,alpha,r2,sharpe,sortino,calmar,var95:Math.abs(am-1.645*sx),upCap,downCap,spread:upCap-downCap,upDown:upCap/Math.abs(downCap),positive:`${pos}/${n} (${(100*pos/n).toFixed(2)}%)`,gainLoss:gain/loss,skew,kurt,volDrag:(am-geo),maxLoss:maxLossRun(x),runup:runup(x),newHigh:newHighFreq(x),active:activeAnn,te,info},
     bm:{am:bmMean,annMean:bmMean*12,geo:Math.pow(y.reduce((p,r)=>p*(1+r),1),1/n)-1,annual:annBm,sdm:sy,sda:sy*Math.sqrt(12),downDev:downDevBm,best:bestBm,worst:worstBm,mdd:ddy.maxDD,dd:ddy,ptu:ptu(y),rho:1,beta:1,alpha:0,r2:1,sharpe:sharpeBm,sortino:sortinoBm,calmar:calmarBm,var95:Math.abs(bmMean-1.645*sy),upCap:100,downCap:100,spread:0,upDown:1,positive:`${posBm}/${n} (${(100*posBm/n).toFixed(2)}%)`,gainLoss:gainBm/lossBm,skew:skewBm,kurt:kurtBm,volDrag:(bmMean-(Math.pow(y.reduce((p,r)=>p*(1+r),1),1/n)-1)),maxLoss:maxLossRun(y),runup:runup(y),newHigh:newHighFreq(y),active:null,te:null,info:null}};
