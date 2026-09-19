@@ -1807,82 +1807,54 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
 }
 
 
-/* v23 — unified compact selector controls (iPhone)
-   Selection UI is secondary to data: smaller type, tighter padding, no page-wide horizontal scroll. */
+/* v24 — Research Performance portfolio picker: collapsed tab */
+.perf-picker-fold{
+  margin:8px 0 10px!important;
+  border:1px solid #dbe3e8!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  overflow:hidden!important;
+}
+.perf-picker-fold > .perf-picker-summary{
+  list-style:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  padding:9px 11px!important;
+  cursor:pointer!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  color:#1f2937!important;
+  background:#f8fafc!important;
+}
+.perf-picker-fold > .perf-picker-summary::-webkit-details-marker{display:none!important}
+.perf-picker-fold > .perf-picker-summary::after{
+  content:"⌄";
+  margin-left:auto;
+  font-size:16px;
+  line-height:1;
+  color:#64748b;
+  transition:transform .15s ease;
+}
+.perf-picker-fold[open] > .perf-picker-summary::after{transform:rotate(180deg)}
+.perf-selected-count{
+  margin-left:auto;
+  font-size:10px!important;
+  font-weight:700!important;
+  color:#64748b!important;
+  white-space:nowrap!important;
+}
+.perf-picker-body{
+  padding:8px 9px 9px!important;
+  border-top:1px solid #e8edf1!important;
+}
 @media(max-width:700px){
-  /* Research Performance: group filters + portfolio choices */
-  .perf-groups button,
-  .perf-chip{
-    font-size:12px!important;
-    line-height:1!important;
-    padding:6px 9px!important;
-    min-height:32px!important;
-    height:auto!important;
-    border-radius:17px!important;
-    white-space:nowrap!important;
-  }
-  .perf-groups{
-    gap:6px!important;
-    margin-block:7px!important;
-  }
-  .perf-chips{
-    gap:6px!important;
-  }
-
-  /* Rolling / Drawdowns / Annual portfolio chips */
-  .analytics-chip,
-  .strategy-chip,
-  .analytics-chips button,
-  #rollingReturnsPage button[data-series],
-  #drawdownsPage button[data-series],
-  #annualReturnsPage button[data-series],
-  #rollingPage button[data-series],
-  #drawdownsPage button[data-series],
-  #annualPage button[data-series]{
-    font-size:12px!important;
-    line-height:1!important;
-    padding:6px 9px!important;
-    min-height:32px!important;
-    height:auto!important;
-    border-radius:17px!important;
-    white-space:nowrap!important;
-  }
-  .analytics-chips,
-  .strategy-chips{
-    gap:6px!important;
-    margin-top:7px!important;
-    margin-bottom:7px!important;
-  }
-
-  /* BM / SPY / TQQQ selectors on Summary, Metrics, Monthly, Rolling,
-     Drawdowns and Annual pages */
-  .bm-switch button,
-  .bm-toggle button,
-  .benchmark-toggle button,
-  #summaryPage .bm-switch button,
-  #metricsPage .bm-switch button,
-  #monthlyReturnsPage .bm-switch button,
-  #rollingPage .bm-switch button,
-  #drawdownsPage .bm-switch button,
-  #annualPage .bm-switch button{
-    font-size:13px!important;
-    line-height:1!important;
-    padding:7px 11px!important;
-    min-height:34px!important;
-    height:auto!important;
-  }
-  .bm-switch,
-  .bm-toggle,
-  .benchmark-toggle{
+  .perf-picker-fold{margin:6px 0 8px!important}
+  .perf-picker-fold > .perf-picker-summary{
     min-height:0!important;
+    padding:8px 10px!important;
+    font-size:12px!important;
   }
-
-  /* Metrics portfolio select: reduce control typography/height too */
-  #metricsPage select,
-  #metricsPage .portfolio-select{
-    font-size:14px!important;
-    min-height:40px!important;
-    padding-top:7px!important;
-    padding-bottom:7px!important;
-  }
+  .perf-picker-body{padding:7px 8px 8px!important}
 }

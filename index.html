@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260919-drawdown-compact1">
+<link rel="stylesheet" href="styles.css?v=20260919-pickerfold1">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -64,15 +64,21 @@
 
 <section id="performance" class="app-page"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
 <div id="perfChips" class="perf-chips"></div>
-<div class="perf-picker">
-  <div class="perf-picker-title">Select Portfolios <span>(max 4)</span></div>
-  <div id="perfGroupTabs" class="perf-group-tabs" aria-label="Portfolio groups"></div>
-  <div id="perfGroupPanel" class="perf-group-panel"></div>
-  <div class="perf-start-row">
-    <label for="perfStartYear">From:</label>
-    <select id="perfStartYear" aria-label="Start year"><option value="ALL">ALL</option></select>
+<details class="perf-picker perf-picker-fold">
+  <summary class="perf-picker-summary">
+    <span>Select Portfolios</span>
+    <span id="perfSelectedCount" class="perf-selected-count">3 selected</span>
+  </summary>
+  <div class="perf-picker-body">
+    <div class="perf-picker-title">Select Portfolios <span>(max 4)</span></div>
+    <div id="perfGroupTabs" class="perf-group-tabs" aria-label="Portfolio groups"></div>
+    <div id="perfGroupPanel" class="perf-group-panel"></div>
+    <div class="perf-start-row">
+      <label for="perfStartYear">From:</label>
+      <select id="perfStartYear" aria-label="Start year"><option value="ALL">ALL</option></select>
+    </div>
   </div>
-</div>
+</details>
 <div class="perf-compare-head"><strong>Comparison</strong><div id="perfPeriods" class="perf-periods"><button type="button" class="perf-period" data-period="1Y">1Y</button><button type="button" class="perf-period" data-period="2Y">2Y</button><button type="button" class="perf-period" data-period="3Y">3Y</button><button type="button" class="perf-period" data-period="5Y">5Y</button><button type="button" class="perf-period" data-period="10Y">10Y</button><button type="button" class="perf-period active" data-period="ALL">ALL</button></div></div><div class="perf-scale-row"><button id="perfLogToggle" class="perf-mode active" type="button">LOG</button><button id="perfLinearToggle" class="perf-mode" type="button">LINEAR</button></div><div class="perf-period-mode"><span>PERIOD MODE:</span><button id="perfCommon" class="perf-mode active" type="button">Common</button><button id="perfFull" class="perf-mode" type="button">Full</button></div><div id="perfChart" class="perf-chart"></div>
 <div id="perfMeta" class="muted"></div><div id="perfPeriodReturns" class="perf-period-returns"></div>
 <div id="perfCards" class="perf-cards"></div>
@@ -127,7 +133,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260919-roll9"></script>
+<script src="app.js?v=20260919-pickerfold1"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
