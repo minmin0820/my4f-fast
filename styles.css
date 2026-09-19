@@ -1947,3 +1947,39 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     border-radius:8px!important;
   }
 }
+
+/* v31 — Monthly Returns column balance.
+   Reduce the oversized Month column and bring return values closer to the date. */
+@media (max-width:700px){
+  #monthlyReturnsPage .monthly-compare-table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(1),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(1){
+    width:20%!important;
+    padding-left:3px!important;
+    padding-right:2px!important;
+    text-align:left!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(2),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(2),
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(3),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(3),
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(4),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(4){
+    width:26.6667%!important;
+    padding-left:2px!important;
+    padding-right:2px!important;
+    text-align:right!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(n+2){
+    text-align:right!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td .ret-pos,
+  #monthlyReturnsPage .monthly-compare-table td .ret-neg{
+    font-variant-numeric:tabular-nums!important;
+    letter-spacing:-.15px!important;
+  }
+}
