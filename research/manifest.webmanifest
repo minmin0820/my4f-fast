@@ -3,7 +3,7 @@
   "short_name": "My4F Research",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#071426",
   "theme_color": "#071426",
   "orientation": "portrait",
