@@ -2012,3 +2012,51 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     padding:3px 23px 3px 8px!important;font-size:11px!important;border-width:1.5px!important;
   }
 }
+
+
+/* v36 — Annual Returns 3-column mobile width fix.
+   No global horizontal scroll; Year stays compact and both Return columns share the remaining width. */
+@media (max-width:700px){
+  #annualPage .analytics-table-scroll{
+    width:100%!important;
+    max-width:100%!important;
+    overflow-x:hidden!important;
+  }
+  #annualPage .annual-compare-table{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+  }
+  #annualPage .annual-compare-table th,
+  #annualPage .annual-compare-table td{
+    box-sizing:border-box!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    padding-left:4px!important;
+    padding-right:4px!important;
+  }
+  #annualPage .annual-compare-table th:nth-child(1),
+  #annualPage .annual-compare-table td:nth-child(1){
+    width:18%!important;
+    text-align:left!important;
+    padding-left:5px!important;
+  }
+  #annualPage .annual-compare-table th:nth-child(2),
+  #annualPage .annual-compare-table td:nth-child(2){
+    width:41%!important;
+    text-align:right!important;
+  }
+  #annualPage .annual-compare-table th:nth-child(3),
+  #annualPage .annual-compare-table td:nth-child(3){
+    width:41%!important;
+    text-align:right!important;
+    padding-right:5px!important;
+  }
+  #annualPage .annual-compare-table th:nth-child(2),
+  #annualPage .annual-compare-table th:nth-child(3){
+    white-space:normal!important;
+    line-height:1.05!important;
+  }
+}
