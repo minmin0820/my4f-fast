@@ -1833,3 +1833,46 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   #annualPage .annual-compare-table th{font-size:11px!important;padding:7px 4px!important}
   #annualPage .annual-compare-table td{font-size:13px!important;padding:9px 5px!important}
 }
+\n\n/* v29 — definitive compact portfolio/BM selectors on iPhone.
+   Must remain after v6/v7 global button rules so those rules cannot enlarge selectors again. */
+@media(max-width:700px){
+  .analytics-page .analytics-chips{
+    gap:5px!important;
+    padding:1px 0 6px!important;
+    margin:4px 0 5px!important;
+  }
+  .analytics-page .analytics-chips button,
+  .analytics-page button[data-series],
+  #rollingReturnsPage button[data-series],
+  #drawdownsPage button[data-series],
+  #annualReturnsPage button[data-series]{
+    font-size:11px!important;
+    font-weight:750!important;
+    line-height:1!important;
+    min-height:28px!important;
+    height:28px!important;
+    padding:5px 9px!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+  }
+  .analytics-page .bm-switch{
+    gap:2px!important;
+    padding:2px!important;
+    margin:3px 0 8px!important;
+    border-radius:10px!important;
+  }
+  .analytics-page .bm-switch>span{
+    font-size:10px!important;
+    line-height:1!important;
+    padding:0 6px!important;
+  }
+  .analytics-page .bm-switch button{
+    font-size:11px!important;
+    font-weight:800!important;
+    line-height:1!important;
+    min-height:28px!important;
+    height:28px!important;
+    padding:5px 10px!important;
+    border-radius:8px!important;
+  }
+}
