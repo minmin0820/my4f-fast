@@ -1608,3 +1608,87 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   /* Keep page itself fixed: no horizontal page scrolling */
   html, body, main{max-width:100%!important; overflow-x:hidden!important;}
 }
+
+/* v20 — Metrics table collision fix */
+@media(max-width:700px){
+  #metricsPage .metrics-table,
+  #metricsPage table{
+    width:100%!important;
+    table-layout:fixed!important;
+    border-collapse:collapse!important;
+  }
+
+  /* Metric label gets most of the width; two numeric columns stay compact */
+  #metricsPage .metrics-table th:first-child,
+  #metricsPage .metrics-table td:first-child,
+  #metricsPage table th:first-child,
+  #metricsPage table td:first-child{
+    width:58%!important;
+    max-width:58%!important;
+    font-size:11.5px!important;
+    line-height:1.12!important;
+    padding:8px 4px!important;
+    white-space:normal!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+  }
+
+  #metricsPage .metrics-table th:not(:first-child),
+  #metricsPage .metrics-table td:not(:first-child),
+  #metricsPage table th:not(:first-child),
+  #metricsPage table td:not(:first-child){
+    width:21%!important;
+    max-width:21%!important;
+    font-size:12px!important;
+    line-height:1.05!important;
+    padding:8px 2px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:clip!important;
+    text-align:right!important;
+    font-weight:400!important;
+    font-variant-numeric:tabular-nums!important;
+  }
+
+  #metricsPage .metrics-table thead th,
+  #metricsPage table thead th{
+    font-size:11.5px!important;
+    font-weight:700!important;
+  }
+}
+
+/* v21 — compact portfolio selectors */
+@media(max-width:700px){
+  .analytics-chip, .strategy-chip,
+  #rollingReturnsPage button[data-series],
+  #drawdownsPage button[data-series],
+  #annualReturnsPage button[data-series]{
+    font-size:12px!important;
+    line-height:1!important;
+    padding:6px 9px!important;
+    min-height:32px!important;
+    height:auto!important;
+    border-radius:18px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Selector rows themselves should not waste vertical space */
+  #rollingReturnsPage .analytics-chips,
+  #drawdownsPage .analytics-chips,
+  #annualReturnsPage .analytics-chips,
+  .strategy-chips{
+    gap:6px!important;
+    margin-top:8px!important;
+    margin-bottom:8px!important;
+  }
+
+  /* Benchmark selector: compact but still easy to tap */
+  #rollingReturnsPage .benchmark-toggle button,
+  #drawdownsPage .benchmark-toggle button,
+  #annualReturnsPage .benchmark-toggle button,
+  .bm-toggle button{
+    font-size:13px!important;
+    padding:7px 11px!important;
+    min-height:34px!important;
+  }
+}
