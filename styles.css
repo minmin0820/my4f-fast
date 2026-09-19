@@ -1305,3 +1305,96 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     letter-spacing:-0.35px!important;
   }
 }
+
+
+/* v15 — unified mobile table typography
+   Metrics density is the reference. No page-level horizontal scrolling. */
+@media(max-width:700px){
+
+  /* Monthly Returns:
+     date stays restrained; actual percentage spans are readable but not oversized. */
+  #monthlyReturnsPage .monthly-full-scroll{overflow-x:hidden!important}
+  #monthlyReturnsPage .monthly-compare-table{
+    width:100%!important;min-width:0!important;table-layout:fixed!important
+  }
+  #monthlyReturnsPage .monthly-compare-table th{
+    font-size:15px!important;line-height:1.05!important;
+    padding:9px 2px!important;white-space:nowrap!important
+  }
+  #monthlyReturnsPage .monthly-compare-table td{
+    padding:9px 2px!important;line-height:1.05!important;white-space:nowrap!important
+  }
+  #monthlyReturnsPage .monthly-compare-table td:first-child{
+    font-size:16px!important;font-weight:600!important
+  }
+  #monthlyReturnsPage .monthly-compare-table td .ret-pos,
+  #monthlyReturnsPage .monthly-compare-table td .ret-neg{
+    font-size:18px!important;line-height:1!important;font-weight:750!important;
+    letter-spacing:-.25px!important;white-space:nowrap!important
+  }
+
+  /* Annual Returns: compact enough to keep every value on one line. */
+  #annualPage .analytics-table-scroll{overflow-x:hidden!important}
+  #annualPage .annual-compare-table{
+    width:100%!important;min-width:0!important;table-layout:fixed!important
+  }
+  #annualPage .annual-compare-table th{
+    font-size:13px!important;line-height:1.05!important;padding:9px 2px!important;
+    white-space:nowrap!important;word-break:keep-all!important;overflow-wrap:normal!important
+  }
+  #annualPage .annual-compare-table td{
+    font-size:15px!important;line-height:1.08!important;padding:10px 2px!important;
+    white-space:nowrap!important;word-break:keep-all!important;overflow-wrap:normal!important;
+    font-variant-numeric:tabular-nums
+  }
+  #annualPage .annual-compare-table td:first-child{
+    font-size:15px!important;font-weight:650!important
+  }
+
+  /* Drawdowns: single-line Worst 10, with numbers emphasized but not huge. */
+  #drawdownsPage .dd-worst-head,
+  #drawdownsPage .dd-worst-row{
+    grid-template-columns:6% 20% 20% 15% 19% 20%!important;
+    min-height:58px!important
+  }
+  #drawdownsPage .dd-worst-head{min-height:48px!important}
+  #drawdownsPage .dd-worst-head span{
+    font-size:11px!important;line-height:1!important;padding:7px 1px!important;
+    white-space:nowrap!important;word-break:keep-all!important;overflow-wrap:normal!important
+  }
+  #drawdownsPage .dd-worst-row span,
+  #drawdownsPage .dd-worst-row strong{
+    font-size:14px!important;line-height:1.05!important;padding:9px 1px!important;
+    white-space:nowrap!important;word-break:keep-all!important;overflow-wrap:normal!important;
+    font-variant-numeric:tabular-nums
+  }
+  #drawdownsPage .dd-worst-row strong{font-size:15px!important;font-weight:800!important}
+
+  /* Rolling Returns: Bam-like density, one-line numeric cells. */
+  #rollingPage .bam-roll-row{
+    min-height:52px!important
+  }
+  #rollingPage .bam-roll-row span{
+    font-size:16px!important;line-height:1.08!important;padding:8px 3px!important;
+    white-space:nowrap!important;font-variant-numeric:tabular-nums
+  }
+  #rollingPage .bam-roll-row.head span{
+    font-size:14px!important;font-weight:800!important
+  }
+
+  /* Metrics / Summary: keep the current readable reference size,
+     but normalize spacing and prevent numeric wrapping. */
+  #metricsPage .metrics-row{
+    min-height:64px!important;padding:8px 5px!important
+  }
+  #metricsPage .metrics-row>span,
+  #metricsPage .metrics-row>b{
+    font-size:17px!important;white-space:nowrap!important
+  }
+  #summaryPage table th,
+  #summaryPage table td{
+    padding-left:4px!important;padding-right:4px!important;
+    white-space:nowrap!important
+  }
+  #summaryPage table td{font-size:17px!important}
+}
