@@ -1219,3 +1219,56 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     font-size:20px!important;
   }
 }
+
+
+/* v12 — Monthly Returns: compact rows; date normal, numeric values larger.
+   No width / overflow / horizontal-scroll changes. */
+@media(max-width:700px){
+  #monthlyReturnsPage .monthly-compare-table th{
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td{
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+    line-height:1.10!important;
+  }
+
+  /* Month/date column: return to a normal readable size */
+  #monthlyReturnsPage .monthly-compare-table td:first-child{
+    font-size:16px!important;
+    font-weight:500!important;
+    white-space:nowrap!important;
+  }
+
+  /* Numeric return / difference cells only */
+  #monthlyReturnsPage .monthly-compare-table td:not(:first-child){
+    font-size:20px!important;
+    line-height:1.10!important;
+    font-variant-numeric:tabular-nums;
+  }
+}
+
+
+/* v13 — Monthly Returns: tighter horizontal spacing, never wrap.
+   Keep page/table width behavior unchanged. */
+@media(max-width:700px){
+  #monthlyReturnsPage .monthly-compare-table th,
+  #monthlyReturnsPage .monthly-compare-table td{
+    padding-left:4px!important;
+    padding-right:4px!important;
+    white-space:nowrap!important;
+    word-break:keep-all!important;
+    overflow-wrap:normal!important;
+  }
+
+  #monthlyReturnsPage .monthly-compare-table td:first-child{
+    font-size:16px!important;
+  }
+
+  #monthlyReturnsPage .monthly-compare-table td:not(:first-child){
+    font-size:20px!important;
+    letter-spacing:-0.2px!important;
+    white-space:nowrap!important;
+  }
+}
