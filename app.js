@@ -36,68 +36,37 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
 function renderResearchPerformance(p){
  if(!p||!Array.isArray(p.series)||!p.series.length)return;
- const rows=p.series, hist=p.history||{};
- const defaults=['Frozen Core','Frozen v3.45','Frozen 4F'];
- let selected=new Set(defaults.filter(x=>hist[x]));
- if(!selected.size) selected=new Set(rows.slice(0,Math.min(3,rows.length)).map(x=>x.name));
- let period='ALL', logScale=false;
- const fmt=(x,d=2)=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(d);
- const pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
- const chips=document.getElementById('perfChips'), cards=document.getElementById('perfCards'), table=document.getElementById('perfTable'), meta=document.getElementById('perfMeta');
- const periods=document.getElementById('perfPeriods'), logBtn=document.getElementById('perfLogToggle');
- if(periods){
-   periods.querySelectorAll('.perf-period').forEach(b=>{
-     b.classList.toggle('active',b.dataset.period===period);
-     b.addEventListener('click',()=>{
-       period=b.dataset.period||'ALL';
-       periods.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));
-       draw();
-     });
-   });
- }
- if(logBtn){
-   logBtn.textContent='LOG OFF';
-   logBtn.setAttribute('aria-pressed','false');
-   logBtn.addEventListener('click',()=>{
-     logScale=!logScale;
-     logBtn.classList.toggle('active',logScale);
-     logBtn.setAttribute('aria-pressed',String(logScale));
-     logBtn.textContent=logScale?'LOG ON':'LOG OFF';
-     draw();
-   });
- }
+ const rows=p.series,hist=p.history||{},defaults=['Frozen Core','Frozen v3.45','Frozen 4F'];
+ let selected=new Set(defaults.filter(x=>hist[x]));if(!selected.size)selected=new Set(rows.slice(0,3).map(x=>x.name));
+ let period='ALL',logScale=true,periodMode='COMMON';
+ const fmt=(x,d=2)=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(d),pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
+ const chips=document.getElementById('perfChips'),cards=document.getElementById('perfCards'),table=document.getElementById('perfTable'),meta=document.getElementById('perfMeta'),periods=document.getElementById('perfPeriods'),logBtn=document.getElementById('perfLogToggle'),linBtn=document.getElementById('perfLinearToggle'),commonBtn=document.getElementById('perfCommon'),fullBtn=document.getElementById('perfFull'),returns=document.getElementById('perfPeriodReturns');
+ periods?.querySelectorAll('.perf-period').forEach(b=>b.addEventListener('click',()=>{period=b.dataset.period||'ALL';draw()}));
+ logBtn?.addEventListener('click',()=>{logScale=true;draw()});linBtn?.addEventListener('click',()=>{logScale=false;draw()});
+ commonBtn?.addEventListener('click',()=>{periodMode='COMMON';draw()});fullBtn?.addEventListener('click',()=>{periodMode='FULL';draw()});
  function draw(){
-   chips.innerHTML=rows.map(r=>`<button class="perf-chip ${selected.has(r.name)?'active':''}" data-name="${esc(r.name)}">${esc(r.name)}</button>`).join('');
-   chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
-   const sr=rows.filter(r=>selected.has(r.name));
-   cards.innerHTML=sr.map(r=>`<div class="perf-card"><div class="perf-name">${esc(r.name)}</div><div class="perf-metrics"><div class="perf-metric"><span>CAGR</span><b>${pp(r.cagr)}</b></div><div class="perf-metric"><span>Sortino</span><b>${fmt(r.sortino,3)}</b></div><div class="perf-metric"><span>MaxDD</span><b>${pp(r.maxdd)}</b></div><div class="perf-metric"><span>Sharpe</span><b>${fmt(r.sharpe,3)}</b></div><div class="perf-metric"><span>Calmar</span><b>${fmt(r.calmar,3)}</b></div><div class="perf-metric"><span>Months</span><b>${r.months}</b></div></div></div>`).join('');
-   const info=renderPerfChart([...selected],hist,period,logScale);
-   meta.textContent=info?`Chart period: ${info.start} → ${info.end} (${info.months} months) ｜ ${period} ｜ ${logScale?'LOG':'LINEAR'} ｜ metrics below = full history ｜ tap up to 4 series`:'共通期間なし';
+  chips.innerHTML=rows.map(r=>`<button class="perf-chip ${selected.has(r.name)?'active':''}" data-name="${esc(r.name)}">${esc(r.name)}</button>`).join('');
+  chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
+  periods?.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));logBtn?.classList.toggle('active',logScale);linBtn?.classList.toggle('active',!logScale);commonBtn?.classList.toggle('active',periodMode==='COMMON');fullBtn?.classList.toggle('active',periodMode==='FULL');
+  const sr=rows.filter(r=>selected.has(r.name));cards.innerHTML=sr.map(r=>`<div class="perf-card"><div class="perf-name">${esc(r.name)}</div><div class="perf-metrics"><div class="perf-metric"><span>CAGR</span><b>${pp(r.cagr)}</b></div><div class="perf-metric"><span>Sortino</span><b>${fmt(r.sortino,3)}</b></div><div class="perf-metric"><span>MaxDD</span><b>${pp(r.maxdd)}</b></div><div class="perf-metric"><span>Sharpe</span><b>${fmt(r.sharpe,3)}</b></div><div class="perf-metric"><span>Calmar</span><b>${fmt(r.calmar,3)}</b></div><div class="perf-metric"><span>Months</span><b>${r.months}</b></div></div></div>`).join('');
+  const info=renderPerfChart([...selected],hist,period,logScale,periodMode);meta.textContent=info?`Chart period: ${info.start} → ${info.end} ｜ ${period} ｜ ${logScale?'LOG':'LINEAR'} ｜ ${periodMode==='COMMON'?'Common':'Full'} ｜ metrics below = full history`:'表示可能な履歴なし';
+  if(returns)returns.innerHTML=info?info.returns.map((r,i)=>`<div class="perf-return-item"><span class="perf-dot" style="--dot:${info.colors[i]}"></span><b>${esc(r.name)}</b><strong>${r.value>=0?'+':''}${r.value.toFixed(1)}%</strong></div>`).join(''):'';
  }
- table.innerHTML=`<table class="perf-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>MaxDD</th><th>Calmar</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${pp(r.cagr)}</td><td>${fmt(r.sortino,2)}</td><td>${pp(r.maxdd)}</td><td>${fmt(r.calmar,2)}</td></tr>`).join('')}</tbody></table>`;
- draw();
+ table.innerHTML=`<table class="perf-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>MaxDD</th><th>Calmar</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${pp(r.cagr)}</td><td>${fmt(r.sortino,2)}</td><td>${pp(r.maxdd)}</td><td>${fmt(r.calmar,2)}</td></tr>`).join('')}</tbody></table>`;draw();
 }
-function renderPerfChart(names,hist,period='ALL',logScale=false){
- const box=document.getElementById('perfChart'); if(!box)return null;
- const maps=names.map(n=>[n,new Map((hist[n]||[]).map(x=>[x[0],Number(x[1])/100]))]);
- if(!maps.length){box.innerHTML='';return null}
- let months=[...maps[0][1].keys()].filter(m=>maps.every(x=>x[1].has(m))).sort();
- const count={ '1Y':12,'2Y':24,'5Y':60,'10Y':120 }[period];
- if(count && months.length>count) months=months.slice(-count);
- if(months.length<2){box.innerHTML='<div class="muted">共通履歴なし</div>';return null}
- // Display transformation only: source monthly returns are unchanged. Each visible window rebases to 100.
- const vals={}; names.forEach(n=>{const mp=maps.find(x=>x[0]===n)[1];let w=100;vals[n]=months.map((m,i)=>{if(i===0){w=100;return 100;} const r=mp.get(m); w*=1+(Number.isFinite(r)?r:0); return w;});});
- // Hard audit: every visible series must share exactly the same rebased start (=100).
- const startVals=names.map(n=>vals[n]?.[0]);
- if(startVals.some(v=>Math.abs(Number(v)-100)>1e-9)){box.innerHTML='<div class="muted">Rebase audit failed</div>';return null;}
- const all=Object.values(vals).flat().filter(v=>Number.isFinite(v)&&(!logScale||v>0));
- if(!all.length){box.innerHTML='<div class="muted">表示可能な履歴なし</div>';return null}
- const rawLo=Math.min(...all), rawHi=Math.max(...all), tx=v=>logScale?Math.log(v):v, lo=tx(rawLo), hi=tx(rawHi), W=680,H=300,L=46,R=10,T=18,B=34, pw=W-L-R,ph=H-T-B;
- const y=v=>T+(hi-tx(v))/(hi-lo||1)*ph, x=i=>L+i/(months.length-1)*pw;
- const palette=['#1565c0','#7b1fa2','#00897b','#b45309'];
- let g=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Research performance equity curve"><line x1="${L}" y1="${T+ph}" x2="${W-R}" y2="${T+ph}" stroke="#d9dde3"/><text x="${L}" y="${H-8}" font-size="10" fill="#777">${months[0]}</text><text x="${W-R}" y="${H-8}" text-anchor="end" font-size="10" fill="#777">${months[months.length-1]}</text>`;
- [0,.5,1].forEach(q=>{const z=lo+(hi-lo)*q, v=logScale?Math.exp(z):z, yy=T+(1-q)*ph;g+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#eef0f2"/><text x="${L-5}" y="${yy+3}" text-anchor="end" font-size="9" fill="#888">${Math.round(v)}</text>`});
- names.forEach((n,j)=>{const pts=vals[n].map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');g+=`<polyline points="${pts}" fill="none" stroke="${palette[j%palette.length]}" stroke-width="2.5" stroke-linejoin="round"/><text x="${L+5}" y="${T+12+j*13}" font-size="10" font-weight="700" fill="${palette[j%palette.length]}">${esc(n)}</text>`});
- box.innerHTML=g+'</svg>';
- return {start:months[0],end:months[months.length-1],months:months.length};
+function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMON'){
+ const box=document.getElementById('perfChart');if(!box)return null;const palette=['#12a8df','#0a9b72','#8da0b8','#7b1fa2'];
+ const maps=names.map(n=>[n,new Map((hist[n]||[]).map(x=>[x[0],Number(x[1])/100]))]).filter(x=>x[1].size);if(!maps.length)return null;
+ let months=periodMode==='COMMON'?[...maps[0][1].keys()].filter(m=>maps.every(x=>x[1].has(m))).sort():[...new Set(maps.flatMap(x=>[...x[1].keys()]))].sort();
+ const count={'1Y':12,'2Y':24,'3Y':36,'5Y':60,'10Y':120}[period];if(count&&months.length>count)months=months.slice(-count);if(months.length<2)return null;
+ const vals={};names.forEach(n=>{const mp=maps.find(x=>x[0]===n)?.[1];if(!mp)return;let w=100,started=false;vals[n]=months.map(m=>{if(!mp.has(m))return null;if(!started){started=true;return 100}w*=1+(Number.isFinite(mp.get(m))?mp.get(m):0);return w})});
+ const all=Object.values(vals).flat().filter(v=>Number.isFinite(v)&&(!logScale||v>0));if(!all.length)return null;
+ const rawLo=Math.min(...all),rawHi=Math.max(...all),tx=v=>logScale?Math.log(v):v,lo=tx(rawLo),hi=tx(rawHi),W=680,H=300,L=52,R=12,T=18,B=34,pw=W-L-R,ph=H-T-B,y=v=>T+(hi-tx(v))/(hi-lo||1)*ph,x=i=>L+i/(months.length-1)*pw;
+ let g=`<svg viewBox="0 0 ${W} ${H}" role="img">`;[0,.25,.5,.75,1].forEach(q=>{const z=lo+(hi-lo)*q,v=logScale?Math.exp(z):z,yy=T+(1-q)*ph;g+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e8edf2"/><text x="${L-6}" y="${yy+3}" text-anchor="end" font-size="9" fill="#728096">${logScale?(v/100).toFixed(v<100?2:1)+'×':Math.round(v)}</text>`});g+=`<text x="${L}" y="${H-8}" font-size="10" fill="#728096">${months[0]}</text><text x="${W-R}" y="${H-8}" text-anchor="end" font-size="10" fill="#728096">${months.at(-1)}</text>`;
+ names.forEach((n,j)=>{let seg=[];const flush=()=>{if(seg.length>1)g+=`<polyline points="${seg.join(' ')}" fill="none" stroke="${palette[j%4]}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>`;seg=[]};(vals[n]||[]).forEach((v,i)=>Number.isFinite(v)?seg.push(`${x(i).toFixed(1)},${y(v).toFixed(1)}`):flush());flush()});
+ g+=`<line id="perfCrosshair" x1="${L}" y1="${T}" x2="${L}" y2="${T+ph}" stroke="#9aa7b8" stroke-dasharray="3 3" visibility="hidden"/><rect x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/></svg><div id="perfTooltip" class="perf-tooltip" hidden></div>`;box.innerHTML=g;
+ const svg=box.querySelector('svg'),tip=box.querySelector('#perfTooltip'),cross=box.querySelector('#perfCrosshair');
+ const showAt=cx=>{const r=svg.getBoundingClientRect(),px=Math.max(0,Math.min(r.width,cx-r.left));let i=Math.round(((px/r.width*W)-L)/pw*(months.length-1));i=Math.max(0,Math.min(months.length-1,i));const rr=names.map((n,j)=>{const v=vals[n]?.[i];return Number.isFinite(v)?`<div><span class="perf-dot" style="--dot:${palette[j%4]}"></span><b>${esc(n)}</b><strong>${v-100>=0?'+':''}${(v-100).toFixed(1)}%</strong></div>`:''}).join('');if(!rr)return;const xx=x(i);cross.setAttribute('x1',xx);cross.setAttribute('x2',xx);cross.setAttribute('visibility','visible');tip.innerHTML=`<div class="perf-tip-date">${months[i]}</div>${rr}`;tip.hidden=false;tip.style.left=Math.max(8,Math.min(box.clientWidth-tip.offsetWidth-8,px-tip.offsetWidth/2))+'px';tip.style.top='42px'};
+ svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);showAt(e.clientX)});svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)showAt(e.clientX)});svg.addEventListener('click',e=>showAt(e.clientX));
+ const returns=names.map(n=>{const a=(vals[n]||[]).filter(Number.isFinite);return{name:n,value:a.length?(a.at(-1)/a[0]-1)*100:0}});return{start:months[0],end:months.at(-1),returns,colors:names.map((_,i)=>palette[i%4])};
 }
