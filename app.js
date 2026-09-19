@@ -117,15 +117,20 @@ function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMO
 function renderFastAnalytics(d){
  const p=d?.performance,ss=p?.series||[];
  let a=p?.analytics||{};
- // Compatibility fallback for snapshots generated before analytics was added:
- // derive display diagnostics only from the already-published frozen monthly history.
- if(!Object.keys(a).length && Array.isArray(p?.history)){
-   const by={}; p.history.forEach(r=>Object.keys(r||{}).filter(k=>k!=='month').forEach(k=>{const v=Number(r[k]);if(Number.isFinite(v))(by[k]??=[]).push([String(r.month),v/100]);}));
+ // Compatibility fallback: derive analytics from published frozen monthly history.
+ // Supports current canonical object format {Series: [[YYYY-MM, returnPct], ...]} and legacy rows.
+ if(!Object.keys(a).length && p?.history && typeof p.history==='object'){
+   const by={};
+   if(Array.isArray(p.history)){
+     p.history.forEach(r=>Object.keys(r||{}).filter(k=>k!=='month').forEach(k=>{const v=Number(r[k]);if(Number.isFinite(v))(by[k]??=[]).push([String(r.month),v/100]);}));
+   }else{
+     Object.entries(p.history).forEach(([n,arr])=>{if(Array.isArray(arr))by[n]=arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1]));});
+   }
    Object.entries(by).forEach(([n,rows])=>{
      rows.sort((x,y)=>x[0].localeCompare(y[0])); let w=1,peak=1; const dd=[],annual={},rolling={};
      rows.forEach(([m,r])=>{w*=1+r;peak=Math.max(peak,w);dd.push([m,(w/peak-1)*100]);const y=m.slice(0,4);annual[y]=(annual[y]??1)*(1+r);});
-     [12,36,60].forEach(win=>{if(rows.length<win)return;const h=[];for(let i=win-1;i<rows.length;i++){let prod=1;for(let j=i-win+1;j<=i;j++)prod*=1+rows[j][1];const rr=(win===12?prod-1:Math.pow(prod,12/win)-1)*100;h.push([rows[i][0],rr]);}const vs=h.map(x=>x[1]).sort((x,y)=>x-y),q=.1*(vs.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=vs[lo]+(vs[hi]-vs[lo])*(q-lo);rolling[String(win)]={current:h.at(-1)[1],median:vs[Math.floor((vs.length-1)/2)],p10,min:vs[0],positive_rate:100*vs.filter(v=>v>0).length/vs.length,history:h};});
-     a[n]={annual:Object.entries(annual).map(([y,v])=>[y,(v-1)*100]),drawdown:dd,rolling};
+     [12,36,60].forEach(win=>{if(rows.length<win)return;const h=[];for(let i=win-1;i<rows.length;i++){let prod=1;for(let j=i-win+1;j<=i;j++)prod*=1+rows[j][1];const rr=(win===12?prod-1:Math.pow(prod,12/win)-1)*100;h.push([rows[i][0],rr]);}const vs=h.map(x=>x[1]).sort((x,y)=>x-y),q=.1*(vs.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=vs[lo]+(vs[hi]-vs[lo])*(q-lo),mid=(vs.length-1)/2,ml=Math.floor(mid),mh=Math.ceil(mid),median=(vs[ml]+vs[mh])/2;rolling[String(win)]={current:h.at(-1)[1],median,p10,min:vs[0],positive_rate:100*vs.filter(v=>v>0).length/vs.length,history:h};});
+     a[n]={annual:Object.entries(annual).sort((x,y)=>x[0].localeCompare(y[0])).map(([y,v])=>[y,(v-1)*100]),drawdown:dd,rolling};
    });
  }
  const names=ss.map(x=>x.name).filter(n=>a[n]);
@@ -133,13 +138,13 @@ function renderFastAnalytics(d){
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pick=id=>`<div class="analytics-chips">${names.map((n,i)=>`<button data-series="${E(n)}" class="${i?'':'active'}">${E(n)}</button>`).join('')}</div><div id="${id}Body"></div>`;
  const mt=document.getElementById('metricsPage');
- const metricCols=[['name','Series'],['cagr','CAGR'],['sortino','Sortino'],['sharpe','Sharpe'],['maxdd','MaxDD'],['calmar','Calmar'],['volatility','Vol'],['months','Months']];
+ const metricCols=[['name','Series'],['cagr','CAGR'],['sortino','Sortino'],['sharpe','Sharpe'],['maxdd','MaxDD'],['calmar','Calmar'],['vol','Vol'],['months','Months']];
  let metricSort={key:'name',dir:1};
  function metricValue(s,k){return k==='name'?String(s.name??''):Number(s[k]);}
  function drawMetrics(){
    if(!mt)return;
    const rows=[...ss].sort((a,b)=>{const av=metricValue(a,metricSort.key),bv=metricValue(b,metricSort.key);return metricSort.dir*(typeof av==='string'?av.localeCompare(bv,'ja'):(av-bv));});
-   const val=(s,k)=>k==='name'?E(s.name):(['cagr','maxdd','volatility'].includes(k)?fmt(s[k]):(['sortino','sharpe','calmar'].includes(k)?(Number.isFinite(Number(s[k]))?Number(s[k]).toFixed(2):'—'):(s[k]??'—')));
+   const val=(s,k)=>k==='name'?E(s.name):(['cagr','maxdd','vol'].includes(k)?fmt(s[k]):(['sortino','sharpe','calmar'].includes(k)?(Number.isFinite(Number(s[k]))?Number(s[k]).toFixed(2):'—'):(s[k]??'—')));
    mt.innerHTML=`<div class="analytics-table-scroll"><table class="analytics-table metrics-table"><thead><tr>${metricCols.map(([k,l])=>`<th><button type="button" class="metric-sort ${metricSort.key===k?'active':''}" data-key="${k}">${l}<span>${metricSort.key===k?(metricSort.dir>0?'▲':'▼'):'↕'}</span></button></th>`).join('')}</tr></thead><tbody>${rows.map(s=>`<tr>${metricCols.map(([k])=>`<td>${val(s,k)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
    mt.querySelectorAll('.metric-sort').forEach(b=>b.onclick=()=>{const k=b.dataset.key;if(metricSort.key===k)metricSort.dir*=-1;else metricSort={key:k,dir:k==='name'?1:-1};drawMetrics();});
  }
