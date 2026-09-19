@@ -42,9 +42,30 @@ function renderResearchPerformance(p){
  if(!p||!Array.isArray(p.series)||!p.series.length)return;
  const rows=p.series,hist=p.history||{},defaults=['Frozen Core','Frozen v3.45','Frozen 4F'];
  let selected=new Set(defaults.filter(x=>hist[x]));if(!selected.size)selected=new Set(rows.slice(0,3).map(x=>x.name));
- let period='ALL',logScale=true,periodMode='COMMON';
+ let period='ALL',logScale=true,periodMode='COMMON',startYear='ALL',activeGroup='All';
+ const groupMap={
+   'All': rows.map(r=>r.name),
+   'Frozen': rows.filter(r=>/^Frozen /.test(r.name)).map(r=>r.name),
+   '4F': rows.filter(r=>/^(Frozen 4F|4F )/.test(r.name)).map(r=>r.name),
+   'KIRIN': rows.filter(r=>/麒麟/.test(r.name)).map(r=>r.name),
+   'Benchmark': rows.filter(r=>['SPY','TQQQ'].includes(r.name)).map(r=>r.name)
+ };
+ Object.keys(groupMap).forEach(k=>{if(!groupMap[k].length)delete groupMap[k]});
  const fmt=(x,d=2)=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(d),pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
- const chips=document.getElementById('perfChips'),cards=document.getElementById('perfCards'),table=document.getElementById('perfTable'),meta=document.getElementById('perfMeta'),periods=document.getElementById('perfPeriods'),logBtn=document.getElementById('perfLogToggle'),linBtn=document.getElementById('perfLinearToggle'),commonBtn=document.getElementById('perfCommon'),fullBtn=document.getElementById('perfFull'),returns=document.getElementById('perfPeriodReturns');
+ const chips=document.getElementById('perfChips'),cards=document.getElementById('perfCards'),table=document.getElementById('perfTable'),meta=document.getElementById('perfMeta'),periods=document.getElementById('perfPeriods'),logBtn=document.getElementById('perfLogToggle'),linBtn=document.getElementById('perfLinearToggle'),commonBtn=document.getElementById('perfCommon'),fullBtn=document.getElementById('perfFull'),returns=document.getElementById('perfPeriodReturns'),
+ groupTabs=document.getElementById('perfGroupTabs'),groupPanel=document.getElementById('perfGroupPanel'),startSel=document.getElementById('perfStartYear');
+ const allMonths=[...new Set(Object.values(hist).flatMap(a=>(a||[]).map(x=>x[0])))].sort();
+ const years=[...new Set(allMonths.map(m=>String(m).slice(0,4)))].sort((a,b)=>Number(b)-Number(a));
+ if(startSel){startSel.innerHTML='<option value="ALL">ALL</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');startSel.value='ALL';startSel.addEventListener('change',()=>{startYear=startSel.value;draw()})}
+ function renderGroups(){
+   if(!groupTabs||!groupPanel)return;
+   groupTabs.innerHTML=Object.keys(groupMap).map(k=>`<button type="button" class="perf-group-tab ${k===activeGroup?'active':''}" data-group="${esc(k)}">${esc(k)}</button>`).join('');
+   groupTabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{activeGroup=b.dataset.group;renderGroups()});
+   const members=groupMap[activeGroup]||[];
+   groupPanel.innerHTML=members.map(n=>`<button type="button" class="perf-group-item ${selected.has(n)?'active':''}" data-name="${esc(n)}">${esc(n)}</button>`).join('');
+   groupPanel.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw();renderGroups()});
+ }
+ renderGroups();
  periods?.querySelectorAll('.perf-period').forEach(b=>b.addEventListener('click',()=>{period=b.dataset.period||'ALL';draw()}));
  logBtn?.addEventListener('click',()=>{logScale=true;draw()});linBtn?.addEventListener('click',()=>{logScale=false;draw()});
  commonBtn?.addEventListener('click',()=>{periodMode='COMMON';draw()});fullBtn?.addEventListener('click',()=>{periodMode='FULL';draw()});
@@ -53,15 +74,16 @@ function renderResearchPerformance(p){
   chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
   periods?.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));logBtn?.classList.toggle('active',logScale);linBtn?.classList.toggle('active',!logScale);commonBtn?.classList.toggle('active',periodMode==='COMMON');fullBtn?.classList.toggle('active',periodMode==='FULL');
   const sr=rows.filter(r=>selected.has(r.name));cards.innerHTML=sr.map(r=>`<div class="perf-card"><div class="perf-name">${esc(r.name)}</div><div class="perf-metrics"><div class="perf-metric"><span>CAGR</span><b>${pp(r.cagr)}</b></div><div class="perf-metric"><span>Sortino</span><b>${fmt(r.sortino,3)}</b></div><div class="perf-metric"><span>MaxDD</span><b>${pp(r.maxdd)}</b></div><div class="perf-metric"><span>Sharpe</span><b>${fmt(r.sharpe,3)}</b></div><div class="perf-metric"><span>Calmar</span><b>${fmt(r.calmar,3)}</b></div><div class="perf-metric"><span>Months</span><b>${r.months}</b></div></div></div>`).join('');
-  const info=renderPerfChart([...selected],hist,period,logScale,periodMode);meta.textContent=info?`Chart period: ${info.start} → ${info.end} ｜ ${period} ｜ ${logScale?'LOG':'LINEAR'} ｜ ${periodMode==='COMMON'?'Common':'Full'} ｜ metrics below = full history`:'表示可能な履歴なし';
+  const info=renderPerfChart([...selected],hist,period,logScale,periodMode,startYear);meta.textContent=info?`Chart period: ${info.start} → ${info.end} ｜ ${period} ｜ From ${startYear} ｜ ${logScale?'LOG':'LINEAR'} ｜ ${periodMode==='COMMON'?'Common':'Full'} ｜ metrics below = full history`:'表示可能な履歴なし';
   if(returns)returns.innerHTML=info?info.returns.map((r,i)=>`<div class="perf-return-item"><span class="perf-dot" style="--dot:${info.colors[i]}"></span><b>${esc(r.name)}</b><strong>${r.value>=0?'+':''}${r.value.toFixed(1)}%</strong></div>`).join(''):'';
  }
  table.innerHTML=`<table class="perf-table"><thead><tr><th>Series</th><th>CAGR</th><th>Sortino</th><th>MaxDD</th><th>Calmar</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${pp(r.cagr)}</td><td>${fmt(r.sortino,2)}</td><td>${pp(r.maxdd)}</td><td>${fmt(r.calmar,2)}</td></tr>`).join('')}</tbody></table>`;draw();
 }
-function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMON'){
+function renderPerfChart(names,hist,period='ALL',logScale=true,periodMode='COMMON',startYear='ALL'){
  const box=document.getElementById('perfChart');if(!box)return null;const palette=['#12a8df','#0a9b72','#8da0b8','#7b1fa2'];
  const maps=names.map(n=>[n,new Map((hist[n]||[]).map(x=>[x[0],Number(x[1])/100]))]).filter(x=>x[1].size);if(!maps.length)return null;
  let months=periodMode==='COMMON'?[...maps[0][1].keys()].filter(m=>maps.every(x=>x[1].has(m))).sort():[...new Set(maps.flatMap(x=>[...x[1].keys()]))].sort();
+ if(startYear!=='ALL')months=months.filter(m=>String(m).slice(0,4)>=String(startYear));
  const count={'1Y':12,'2Y':24,'3Y':36,'5Y':60,'10Y':120}[period];if(count&&months.length>count)months=months.slice(-count);if(months.length<2)return null;
  const vals={};names.forEach(n=>{const mp=maps.find(x=>x[0]===n)?.[1];if(!mp)return;let w=100,started=false;vals[n]=months.map(m=>{if(!mp.has(m))return null;if(!started){started=true;return 100}w*=1+(Number.isFinite(mp.get(m))?mp.get(m):0);return w})});
  const all=Object.values(vals).flat().filter(v=>Number.isFinite(v)&&(!logScale||v>0));if(!all.length)return null;
