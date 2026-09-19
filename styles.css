@@ -1206,3 +1206,36 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   #rollingPage .bam-roll-kpis b{display:block;font-size:22px!important;line-height:1.15;font-weight:800}
   #rollingPage .bam-roll-kpis small{display:block;font-size:14px!important;line-height:1.3;color:#65748a;margin-top:3px}
 }
+
+
+/* v10 — Monthly Returns mobile table: Bam-style readable data */
+@media(max-width:700px){
+  #monthlyReturnsPage .monthly-compare-table{
+    min-width:620px!important;
+    table-layout:fixed!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table th{
+    font-size:18px!important;
+    line-height:1.12!important;
+    padding:15px 10px!important;
+    white-space:nowrap!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td{
+    font-size:21px!important;
+    line-height:1.18!important;
+    padding:17px 10px!important;
+    white-space:nowrap!important;
+    font-variant-numeric:tabular-nums;
+  }
+  #monthlyReturnsPage .monthly-compare-table td:first-child{
+    font-size:21px!important;
+    font-weight:500!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td:not(:first-child){
+    font-weight:700!important;
+  }
+  #monthlyReturnsPage .monthly-full-scroll{
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+}
