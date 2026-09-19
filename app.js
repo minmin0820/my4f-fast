@@ -73,7 +73,7 @@ function renderResearchPerformance(p){
  Object.keys(groupMap).forEach(k=>{if(!groupMap[k].length)delete groupMap[k]});
  const fmt=(x,d=2)=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(d),pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
  const chips=document.getElementById('perfChips'),cards=document.getElementById('perfCards'),table=document.getElementById('perfTable'),meta=document.getElementById('perfMeta'),periods=document.getElementById('perfPeriods'),logBtn=document.getElementById('perfLogToggle'),linBtn=document.getElementById('perfLinearToggle'),commonBtn=document.getElementById('perfCommon'),fullBtn=document.getElementById('perfFull'),returns=document.getElementById('perfPeriodReturns'),
- groupTabs=document.getElementById('perfGroupTabs'),groupPanel=document.getElementById('perfGroupPanel'),startSel=document.getElementById('perfStartYear'),selectedCount=document.getElementById('perfSelectedCount');
+ groupTabs=document.getElementById('perfGroupTabs'),groupPanel=document.getElementById('perfGroupPanel'),startSel=document.getElementById('perfStartYear');
  const allMonths=[...new Set(Object.values(hist).flatMap(a=>(a||[]).map(x=>x[0])))].sort();
  const years=[...new Set(allMonths.map(m=>String(m).slice(0,4)))].sort((a,b)=>Number(b)-Number(a));
  if(startSel){
@@ -100,7 +100,6 @@ function renderResearchPerformance(p){
  logBtn?.addEventListener('click',()=>{logScale=true;draw()});linBtn?.addEventListener('click',()=>{logScale=false;draw()});
  commonBtn?.addEventListener('click',()=>{periodMode='COMMON';draw()});fullBtn?.addEventListener('click',()=>{periodMode='FULL';draw()});
  function draw(){
-  if(selectedCount)selectedCount.textContent=`${selected.size} selected`;
   chips.innerHTML=rows.map(r=>`<button class="perf-chip ${selected.has(r.name)?'active':''}" data-name="${esc(r.name)}">${esc(r.name)}</button>`).join('');
   chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n)){if(selected.size>1)selected.delete(n)}else if(selected.size<4)selected.add(n);draw()});
   periods?.querySelectorAll('.perf-period').forEach(x=>x.classList.toggle('active',x.dataset.period===period));if(startSel&&startSel.value!==startYear)startSel.value=startYear;logBtn?.classList.toggle('active',logScale);linBtn?.classList.toggle('active',!logScale);commonBtn?.classList.toggle('active',periodMode==='COMMON');fullBtn?.classList.toggle('active',periodMode==='FULL');
@@ -374,6 +373,13 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    }
    const se=episodes(r),be=episodes(br),sWorst=se[0],bWorst=be[0];
    const duration=x=>x==null?'Ongoing':`${x} mo`;
+   function durationCards(){
+     return `<div class="dd-duration-grid">
+       <div><small>Drawdown Length</small><b>${duration(sWorst?.ddLength)}</b><span>${E(n)}</span><em>${duration(bWorst?.ddLength)} · ${E(bmName)}</em></div>
+       <div><small>Recovery Time</small><b>${duration(sWorst?.recovery)}</b><span>${E(n)}</span><em>${duration(bWorst?.recovery)} · ${E(bmName)}</em></div>
+       <div><small>Underwater Period</small><b>${duration(sWorst?.underwater)}</b><span>${E(n)}</span><em>${duration(bWorst?.underwater)} · ${E(bmName)}</em></div>
+     </div>`;
+   }
    function interactiveDD(){
      const sm=new Map(r.map(x=>[String(x[0]),Number(x[1])])),bm=new Map(br.map(x=>[String(x[0]),Number(x[1])]));
      const months=[...new Set([...sm.keys(),...bm.keys()])].sort();
@@ -432,7 +438,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function annualBars(mainRows,bmRows,mainName,bmName){
    const bmMap=new Map(bmRows.map(x=>[x[0],Number(x[1])])),rows=mainRows.map(x=>[x[0],Number(x[1]),bmMap.get(x[0])]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
    if(!rows.length)return'<div class="analytics-empty">データなし</div>';
-   const W=760,H=300,L=46,R=12,T=16,B=40,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
+   const W=760,H=420,L=46,R=12,T=18,B=44,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
    let s=`<div class="annual-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="annual-bar-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>`;
    rows.forEach((x,i)=>{const cx=L+group*(i+.5),y1=Y(x[1]),y2=Y(x[2]);s+=`<rect x="${cx-bw-1}" y="${Math.min(y1,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y1))}" class="annual-main-bar"/><rect x="${cx+1}" y="${Math.min(y2,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y2))}" class="annual-bm-bar"/>`;if(i%Math.max(1,Math.ceil(rows.length/8))===0)s+=`<text x="${cx}" y="${H-12}" text-anchor="middle">${E(x[0])}</text>`});
    return s+`</svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
