@@ -86,7 +86,10 @@ function renderPerfChart(names,hist,period='ALL',logScale=false){
  if(count && months.length>count) months=months.slice(-count);
  if(months.length<2){box.innerHTML='<div class="muted">共通履歴なし</div>';return null}
  // Display transformation only: source monthly returns are unchanged. Each visible window rebases to 100.
- const vals={}; names.forEach(n=>{let w=100;const mp=maps.find(x=>x[0]===n)[1];vals[n]=months.map((m,i)=>{if(i===0)return 100;w*=1+mp.get(m);return w})});
+ const vals={}; names.forEach(n=>{const mp=maps.find(x=>x[0]===n)[1];let w=100;vals[n]=months.map((m,i)=>{if(i===0){w=100;return 100;} const r=mp.get(m); w*=1+(Number.isFinite(r)?r:0); return w;});});
+ // Hard audit: every visible series must share exactly the same rebased start (=100).
+ const startVals=names.map(n=>vals[n]?.[0]);
+ if(startVals.some(v=>Math.abs(Number(v)-100)>1e-9)){box.innerHTML='<div class="muted">Rebase audit failed</div>';return null;}
  const all=Object.values(vals).flat().filter(v=>Number.isFinite(v)&&(!logScale||v>0));
  if(!all.length){box.innerHTML='<div class="muted">表示可能な履歴なし</div>';return null}
  const rawLo=Math.min(...all), rawHi=Math.max(...all), tx=v=>logScale?Math.log(v):v, lo=tx(rawLo), hi=tx(rawHi), W=680,H=300,L=46,R=10,T=18,B=34, pw=W-L-R,ph=H-T-B;
