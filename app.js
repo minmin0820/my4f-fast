@@ -259,19 +259,43 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
  function bind(root,fn){if(!root)return;root.innerHTML=pick(root.id);const body=root.querySelector(`#${root.id}Body`),bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}
  bind(document.getElementById('rollingPage'),(n,b)=>{
-   const r=a[n]?.rolling||{},bm=a[bmName]?.rolling||{};
-   const periods=['12','36','60'];
-   b.innerHTML='<div id="rollingBmSwitch"></div><div id="rollingBmBody"></div>';
+   const hist=p?.history||{}, mainRows=Array.isArray(hist[n])?hist[n]:[], bmRows=Array.isArray(hist[bmName])?hist[bmName]:[];
+   const clean=arr=>arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
+   const M=clean(mainRows), B=clean(bmRows), bmMap=new Map(B);
+   const common=M.map(x=>[x[0],x[1],bmMap.get(x[0])]).filter(x=>Number.isFinite(x[2]));
+   const windows=[3,6,12,24,36,60,84,120];
+   const label=w=>w<12?`${w} months`:w===12?'1 year':`${w/12} years`;
+   const roll=(rows,w)=>{
+     const out=[];
+     for(let i=w-1;i<rows.length;i++){
+       let prod=1; for(let j=i-w+1;j<=i;j++)prod*=1+rows[j][1];
+       const v=w<12?(prod-1):(Math.pow(prod,12/w)-1);
+       out.push([rows[i][0],v*100]);
+     }
+     return out;
+   };
+   const stats=arr=>{
+     const v=arr.map(x=>x[1]).filter(Number.isFinite).sort((a,b)=>a-b);
+     if(!v.length)return null;
+     const avg=v.reduce((s,x)=>s+x,0)/v.length;
+     const med=v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2;
+     const q=.1*(v.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=v[lo]+(v[hi]-v[lo])*(q-lo);
+     return {avg,high:v.at(-1),low:v[0],median:med,p10,positive:100*v.filter(x=>x>0).length/v.length};
+   };
+   const fmtp=v=>Number.isFinite(+v)?`${+v>=0?'+':''}${(+v).toFixed(2)}%`:'—';
+   const statTable=(title,rows,dist=false)=>`<div class="bam-roll-section"><h3>${E(title)}</h3><div class="bam-roll-table"><div class="bam-roll-row head"><span>Period</span>${dist?'<span>Median</span><span>P10</span><span>Positive</span>':'<span>Average</span><span>High</span><span>Low</span>'}</div>${windows.map(w=>{const s=stats(roll(rows,w));if(!s)return'';return`<div class="bam-roll-row"><span>${label(w)}</span>${dist?`<span>${fmtp(s.median)}</span><span class="${s.p10<0?'neg':''}">${fmtp(s.p10)}</span><span>${s.positive.toFixed(2)}%</span>`:`<span>${fmtp(s.avg)}</span><span>${fmtp(s.high)}</span><span class="${s.low<0?'neg':''}">${fmtp(s.low)}</span>`}</div>`}).join('')}</div></div>`;
+   b.innerHTML=`<div id="rollingBmSwitch"></div><div class="bam-roll-wrap"><h2 class="bam-roll-h2">Summary Statistics</h2>${statTable(n,M,false)}${statTable(bmName,B,false)}<h2 class="bam-roll-h2">Distribution</h2>${statTable(n,M,true)}${statTable(bmName,B,true)}<div class="bam-roll-chart-section"><h2 class="bam-roll-h2">Rolling CAGR Chart</h2><div class="bam-roll-tabs">${[12,36,60,84,120].map(w=>`<button data-w="${w}" class="${w===36?'active':''}">${w/12}Y</button>`).join('')}</div><div id="bamRollingChart"></div></div></div>`;
    bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
-   const rollBody=b.querySelector('#rollingBmBody');
-   const stat=(obj,k)=>obj?.[k];
-   rollBody.innerHTML=periods.filter(k=>r[k]).map(k=>{
-     const x=r[k],y=bm[k],lab=k==='12'?'1Y':k==='36'?'3Y':'5Y';
-     const rows=x.history||[], bmMap=new Map((y?.history||[]).map(z=>[z[0],z[1]]));
-     const both=rows.map(z=>[z[0],z[1],bmMap.get(z[0])]).filter(z=>Number.isFinite(Number(z[1])));
-     const compChart=compareChart(both,n,bmName);
-     return`<div class="rolling-block bm-compare"><div class="rolling-title-row"><h3>${lab}</h3><span class="bm-pill">BM: ${bmName}</span></div><div class="analytics-table-scroll"><table class="analytics-table rolling-compare-table"><thead><tr><th>Statistic</th><th>${E(n)}</th><th>${E(bmName)}</th></tr></thead><tbody><tr><td>Current</td><td>${fmt(stat(x,'current'))}</td><td>${fmt(stat(y,'current'))}</td></tr><tr><td>Median</td><td>${fmt(stat(x,'median'))}</td><td>${fmt(stat(y,'median'))}</td></tr><tr><td>P10</td><td>${fmt(stat(x,'p10'))}</td><td>${fmt(stat(y,'p10'))}</td></tr><tr><td>Min</td><td>${fmt(x.min)}</td><td>${fmt(y?.min)}</td></tr><tr><td>Positive</td><td>${Number.isFinite(+x.positive_rate)?(+x.positive_rate).toFixed(1)+'%':'—'}</td><td>${Number.isFinite(+y?.positive_rate)?(+y.positive_rate).toFixed(1)+'%':'—'}</td></tr></tbody></table></div>${compChart}</div>`;
-   }).join('');
+   const chartBox=b.querySelector('#bamRollingChart');
+   const draw=w=>{
+     b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.classList.toggle('active',+x.dataset.w===w));
+     const mr=roll(M,w), br=roll(B,w), mp=new Map(br), both=mr.map(x=>[x[0],x[1],mp.get(x[0])]).filter(x=>Number.isFinite(x[2]));
+     const wins=both.filter(x=>x[1]>x[2]).length, winrate=both.length?100*wins/both.length:NaN;
+     let best=null,worst=null; both.forEach(x=>{if(!best||x[1]>best[1])best=x;if(!worst||x[1]<worst[1])worst=x});
+     chartBox.innerHTML=`<div class="bam-roll-chart-title">Annualized Rolling Return - ${w/12} ${w===12?'Year':'Years'}</div>${compareChart(both,n,bmName)}<div class="bam-roll-kpis"><div><span>Win Rate vs ${E(bmName)}</span><b>${Number.isFinite(winrate)?winrate.toFixed(1)+'%':'—'}</b></div><div><span>Sample Count</span><b>${both.length}</b></div><div><span>Best Window</span><b>${best?fmtp(best[1]):'—'}</b><small>${best?E(best[0])+' · '+E(bmName)+' '+fmtp(best[2]):''}</small></div><div><span>Worst Window</span><b>${worst?fmtp(worst[1]):'—'}</b><small>${worst?E(worst[0])+' · '+E(bmName)+' '+fmtp(worst[2]):''}</small></div></div>`;
+   };
+   b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));
+   draw(36);
  });
  function compareChart(rows,mainName,bmName){
    if(!rows?.length)return'<div class="analytics-empty">データなし</div>';
