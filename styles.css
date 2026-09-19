@@ -1805,3 +1805,48 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     font-weight:700!important;
   }
 }
+
+/* v24 — Drawdowns mobile compact layout
+   Appended last so it overrides the older mobile enlargement rules. */
+@media (max-width:700px){
+  #drawdownsPage.analytics-page{padding:11px 9px 13px!important}
+  #drawdownsPage h2{font-size:25px!important;line-height:1.08!important;margin:0 0 5px!important}
+  #drawdownsPage .sub{font-size:13px!important;line-height:1.32!important;margin:0 0 7px!important}
+
+  #drawdownsPage .analytics-chips{gap:5px!important;padding:1px 0 5px!important;margin:0 0 5px!important}
+  #drawdownsPage .analytics-chips button{
+    font-size:11px!important;line-height:1!important;min-height:29px!important;height:29px!important;
+    padding:5px 9px!important;border-radius:15px!important
+  }
+
+  #drawdownsPage .bm-switch{margin:1px 0 7px!important;padding:2px!important}
+  #drawdownsPage .bm-switch>span{font-size:10px!important;padding:0 5px!important}
+  #drawdownsPage .bm-switch button{
+    font-size:11px!important;line-height:1!important;min-height:30px!important;padding:6px 9px!important
+  }
+
+  #drawdownsPage .dd-worst-cards{gap:7px!important;margin:7px 0 8px!important}
+  #drawdownsPage .dd-worst-cards>div{border-radius:13px!important;padding:9px 10px!important}
+  #drawdownsPage .dd-worst-cards small{font-size:11px!important;line-height:1.15!important}
+  #drawdownsPage .dd-worst-cards b{font-size:19px!important;line-height:1!important;margin-top:5px!important}
+
+  #drawdownsPage .dd-duration-grid{
+    grid-template-columns:1fr!important;gap:6px!important;margin:7px 0 9px!important
+  }
+  #drawdownsPage .dd-duration-grid>div{
+    min-height:0!important;height:auto!important;border-radius:12px!important;padding:8px 10px!important
+  }
+  #drawdownsPage .dd-duration-grid small{font-size:11px!important;line-height:1.1!important;margin:0!important}
+  #drawdownsPage .dd-duration-grid b{font-size:18px!important;line-height:1!important;margin:4px 0 0!important}
+  #drawdownsPage .dd-duration-grid span,
+  #drawdownsPage .dd-duration-grid em{
+    font-size:10.5px!important;line-height:1.1!important;margin-top:3px!important
+  }
+
+  #drawdownsPage .dd-touch-chart{margin:8px 0 11px!important;padding:6px 5px 4px!important;border-radius:13px!important}
+  #drawdownsPage .dd-svg text{font-size:9px!important}
+
+  #drawdownsPage .dd-worst-block{margin:10px 0 14px!important}
+  #drawdownsPage .dd-worst-block h3{font-size:18px!important;line-height:1.1!important;margin:0 2px 7px!important}
+}
+
