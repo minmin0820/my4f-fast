@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260918-12">
+<link rel="stylesheet" href="styles.css?v=20260919-perf1">
 </head>
 <body>
 <div class="page-scroll"><main>
@@ -41,6 +41,13 @@
 <section><h2>月次リターン</h2><p class="muted">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p>
 <div id="summary" class="summary"></div><div id="bm" class="bm"></div>
 <p class="muted">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
+
+<section id="researchPerformance"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
+<div id="perfChips" class="perf-chips"></div>
+<div id="perfChart" class="perf-chart"></div>
+<div id="perfMeta" class="muted"></div>
+<div id="perfCards" class="perf-cards"></div>
+<details><summary>全系列の指標</summary><div id="perfTable" class="perf-table-wrap"></div></details></section>
 
 <section><h2>直近12か月</h2><div id="months" class="months"></div></section>
 
@@ -86,7 +93,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260919-14"></script>
+<script src="app.js?v=20260919-perf1"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');

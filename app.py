@@ -47159,6 +47159,49 @@ def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
                 "SPY": float(_r["SPY"])*100 if pd.notna(_r["SPY"]) else None,
                 "TQQQ": float(_r["TQQQ"])*100 if pd.notna(_r["TQQQ"]) else None,
             })
+        # Fast Research Performance — display-only snapshot from the already-frozen
+        # Research Performance lineage. No parameter search or strategy mutation.
+        _perf_base = _r15d_main_performance("2009-01-01", end0).copy()
+        _perf_base = pd.concat([
+            _perf_base,
+            hybrid.rename("麒麟「天界」"),
+            gense.rename("麒麟「現世」"),
+        ], axis=1)
+        _perf_names = [
+            "Frozen Core", "Frozen v3.45", "Frozen 4F",
+            "4F Attack75", "4F Promotion100",
+            "麒麟「天界」", "麒麟「現世」", "SPY", "TQQQ",
+        ]
+        _perf_series = []
+        _perf_history = {}
+        for _name in _perf_names:
+            if _name not in _perf_base.columns:
+                continue
+            _sr = pd.Series(_perf_base[_name]).dropna().astype(float).sort_index()
+            if len(_sr) < 2:
+                continue
+            _met = monthly_metrics_0rf(_sr)
+            _perf_series.append({
+                "name": _name,
+                "start": str(_sr.index.min()),
+                "end": str(_sr.index.max()),
+                "months": int(len(_sr)),
+                "cagr": float(_met.get("CAGR", np.nan))*100 if np.isfinite(_met.get("CAGR", np.nan)) else None,
+                "sortino": float(_met.get("Sortino", np.nan)) if np.isfinite(_met.get("Sortino", np.nan)) else None,
+                "sharpe": float(_met.get("Sharpe", np.nan)) if np.isfinite(_met.get("Sharpe", np.nan)) else None,
+                "maxdd": float(_met.get("MaxDD", np.nan))*100 if np.isfinite(_met.get("MaxDD", np.nan)) else None,
+                "vol": float(_met.get("Volatility", np.nan))*100 if np.isfinite(_met.get("Volatility", np.nan)) else None,
+                "calmar": float(_met.get("Calmar", np.nan)) if np.isfinite(_met.get("Calmar", np.nan)) else None,
+            })
+            _perf_history[_name] = [[str(_m), round(float(_v)*100, 8)] for _m,_v in _sr.items()]
+        _fast_performance = {
+            "source": "Research Performance / frozen Python lineage",
+            "metric_basis": "Monthly returns / 0RF",
+            "sample_policy": "Each series uses its own maximum valid history in headline metrics; chart common-aligns selected series.",
+            "series": _perf_series,
+            "history": _perf_history,
+        }
+
         _fast_snapshot=build_snapshot(
             asof=pd.Timestamp(asof).strftime("%Y-%m-%d"),
             month=opm, previous_month=prevm,
@@ -47173,6 +47216,7 @@ def render_erc6_attack75_dashboard(asof, px_signal, rf_signal):
             summary={"mtd":[mtd_t,mtd_g],"prev":[prev_t,prev_g],"ytd":[ytd_t,ytd_g]},
             benchmarks={"SPY":ytd_s,"TQQQ":ytd_q},
             forward_mode=z.get("forward_mode",""),
+            performance=_fast_performance,
         )
         _fast_json=dumps_snapshot(_fast_snapshot)
         with st.expander("My4F Fast Live Data Bridge", expanded=False):

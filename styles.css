@@ -404,3 +404,18 @@ main{padding-left:12px!important;padding-right:12px!important}
     margin-right:0!important;
   }
 }
+
+
+/* Fast v4.4 — Research Performance (display-only) */
+.perf-chips{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0 9px}
+.perf-chip{appearance:none;border:1px solid #d7dbe0;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:750;color:#555b66;cursor:pointer}
+.perf-chip.active{background:#292d38;color:#fff;border-color:#292d38}
+.perf-chart{width:100%;border:1px solid #e2e4e8;border-radius:13px;padding:7px;margin:4px 0 7px;overflow:hidden}
+.perf-chart svg{display:block;width:100%;height:auto}
+.perf-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+.perf-card{background:#f7f7f8;border-radius:12px;padding:9px;min-width:0}
+.perf-card .perf-name{font-size:11px;font-weight:850;line-height:1.25;margin-bottom:6px;overflow-wrap:anywhere}
+.perf-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.perf-metric span{display:block;color:#8b8d93;font-size:8px}.perf-metric b{font-size:11px;font-variant-numeric:tabular-nums}
+.perf-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9px}.perf-table th,.perf-table td{border-bottom:1px solid #e5e7eb;padding:5px 3px;text-align:right;overflow-wrap:anywhere}.perf-table th:first-child,.perf-table td:first-child{text-align:left;width:29%}
+@media(max-width:430px){.perf-chip{font-size:11px;padding:6px 8px}.perf-chart{padding:4px}.perf-cards{gap:5px}.perf-card{padding:7px}.perf-card .perf-name{font-size:12px}.perf-metric span{font-size:9px}.perf-metric b{font-size:12px}.perf-table th,.perf-table td{font-size:9px;padding:4px 2px}}

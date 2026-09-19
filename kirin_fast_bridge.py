@@ -39,7 +39,7 @@ def _health_color(c):
 
 def build_snapshot(*, asof, month, previous_month, exact_ticker, live_ticker,
                    four_gods, previous_live, health, risk, signals,
-                   monthly_rows, summary, benchmarks, forward_mode):
+                   monthly_rows, summary, benchmarks, forward_mode, performance=None):
     """Serialize finalized Python outputs. No strategy logic is allowed here."""
     cur=set((live_ticker or {}).keys()); prev=set((previous_live or {}).keys())
     added=sorted(cur-prev); removed=sorted(prev-cur)
@@ -83,6 +83,7 @@ def build_snapshot(*, asof, month, previous_month, exact_ticker, live_ticker,
       },
       "benchmarks": {"ytd": {k:_pct(v) for k,v in (benchmarks or {}).items()}},
       "returns": rows,
+      "performance": performance or {},
       "governance": {
         "production": "Frozen4F EW",
         "tenkai": "Canonical Exact KIRIN",
