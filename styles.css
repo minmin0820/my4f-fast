@@ -1806,55 +1806,107 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
   }
 }
 
+/* v24 — Drawdowns mobile compact layout
+   Appended last so it overrides the older mobile enlargement rules. */
+@media (max-width:700px){
+  #drawdownsPage.analytics-page{padding:11px 9px 13px!important}
+  #drawdownsPage h2{font-size:25px!important;line-height:1.08!important;margin:0 0 5px!important}
+  #drawdownsPage .sub{font-size:13px!important;line-height:1.32!important;margin:0 0 7px!important}
 
-/* v24 — Research Performance portfolio picker: collapsed tab */
+  #drawdownsPage .analytics-chips{gap:5px!important;padding:1px 0 5px!important;margin:0 0 5px!important}
+  #drawdownsPage .analytics-chips button{
+    font-size:11px!important;line-height:1!important;min-height:29px!important;height:29px!important;
+    padding:5px 9px!important;border-radius:15px!important
+  }
+
+  #drawdownsPage .bm-switch{margin:1px 0 7px!important;padding:2px!important}
+  #drawdownsPage .bm-switch>span{font-size:10px!important;padding:0 5px!important}
+  #drawdownsPage .bm-switch button{
+    font-size:11px!important;line-height:1!important;min-height:30px!important;padding:6px 9px!important
+  }
+
+  #drawdownsPage .dd-worst-cards{gap:7px!important;margin:7px 0 8px!important}
+  #drawdownsPage .dd-worst-cards>div{border-radius:13px!important;padding:9px 10px!important}
+  #drawdownsPage .dd-worst-cards small{font-size:11px!important;line-height:1.15!important}
+  #drawdownsPage .dd-worst-cards b{font-size:19px!important;line-height:1!important;margin-top:5px!important}
+
+  #drawdownsPage .dd-duration-grid{
+    grid-template-columns:1fr!important;gap:6px!important;margin:7px 0 9px!important
+  }
+  #drawdownsPage .dd-duration-grid>div{
+    min-height:0!important;height:auto!important;border-radius:12px!important;padding:8px 10px!important
+  }
+  #drawdownsPage .dd-duration-grid small{font-size:11px!important;line-height:1.1!important;margin:0!important}
+  #drawdownsPage .dd-duration-grid b{font-size:18px!important;line-height:1!important;margin:4px 0 0!important}
+  #drawdownsPage .dd-duration-grid span,
+  #drawdownsPage .dd-duration-grid em{
+    font-size:10.5px!important;line-height:1.1!important;margin-top:3px!important
+  }
+
+  #drawdownsPage .dd-touch-chart{margin:8px 0 11px!important;padding:6px 5px 4px!important;border-radius:13px!important}
+  #drawdownsPage .dd-svg text{font-size:9px!important}
+
+  #drawdownsPage .dd-worst-block{margin:10px 0 14px!important}
+  #drawdownsPage .dd-worst-block h3{font-size:18px!important;line-height:1.1!important;margin:0 2px 7px!important}
+}
+
+
+
+/* v25 — fold Select Portfolios without undoing v21/v24 compact UI */
 .perf-picker-fold{
-  margin:8px 0 10px!important;
+  margin:6px 0 9px!important;
   border:1px solid #dbe3e8!important;
-  border-radius:12px!important;
+  border-radius:11px!important;
   background:#fff!important;
   overflow:hidden!important;
 }
-.perf-picker-fold > .perf-picker-summary{
-  list-style:none!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-  gap:10px!important;
-  padding:9px 11px!important;
-  cursor:pointer!important;
-  font-size:13px!important;
-  font-weight:800!important;
-  color:#1f2937!important;
-  background:#f8fafc!important;
+.perf-picker-fold>.perf-picker-summary{
+  list-style:none!important;display:flex!important;align-items:center!important;
+  gap:7px!important;padding:7px 9px!important;min-height:0!important;
+  background:#f8fafc!important;cursor:pointer!important;
+  font-size:12px!important;line-height:1.15!important;font-weight:800!important;color:#1f2937!important;
 }
-.perf-picker-fold > .perf-picker-summary::-webkit-details-marker{display:none!important}
-.perf-picker-fold > .perf-picker-summary::after{
-  content:"⌄";
-  margin-left:auto;
-  font-size:16px;
-  line-height:1;
-  color:#64748b;
-  transition:transform .15s ease;
+.perf-picker-fold>.perf-picker-summary::-webkit-details-marker{display:none!important}
+.perf-picker-fold>.perf-picker-summary::after{
+  content:"⌄";font-size:14px;line-height:1;color:#64748b;margin-left:1px;transition:transform .15s ease
 }
-.perf-picker-fold[open] > .perf-picker-summary::after{transform:rotate(180deg)}
+.perf-picker-fold[open]>.perf-picker-summary::after{transform:rotate(180deg)}
 .perf-selected-count{
-  margin-left:auto;
-  font-size:10px!important;
-  font-weight:700!important;
-  color:#64748b!important;
-  white-space:nowrap!important;
+  margin-left:auto!important;font-size:9.5px!important;line-height:1!important;
+  font-weight:700!important;color:#7b8798!important;white-space:nowrap!important
 }
-.perf-picker-body{
-  padding:8px 9px 9px!important;
-  border-top:1px solid #e8edf1!important;
+.perf-picker-body{padding:6px 7px 7px!important;border-top:1px solid #e8edf1!important}
+.perf-picker-fold .perf-picker-title{font-size:11px!important;line-height:1.1!important;margin:1px 0 5px!important}
+.perf-picker-fold .perf-picker-title span{font-size:8.5px!important}
+
+/* Inner group filter chips: deliberately smaller than the page selectors */
+.perf-picker-fold .perf-group-tabs{
+  gap:4px!important;padding:0 0 4px!important;margin:0!important
 }
-@media(max-width:700px){
-  .perf-picker-fold{margin:6px 0 8px!important}
-  .perf-picker-fold > .perf-picker-summary{
-    min-height:0!important;
-    padding:8px 10px!important;
-    font-size:12px!important;
-  }
-  .perf-picker-body{padding:7px 8px 8px!important}
+.perf-picker-fold .perf-group-tab{
+  font-size:9px!important;line-height:1!important;
+  padding:4px 7px!important;min-height:24px!important;height:24px!important;
+  border-radius:12px!important
+}
+
+/* Inner portfolio choices: compact 2-column chips, never the old large cards */
+.perf-picker-fold .perf-group-panel{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:4px!important;margin:2px 0 5px!important
+}
+.perf-picker-fold .perf-group-item{
+  min-height:28px!important;height:28px!important;
+  padding:3px 5px!important;border-radius:8px!important;
+  font-size:9.5px!important;line-height:1!important;font-weight:750!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important
+}
+.perf-picker-fold .perf-start-row{
+  gap:5px!important;margin:4px 0 0!important;font-size:9.5px!important
+}
+.perf-picker-fold #perfStartYear{
+  min-width:76px!important;padding:4px 22px 4px 7px!important;
+  border-width:1px!important;border-radius:7px!important;font-size:10px!important
+}
+@media(max-width:380px){
+  .perf-picker-fold .perf-group-item{font-size:9px!important}
 }
