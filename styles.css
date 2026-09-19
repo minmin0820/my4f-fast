@@ -1876,3 +1876,74 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     border-radius:8px!important;
   }
 }
+
+
+/* v30 — hard override for dynamically generated analytics selectors.
+   Exact outer section IDs are used because the inner mount IDs do not carry analytics-page. */
+@media (max-width:700px){
+  #summaryPage .analytics-chips button,
+  #metrics .analytics-chips button,
+  #monthlyReturns .analytics-chips button,
+  #rolling .analytics-chips button,
+  #drawdowns .analytics-chips button,
+  #annual .analytics-chips button {
+    min-height:28px!important;
+    height:28px!important;
+    padding:4px 9px!important;
+    font-size:11px!important;
+    line-height:18px!important;
+    border-radius:999px!important;
+    width:auto!important;
+    min-width:0!important;
+    flex:0 0 auto!important;
+  }
+  #summaryPage .analytics-chips,
+  #metrics .analytics-chips,
+  #monthlyReturns .analytics-chips,
+  #rolling .analytics-chips,
+  #drawdowns .analytics-chips,
+  #annual .analytics-chips {
+    gap:5px!important;
+    margin:4px 0 7px!important;
+    padding:0!important;
+  }
+  #summaryPage .bm-switch,
+  #metrics .bm-switch,
+  #monthlyReturns .bm-switch,
+  #rolling .bm-switch,
+  #drawdowns .bm-switch,
+  #annual .bm-switch {
+    width:max-content!important;
+    max-width:100%!important;
+    min-height:32px!important;
+    height:32px!important;
+    padding:2px!important;
+    gap:2px!important;
+    margin:3px 0 8px!important;
+    border-radius:10px!important;
+  }
+  #summaryPage .bm-switch > span,
+  #metrics .bm-switch > span,
+  #monthlyReturns .bm-switch > span,
+  #rolling .bm-switch > span,
+  #drawdowns .bm-switch > span,
+  #annual .bm-switch > span {
+    font-size:10px!important;
+    padding:0 6px!important;
+  }
+  #summaryPage .bm-switch button,
+  #metrics .bm-switch button,
+  #monthlyReturns .bm-switch button,
+  #rolling .bm-switch button,
+  #drawdowns .bm-switch button,
+  #annual .bm-switch button {
+    min-height:28px!important;
+    height:28px!important;
+    min-width:52px!important;
+    width:auto!important;
+    padding:4px 9px!important;
+    font-size:11px!important;
+    line-height:18px!important;
+    border-radius:8px!important;
+  }
+}
