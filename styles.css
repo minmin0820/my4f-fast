@@ -1412,3 +1412,14 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     letter-spacing:-.2px!important;white-space:nowrap!important;
   }
 }
+
+/* v17 — return percentages: readable size, regular weight */
+@media(max-width:700px){
+  .dashboard-only .months .row strong{
+    font-weight:400!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table td .ret-pos,
+  #monthlyReturnsPage .monthly-compare-table td .ret-neg{
+    font-weight:400!important;
+  }
+}
