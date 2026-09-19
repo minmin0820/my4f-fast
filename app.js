@@ -239,13 +239,31 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const draw=[['Maximum Drawdown',pct(A.mdd),pct(B.mdd)],['MDD Date',A.dd.maxDate||'N/A',B.dd.maxDate||'N/A'],['Peak Date',A.dd.worst?.peakDate||'N/A',B.dd.worst?.peakDate||'N/A'],['Trough Date',A.dd.worst?.troughDate||'N/A',B.dd.worst?.troughDate||'N/A'],['Recovery Date',A.dd.worst?.recoveryDate||'Ongoing',B.dd.worst?.recoveryDate||'Ongoing'],['Drawdown Length',mo(A.dd.worst?.length),mo(B.dd.worst?.length)],['Recovery Time',mo(A.dd.worst?.recovery),mo(B.dd.worst?.recovery)],['Underwater Period',mo(A.dd.worst?.underwater),mo(B.dd.worst?.underwater)],['Avg Underwater Period',mo(Number.isFinite(A.dd.avgUnder)?A.dd.avgUnder.toFixed(1):null),mo(Number.isFinite(B.dd.avgUnder)?B.dd.avgUnder.toFixed(1):null)],['PTU(%)',num(A.ptu),num(B.ptu)],['Calmar Ratio',num(A.calmar),num(B.calmar)]];
    const benchmark=[['Benchmark Correlation',num(A.rho),num(B.rho)],['Beta',num(A.beta),num(B.beta)],['Alpha (annualized)',pct(A.alpha),pct(B.alpha)],['R²',pct(A.r2),pct(B.r2)],['Active Return',pct(A.active),'N/A'],['Tracking Error',pct(A.te),'N/A'],['Information Ratio',num(A.info),'N/A']];
    const capture=[['Upside Capture Ratio (%)',num(A.upCap),num(B.upCap)],['Downside Capture Ratio (%)',num(A.downCap),num(B.downCap)],['Up/Down Spread',num(A.spread),num(B.spread)],['Up/Down Ratio',num(A.upDown),num(B.upDown)],['Max Run-up',`${A.runup>=0?'+':''}${A.runup.toFixed(2)}%`,`${B.runup>=0?'+':''}${B.runup.toFixed(2)}%`]];
-   const regimes=[['Up Market',v=>v>0.02],['Sideways',v=>v>=-0.02&&v<=0.02],['Down Market',v=>v<-0.02]].map(([label,test])=>{const rr=M.rows.filter(r=>test(r[2]));return [label,rr.length,rr.length?mean(rr.map(r=>r[1])):NaN,rr.length?mean(rr.map(r=>r[2])):NaN]});
-   const regimeTable=`<div class="metric-regime"><h3>Up vs. Down Market Performance</h3><p class="analytics-note">Benchmark monthly return: Up &gt; +2%, Sideways −2% to +2%, Down &lt; −2%.</p><div class="regime-grid"><div class="regime-head">Market</div><div class="regime-head">Months</div><div class="regime-head">${E(METRIC_PORTFOLIO)}</div><div class="regime-head">${E(bmName)}</div>${regimes.map(r=>`<div>${E(r[0])}</div><div>${r[1]}</div><div class="${r[2]<0?'neg':'pos'}">${pct(r[2])}</div><div class="${r[3]<0?'neg':'pos'}">${pct(r[3])}</div>`).join('')}</div></div>`;
+   // v44: Bam-style Up vs. Down Market Performance.
+   // Uses the same common-period monthly returns already used by Metrics.
+   const regimeDefs=[['Up Market',v=>v>=0.02],['Sideways',v=>v>-0.02&&v<0.02],['Down Market',v=>v<=-0.02]];
+   const regimeRows=regimeDefs.map(([label,test])=>{
+     const rr=M.rows.filter(r=>test(r[2])),above=rr.filter(r=>r[1]>r[2]).length,below=rr.length-above;
+     return {label,above,below,total:rr.length,pctAbove:rr.length?100*above/rr.length:NaN,avgActive:rr.length?mean(rr.map(r=>r[1]-r[2])):NaN};
+   });
+   const totalAbove=regimeRows.reduce((s,r)=>s+r.above,0),totalBelow=regimeRows.reduce((s,r)=>s+r.below,0),totalN=regimeRows.reduce((s,r)=>s+r.total,0);
+   const totalActive=M.rows.length?mean(M.rows.map(r=>r[1]-r[2])):NaN;
+   const regimeTable=`<div class="metric-regime v44-regime"><h3>Up vs. Down Market Performance <span>(${M.n} months)</span></h3><div class="v44-regime-table"><div class="h">Market Type</div><div class="h">Above BM</div><div class="h">Below BM</div><div class="h">Total</div><div class="h">% Above</div><div class="h">Avg Active</div>${regimeRows.map(r=>`<div class="market ${r.label==='Up Market'?'up':r.label==='Down Market'?'down':''}">${E(r.label)}</div><div>${r.above}</div><div>${r.below}</div><div>${r.total}</div><div>${Number.isFinite(r.pctAbove)?Math.round(r.pctAbove)+'%':'—'}</div><div class="${r.avgActive<0?'neg':'pos'}">${pct(r.avgActive)}</div>`).join('')}<div class="total">Total</div><div class="total">${totalAbove}</div><div class="total">${totalBelow}</div><div class="total">${totalN}</div><div class="total">${totalN?Math.round(100*totalAbove/totalN)+'%':'—'}</div><div class="total ${totalActive<0?'neg':'pos'}">${pct(totalActive)}</div></div></div>`;
+   const bucketDefs=[['≤ -8%',-Infinity,-.08],['-8 to -6%',-.08,-.06],['-6 to -4%',-.06,-.04],['-4 to -2%',-.04,-.02],['-2 to 0%',-.02,0],['0 to 2%',0,.02],['2 to 4%',.02,.04],['4 to 6%',.04,.06],['6 to 8%',.06,.08],['8 to 10%',.08,.10],['10 to 15%',.10,.15],['≥ 15%',.15,Infinity]];
+   const bucketData=bucketDefs.map(([label,lo,hi])=>{const rr=M.rows.filter(r=>r[2]>=lo&&r[2]<hi);return {label,n:rr.length,main:rr.length?mean(rr.map(r=>r[1])):NaN,bm:rr.length?mean(rr.map(r=>r[2])):NaN}}).filter(r=>r.n);
+   function regimeBarChart(data){
+     if(!data.length)return '';
+     const W=720,H=330,L=42,R=10,T=16,B=80,maxAbs=Math.max(.01,...data.flatMap(d=>[Math.abs(d.main),Math.abs(d.bm)])),plotH=H-T-B,zero=T+plotH/2,scale=(plotH/2-10)/maxAbs,step=(W-L-R)/data.length,bw=Math.min(17,step*.28);
+     let bars='',labels='';
+     data.forEach((d,i)=>{const cx=L+step*(i+.5);[[d.main,-bw*.58,'mainbar'],[d.bm,bw*.58,'bmbar']].forEach(([v,dx,cl])=>{const y=v>=0?zero-v*scale:zero;bars+=`<rect class="${cl}" x="${cx+dx-bw/2}" y="${y}" width="${bw}" height="${Math.max(1,Math.abs(v*scale))}" rx="1"/>`});labels+=`<text x="${cx}" y="${H-52}" transform="rotate(-45 ${cx} ${H-52})" text-anchor="end">${E(d.label)}</text>`});
+     return `<div class="v44-regime-chart"><svg viewBox="0 0 ${W} ${H}"><line class="zero" x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}"/>${bars}${labels}<text class="axis-title" x="${W/2}" y="${H-7}" text-anchor="middle">Benchmark Return Range</text></svg><div class="v44-chart-legend"><span class="main">${E(METRIC_PORTFOLIO)}</span><span class="bm">${E(bmName)}</span></div></div>`;
+   }
+   const regimeChart=regimeBarChart(bucketData);
    mt.innerHTML=`<div class="metrics-toolbar"><label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label><div id="metricsBmSwitch"></div></div>
      <div class="metrics-definition">Common period · Monthly returns · RF/MAR 0% · Sortino downside deviation = √mean(min(r,0)²)</div>
      <h3 class="metrics-title">Core Metrics</h3><div class="metric-kpi-grid">${core.map(([l,x,y])=>`<div class="metric-kpi"><span>${E(l)}</span><b>${E(x)}</b><small>${E(bmName)} ${E(y)}</small></div>`).join('')}</div>
      ${section('Return',returns,true)}${section('Risk & Downside',risk,true)}${section('Drawdown',draw)}${section('Benchmark & Alpha',benchmark)}${section('Market Capture',capture)}
-     ${regimeTable}<div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
+     ${regimeTable}${regimeChart}<div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
    mt.querySelector('#metricsPortfolio').onchange=e=>{METRIC_PORTFOLIO=e.target.value;drawMetrics()};
    bmSwitch('metricsBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
  }
@@ -477,48 +495,3 @@ document.addEventListener('DOMContentLoaded',()=>{
  }));
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 });
-
-
-/* v43 — Metrics market-regime table and benchmark-range chart.
-   Display-only analytics from canonical monthly returns. */
-(function(){
- const buckets=[["≤ -8%",-1e9,-8],["-8 to -6%",-8,-6],["-6 to -4%",-6,-4],["-4 to -2%",-4,-2],["-2 to 0%",-2,0],["0 to 2%",0,2],["2 to 4%",2,4],["4 to 6%",4,6],["6 to 8%",6,8],["8 to 10%",8,10],["10 to 15%",10,15],["≥ 15%",15,1e9]];
- const snap=()=>window.__my4fSnapshot||window.snapshotData||window.SNAPSHOT||null;
- function names(root){
-   const all=Object.keys(snap()?.performance?.history||{});
-   const vals=[...root.querySelectorAll("select")].map(x=>x.value);
-   return [vals.find(x=>all.includes(x)&&x!=="SPY"&&x!=="TQQQ")||all.find(x=>x!=="SPY"&&x!=="TQQQ"),vals.find(x=>x==="SPY"||x==="TQQQ")||(all.includes("SPY")?"SPY":"TQQQ")];
- }
- function rows(p,b){
-   const H=snap()?.performance?.history||{}, pm=new Map((H[p]||[]).map(x=>[String(x[0]),+x[1]])), bm=new Map((H[b]||[]).map(x=>[String(x[0]),+x[1]]));
-   return [...pm].filter(([m,v])=>bm.has(m)&&isFinite(v)&&isFinite(bm.get(m))).map(([m,v])=>({m,p:v,b:bm.get(m),a:v-bm.get(m)}));
- }
- const regime=b=>b>=2?"Up Market":b<=-2?"Down Market":"Sideways";
- const fmt=x=>isFinite(x)?`${x>=0?"+":""}${x.toFixed(2)}%`:"—";
- function table(rs){
-   let A=0,B=0,N=0,S=0;
-   const body=["Up Market","Sideways","Down Market"].map(g=>{
-     const z=rs.filter(r=>regime(r.b)===g),a=z.filter(r=>r.a>0).length,b=z.length-a,s=z.reduce((q,r)=>q+r.a,0);
-     A+=a;B+=b;N+=z.length;S+=s;
-     return `<tr><td class="${g==="Up Market"?"up":g==="Down Market"?"down":""}">${g}</td><td>${a}</td><td>${b}</td><td>${z.length}</td><td>${z.length?Math.round(100*a/z.length):0}%</td><td>${fmt(z.length?s/z.length:NaN)}</td></tr>`;
-   }).join("");
-   return `<div class="v43-table-wrap"><table class="v43-market-table"><thead><tr><th>Market Type</th><th>Above<br>BM</th><th>Below<br>BM</th><th>Total</th><th>% Above</th><th>Avg Active</th></tr></thead><tbody>${body}<tr class="total"><td>Total</td><td>${A}</td><td>${B}</td><td>${N}</td><td>${N?Math.round(100*A/N):0}%</td><td>${fmt(N?S/N:NaN)}</td></tr></tbody></table></div>`;
- }
- function chart(rs,p,b){
-   const d=buckets.map(q=>{const z=rs.filter(r=>r.b>=q[1]&&r.b<q[2]);return {l:q[0],p:z.length?z.reduce((s,r)=>s+r.p,0)/z.length:NaN,b:z.length?z.reduce((s,r)=>s+r.b,0)/z.length:NaN,n:z.length}}).filter(x=>x.n);
-   if(!d.length)return "";
-   const W=720,H=330,L=42,R=10,T=16,B=78,M=Math.max(1,...d.flatMap(x=>[Math.abs(x.p),Math.abs(x.b)])),zero=T+(H-T-B)/2,sc=((H-T-B)/2-8)/M,step=(W-L-R)/d.length,bw=Math.min(16,step*.28);
-   let bars="",labs="";
-   d.forEach((x,i)=>{const c=L+step*(i+.5);[[x.p,-bw*.58,"port"],[x.b,bw*.58,"bm"]].forEach(([v,dx,cl])=>{const y=v>=0?zero-v*sc:zero;bars+=`<rect class="${cl}" x="${c+dx-bw/2}" y="${y}" width="${bw}" height="${Math.max(1,Math.abs(v*sc))}" rx="1"/>`});labs+=`<text x="${c}" y="${H-49}" transform="rotate(-45 ${c} ${H-49})" text-anchor="end">${x.l}</text>`});
-   return `<div class="v43-chart-wrap"><svg class="v43-chart" viewBox="0 0 ${W} ${H}"><line x1="${L}" y1="${zero}" x2="${W-R}" y2="${zero}"/>${bars}${labs}<text class="title" x="${W/2}" y="${H-7}" text-anchor="middle">Benchmark Return Range</text></svg><div class="v43-legend"><span><i class="port"></i>${p}</span><span><i class="bm"></i>${b}</span></div></div>`;
- }
- function enhance(){
-   const root=document.querySelector("#metricsPage,#metrics"); if(!root)return;
-   const [p,b]=names(root); if(!p||!b)return; const rs=rows(p,b); if(!rs.length)return;
-   let s=root.querySelector("#v43MarketPerformance"); if(!s){s=document.createElement("section");s.id="v43MarketPerformance";s.className="v43-market-section";root.appendChild(s)}
-   s.innerHTML=`<h2>Up vs. Down Market Performance <span>(${rs.length} months)</span></h2>${table(rs)}${chart(rs,p,b)}<p class="v43-note">BM ≥ +2% = Up / −2% &lt; BM &lt; +2% = Sideways / BM ≤ −2% = Down. Canonical monthly returnsからの表示用集計。</p>`;
- }
- document.addEventListener("DOMContentLoaded",()=>setTimeout(enhance,300));
- document.addEventListener("change",e=>{if(e.target.closest("#metricsPage,#metrics"))setTimeout(enhance,120)});
- setTimeout(enhance,900);
-})();
