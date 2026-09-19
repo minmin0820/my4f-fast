@@ -1692,3 +1692,60 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     min-height:34px!important;
   }
 }
+
+/* v22 — definitive Metrics collision repair
+   Give labels enough room and explicitly allow labels to wrap INSIDE their own cell. */
+@media(max-width:700px){
+  #metricsPage table,
+  #metricsPage .metrics-table{
+    width:100%!important;
+    table-layout:fixed!important;
+  }
+
+  #metricsPage table th:nth-child(1),
+  #metricsPage table td:nth-child(1),
+  #metricsPage .metrics-table th:nth-child(1),
+  #metricsPage .metrics-table td:nth-child(1){
+    width:64%!important;
+    max-width:64%!important;
+    box-sizing:border-box!important;
+    padding:8px 6px!important;
+    font-size:10.5px!important;
+    line-height:1.18!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+  }
+
+  #metricsPage table th:nth-child(2),
+  #metricsPage table td:nth-child(2),
+  #metricsPage table th:nth-child(3),
+  #metricsPage table td:nth-child(3),
+  #metricsPage .metrics-table th:nth-child(2),
+  #metricsPage .metrics-table td:nth-child(2),
+  #metricsPage .metrics-table th:nth-child(3),
+  #metricsPage .metrics-table td:nth-child(3){
+    width:18%!important;
+    max-width:18%!important;
+    box-sizing:border-box!important;
+    padding:8px 2px!important;
+    font-size:10.5px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-align:right!important;
+    font-weight:400!important;
+    font-variant-numeric:tabular-nums!important;
+  }
+
+  #metricsPage table thead th:nth-child(1),
+  #metricsPage .metrics-table thead th:nth-child(1){
+    font-size:11px!important;
+  }
+  #metricsPage table thead th:nth-child(n+2),
+  #metricsPage .metrics-table thead th:nth-child(n+2){
+    font-size:10px!important;
+    font-weight:700!important;
+  }
+}
