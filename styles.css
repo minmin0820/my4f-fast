@@ -2319,3 +2319,71 @@ div.ui-update-badge{
   font-size:13px;
   font-weight:800;
 }
+
+/* v62 — requested visual balance only */
+
+/* Annual Returns: larger plot and readable axis/legend typography */
+#annualPage .annual-chart-wrap{
+  padding:8px 6px 10px!important;
+}
+#annualPage .annual-bar-svg{
+  width:100%!important;
+  min-height:390px!important;
+}
+#annualPage .annual-bar-svg text{
+  font-size:13px!important;
+}
+#annualPage .compare-legend{
+  font-size:16px!important;
+  justify-content:center!important;
+  text-align:center!important;
+  gap:24px!important;
+}
+
+/* Drawdowns: compact the two Worst cards */
+#drawdownsPage .dd-worst-cards{
+  gap:10px!important;
+  margin:10px 0 12px!important;
+}
+#drawdownsPage .dd-worst-cards > div{
+  border-radius:14px!important;
+  padding:9px 10px!important;
+  min-height:0!important;
+}
+#drawdownsPage .dd-worst-cards small{
+  font-size:11px!important;
+  line-height:1.15!important;
+  text-align:center!important;
+}
+#drawdownsPage .dd-worst-cards b{
+  font-size:19px!important;
+  line-height:1!important;
+  margin-top:5px!important;
+  text-align:center!important;
+}
+
+/* All Fast analytics pages: tab/button labels centered */
+.analytics-shell .analytics-chips button,
+.analytics-shell .bm-switch button,
+.analytics-shell .strategy-chip,
+#monthlyTrade button,
+#monthlyTrade .mt-strategy-chip,
+#summaryPage .summary-portfolio-dropdown select{
+  text-align:center!important;
+  justify-content:center!important;
+}
+
+/* All analytics tables: header/title cells centered.
+   Body-cell alignment is intentionally unchanged. */
+.analytics-shell .analytics-table thead th,
+.analytics-shell .metrics-table thead th,
+.analytics-shell .summary-table thead th,
+.analytics-shell .annual-compare-table thead th,
+.analytics-shell .monthly-compare-table thead th,
+.analytics-shell table thead th{
+  text-align:center!important;
+  vertical-align:middle!important;
+}
+.analytics-shell .subsection-title{
+  text-align:center!important;
+}
