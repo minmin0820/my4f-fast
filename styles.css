@@ -2798,3 +2798,49 @@ div.ui-update-badge{
   .analytics-picker-summary::before{width:21px;height:21px;font-size:18px}
   .analytics-selected-name{padding:3px 6px}
 }
+
+/* v85 — mobile table-header containment for long portfolio names */
+@media (max-width:700px){
+  /* Summary: reserve more room for the strategy header and keep every label inside its cell. */
+  #summaryPage .summary-compare-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  #summaryPage .summary-compare-table th:first-child,
+  #summaryPage .summary-compare-table td:first-child{width:40%!important}
+  #summaryPage .summary-compare-table th:nth-child(2),
+  #summaryPage .summary-compare-table td:nth-child(2){width:36%!important}
+  #summaryPage .summary-compare-table th:nth-child(3),
+  #summaryPage .summary-compare-table td:nth-child(3){width:24%!important}
+  #summaryPage .summary-compare-table thead th{
+    white-space:normal!important;
+    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+    line-height:1.12!important;
+    vertical-align:middle!important;
+  }
+  #summaryPage .summary-compare-table thead th:nth-child(2){font-size:11px!important;text-align:center!important}
+  #summaryPage .summary-compare-table thead th:nth-child(3){font-size:13px!important;text-align:center!important}
+
+  /* Monthly Returns: all four columns fit the viewport; long strategy names wrap only in the header. */
+  #monthlyReturnsPage .analytics-table-scroll{overflow-x:hidden!important;width:100%!important}
+  #monthlyReturnsPage .monthly-compare-table{width:100%!important;min-width:0!important;table-layout:fixed!important}
+  #monthlyReturnsPage .monthly-compare-table th:first-child,
+  #monthlyReturnsPage .monthly-compare-table td:first-child{width:19%!important}
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(2),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(2){width:41%!important}
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(3),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(3){width:20%!important}
+  #monthlyReturnsPage .monthly-compare-table th:nth-child(4),
+  #monthlyReturnsPage .monthly-compare-table td:nth-child(4){width:20%!important}
+  #monthlyReturnsPage .monthly-compare-table thead th{
+    white-space:normal!important;
+    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+    word-break:break-word!important;
+    line-height:1.1!important;
+    vertical-align:middle!important;
+    padding:10px 4px!important;
+  }
+  #monthlyReturnsPage .monthly-compare-table thead th:nth-child(2){font-size:11px!important;text-align:center!important}
+  #monthlyReturnsPage .monthly-compare-table thead th:not(:nth-child(2)){font-size:13px!important}
+  #monthlyReturnsPage .monthly-compare-table tbody td{padding:13px 4px!important;font-size:15px!important}
+}

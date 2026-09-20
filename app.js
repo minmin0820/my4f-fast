@@ -49,7 +49,7 @@ function bmSwitch(id,current,onChange){
  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{FAST_BM=b.dataset.bm;onChange(FAST_BM);});
 }
 
-// v84 — shared compact Selection Portfolio fold picker for analytics pages, including Rolling Returns.
+// v85 — responsive long-name table headers; shared compact Selection Portfolio picker preserved.
 function portfolioFoldGroups(names){
  const groups={
   'All':names,
