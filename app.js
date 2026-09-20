@@ -37,6 +37,7 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  window.__MY4F_SNAPSHOT__=d;
  renderResearchPerformance(d.performance);
  renderFastAnalytics(d);
+    enforceDrawdownFrozenUI();
     renderMonthlyTrade(d);
   document.getElementById('months').innerHTML=(d.returns||[]).map(x=>`<article class="month"><div class="monthTop"><span>${esc(x[0])}</span><span class="badge ${x[1]=='A-STATE'?'a':String(x[1]).includes('BOOSTER')?'b':''}">${esc(x[1])}</span></div><div class="return-scroll"><div class="row k"><span class="lab">麒麟</span><span class="name">天界</span><strong>${pct(x[2])}</strong><span class="name">現世</span><strong>${pct(x[3])}</strong></div><div class="row"><span class="lab">BM</span><span class="name">SPY</span><strong>${pct(x[4])}</strong><span class="name">TQQQ</span><strong>${pct(x[5])}</strong></div></div></article>`).join('');
   renderMonthlyReturnsPage(d,FAST_BM);
@@ -500,3 +501,15 @@ function renderMonthlyTrade(d){
  <div class="mt-exec-title">Execution</div><div class="mt-exec-grid">${Object.entries(current).sort((a,b)=>Number(b[1])-Number(a[1])).map(([k,v])=>`<div class="mt-exec-row"><span>${mtEsc(k)}</span><strong>${Number(v).toFixed(1)}%</strong></div>`).join('')}</div>
  <div class="mt-note">月初リバランス用の実運用表示。売買判定・配分計算はFastでは行わず、Python正本のsnapshotをそのまま表示します。</div>`;
 }
+
+
+// Fast v48 — preserve prior Drawdowns spec: obsolete summary cards stay removed.
+function enforceDrawdownFrozenUI(){
+  const root=document.getElementById('drawdowns'); if(!root)return;
+  const banned=new Set(['Recovery Time','Frozen Core','Underwater Period','Drawdown Length']);
+  root.querySelectorAll('.metric-card,.analytics-card,.stat-card,.summary-card,.kpi-card').forEach(el=>{
+    const t=(el.textContent||'').trim();
+    for(const label of banned){ if(t===label || t.startsWith(label+'\n') || t.startsWith(label+' ')){el.remove();break;} }
+  });
+}
+

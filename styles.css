@@ -1832,3 +1832,23 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
 /* Fast v47 routing safety */
 #monthlyTrade.app-page:not(.page-active){display:none!important}
 #monthlyTrade.app-page.page-active{display:block!important}
+
+/* Fast v48 — restore frozen compact portfolio-selector geometry.
+   Scoped to selector/control containers only; no other page layout changes. */
+@media(max-width:700px){
+  #annual :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #drawdowns :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #rolling :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #monthlyReturns :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #metrics :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #summaryPage :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button{
+    width:auto!important; min-width:0!important; min-height:28px!important; height:28px!important;
+    padding:3px 8px!important; margin:1px!important; border-radius:8px!important;
+    font-size:11px!important; line-height:1!important;
+  }
+  #annual button[class*="chip"],#drawdowns button[class*="chip"],#rolling button[class*="chip"],
+  #monthlyReturns button[class*="chip"],#metrics button[class*="chip"],#summaryPage button[class*="chip"]{
+    width:auto!important;min-width:0!important;min-height:28px!important;height:28px!important;
+    padding:3px 8px!important;margin:1px!important;border-radius:8px!important;font-size:11px!important;line-height:1!important;
+  }
+}
