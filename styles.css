@@ -2427,3 +2427,18 @@ div.ui-update-badge{
   font-weight:700!important;
   fill:#64748b;
 }
+
+/* v65 Annual Returns — tighter chart card only */
+#annualPage .annual-chart-wrap{
+  padding:4px 6px 3px!important;
+}
+#annualPage .annual-bar-svg{
+  min-height:0!important;
+  height:auto!important;
+  display:block!important;
+}
+#annualPage .compare-legend{
+  margin-top:0!important;
+  margin-bottom:0!important;
+  padding:2px 0 4px!important;
+}
