@@ -50,12 +50,16 @@ function bmSwitch(id,current,onChange){
 }
 function renderMonthlyReturnsPage(d,bm='SPY'){
  const root=document.getElementById('monthlyReturnsPage');if(!root)return;
- const hist=d?.performance?.history||{},main='麒麟「現世」';
+ const hist=d?.performance?.history||{},names=Object.keys(hist).filter(n=>Array.isArray(hist[n])&&hist[n].length);
+ let main=(window.__MY4F_MONTHLY_PORTFOLIO__&&names.includes(window.__MY4F_MONTHLY_PORTFOLIO__))?window.__MY4F_MONTHLY_PORTFOLIO__:(names.includes('麒麟「現世」')?'麒麟「現世」':names[0]);
  const mainRows=Array.isArray(hist[main])?hist[main]:[],bmRows=Array.isArray(hist[bm])?hist[bm]:[];
  const bmMap=new Map(bmRows.map(x=>[String(x[0]),Number(x[1])]));
  const rows=mainRows.map(x=>[String(x[0]),Number(x[1]),bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
  const cell=v=>Number.isFinite(Number(v))?`<span class="${Number(v)>=0?'ret-pos':'ret-neg'}">${pct(Number(v))}</span>`:'—';
- root.innerHTML=`<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>${esc(main)}</b><span class="bm-pill">BM: ${bm}</span></div><p class="analytics-note">表示可能な最古 ${rows[0]?.[0]||'—'} → ${rows.at(-1)?.[0]||'—'} ｜ ${rows.length} months</p><div class="analytics-table-scroll monthly-full-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>現世</th><th>${bm}</th><th>差</th></tr></thead><tbody>${[...rows].reverse().map(x=>{const dif=Number.isFinite(x[2])?x[1]-x[2]:null;return`<tr><td>${esc(x[0])}</td><td>${cell(x[1])}</td><td>${cell(x[2])}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
+ const portfolioSelect=`<div class="monthly-portfolio-dropdown"><label for="monthlyPortfolioSelect">Portfolio</label><select id="monthlyPortfolioSelect" aria-label="Portfolio">${names.map(n=>`<option value="${esc(n)}"${n===main?' selected':''}>${esc(n)}</option>`).join('')}</select></div>`;
+ root.innerHTML=`${portfolioSelect}<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>${esc(main)}</b><span class="bm-pill">BM: ${bm}</span></div><p class="analytics-note">表示可能な最古 ${rows[0]?.[0]||'—'} → ${rows.at(-1)?.[0]||'—'} ｜ ${rows.length} months</p><div class="analytics-table-scroll monthly-full-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>${esc(main)}</th><th>${bm}</th><th>差</th></tr></thead><tbody>${[...rows].reverse().map(x=>{const dif=Number.isFinite(x[2])?x[1]-x[2]:null;return`<tr><td>${esc(x[0])}</td><td>${cell(x[1])}</td><td>${cell(x[2])}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
+ const sel=root.querySelector('#monthlyPortfolioSelect');
+ if(sel)sel.onchange=()=>{window.__MY4F_MONTHLY_PORTFOLIO__=sel.value;renderMonthlyReturnsPage(d,bm);};
  bmSwitch('monthlyBmSwitch',bm,next=>{FAST_BM=next;renderMonthlyReturnsPage(d,next);renderFastAnalytics(d,next);});
 }
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
