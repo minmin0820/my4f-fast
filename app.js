@@ -37,6 +37,7 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  window.__MY4F_SNAPSHOT__=d;
  renderResearchPerformance(d.performance);
  renderFastAnalytics(d);
+    renderMonthlyTrade(d);
   document.getElementById('months').innerHTML=(d.returns||[]).map(x=>`<article class="month"><div class="monthTop"><span>${esc(x[0])}</span><span class="badge ${x[1]=='A-STATE'?'a':String(x[1]).includes('BOOSTER')?'b':''}">${esc(x[1])}</span></div><div class="return-scroll"><div class="row k"><span class="lab">麒麟</span><span class="name">天界</span><strong>${pct(x[2])}</strong><span class="name">現世</span><strong>${pct(x[3])}</strong></div><div class="row"><span class="lab">BM</span><span class="name">SPY</span><strong>${pct(x[4])}</strong><span class="name">TQQQ</span><strong>${pct(x[5])}</strong></div></div></article>`).join('');
   renderMonthlyReturnsPage(d,FAST_BM);
 }).catch(e=>document.body.insertAdjacentHTML('afterbegin',`<div style="padding:10px;background:#ffecec;color:#a00;font:12px sans-serif">Snapshot load error: ${esc(e.message)}</div>`));
@@ -194,9 +195,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const am=mean(x),bmMean=mean(y),sx=sd(x),sy=sd(y),geo=n?Math.pow(x.reduce((p,r)=>p*(1+r),1),1/n)-1:NaN;
    const annual=x.length?Math.pow(x.reduce((p,r)=>p*(1+r),1),12/n)-1:NaN;
    const annBm=y.length?Math.pow(y.reduce((p,r)=>p*(1+r),1),12/n)-1:NaN;
-   const down=x.filter(v=>v<0),downBm=y.filter(v=>v<0);
-   // Sortino canonical definition: MAR=0, downside deviation uses ALL months; positive months contribute 0.
-   const downDev=Math.sqrt(mean(x.map(v=>Math.min(v,0)**2))),downDevBm=Math.sqrt(mean(y.map(v=>Math.min(v,0)**2)));
+   const down=x.filter(v=>v<0),downBm=y.filter(v=>v<0),downDev=Math.sqrt(mean(down.map(v=>v*v))),downDevBm=Math.sqrt(mean(downBm.map(v=>v*v)));
    const beta=covariance(x,y)/(sy**2),alpha=(am-beta*bmMean)*12,rho=metricCorr(x,y),r2=rho*rho;
    const ddx=ddEpisodeFromReturns(rows,1),ddy=ddEpisodeFromReturns(rows,2);
    const years={}; rows.forEach(r=>{const yy=r[0].slice(0,4);(years[yy]??=[1,1]);years[yy][0]*=1+r[1];years[yy][1]*=1+r[2]});
@@ -231,39 +230,29 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    if(!portfolios.includes(METRIC_PORTFOLIO))METRIC_PORTFOLIO=portfolios[0];
    const M=calcMetrics(METRIC_PORTFOLIO,bmName),A=M.main,B=M.bm;
    const pct=v=>Number.isFinite(v)?`${v>=0?'+':''}${(v*100).toFixed(2)}%`:'N/A',num=v=>Number.isFinite(v)?v.toFixed(2):'N/A',mo=v=>v==null?'Ongoing':`${v} months`;
-   const metricRow=([l,x,y])=>`<div class="metrics-row"><span>${E(l)}</span><b class="${String(x).startsWith('-')?'neg':''}">${E(x)}</b><b class="${String(y).startsWith('-')?'neg':''}">${E(y)}</b></div>`;
-   const section=(title,rows,open=false)=>`<details class="metric-section" ${open?'open':''}><summary>${E(title)}<span>${rows.length} metrics</span></summary><div class="metrics-compare-table"><div class="metrics-row metrics-head"><span>Metric</span><b>${E(METRIC_PORTFOLIO)}</b><b>${E(bmName)}</b></div>${rows.map(metricRow).join('')}</div></details>`;
-   const core=[['CAGR',pct(A.annual),pct(B.annual)],['Sharpe',num(A.sharpe),num(B.sharpe)],['Sortino',num(A.sortino),num(B.sortino)],['Max DD',pct(A.mdd),pct(B.mdd)],['Calmar',num(A.calmar),num(B.calmar)],['Volatility',pct(A.sda),pct(B.sda)]];
-   const returns=[['Arithmetic Mean (monthly)',pct(A.am),pct(B.am)],['Arithmetic Mean (annualized)',pct(A.annMean),pct(B.annMean)],['Geometric Mean (monthly)',pct(A.geo),pct(B.geo)],['Geometric Mean (annualized)',pct(A.annual),pct(B.annual)],['Best Year',pct(A.best),pct(B.best)],['Worst Year',pct(A.worst),pct(B.worst)],['Positive Periods',A.positive,B.positive],['Gain/Loss Ratio',num(A.gainLoss),num(B.gainLoss)],['New High Frequency',`${A.newHigh.toFixed(2)}%`,`${B.newHigh.toFixed(2)}%`]];
-   const risk=[['Standard Deviation (monthly)',pct(A.sdm),pct(B.sdm)],['Standard Deviation (annualized)',pct(A.sda),pct(B.sda)],['Downside Deviation (monthly, MAR=0)',pct(A.downDev),pct(B.downDev)],['Sharpe Ratio',num(A.sharpe),num(B.sharpe)],['Sortino Ratio (MAR=0)',num(A.sortino),num(B.sortino)],['Analytical Value-at-Risk (5%)',pct(A.var95),pct(B.var95)],['Skewness',num(A.skew),num(B.skew)],['Excess Kurtosis',num(A.kurt),num(B.kurt)],['Volatility Drag',pct(A.volDrag),pct(B.volDrag)],['Max Consecutive Loss',String(A.maxLoss),String(B.maxLoss)]];
-   const draw=[['Maximum Drawdown',pct(A.mdd),pct(B.mdd)],['MDD Date',A.dd.maxDate||'N/A',B.dd.maxDate||'N/A'],['Peak Date',A.dd.worst?.peakDate||'N/A',B.dd.worst?.peakDate||'N/A'],['Trough Date',A.dd.worst?.troughDate||'N/A',B.dd.worst?.troughDate||'N/A'],['Recovery Date',A.dd.worst?.recoveryDate||'Ongoing',B.dd.worst?.recoveryDate||'Ongoing'],['Drawdown Length',mo(A.dd.worst?.length),mo(B.dd.worst?.length)],['Recovery Time',mo(A.dd.worst?.recovery),mo(B.dd.worst?.recovery)],['Underwater Period',mo(A.dd.worst?.underwater),mo(B.dd.worst?.underwater)],['Avg Underwater Period',mo(Number.isFinite(A.dd.avgUnder)?A.dd.avgUnder.toFixed(1):null),mo(Number.isFinite(B.dd.avgUnder)?B.dd.avgUnder.toFixed(1):null)],['PTU(%)',num(A.ptu),num(B.ptu)],['Calmar Ratio',num(A.calmar),num(B.calmar)]];
-   const benchmark=[['Benchmark Correlation',num(A.rho),num(B.rho)],['Beta',num(A.beta),num(B.beta)],['Alpha (annualized)',pct(A.alpha),pct(B.alpha)],['R²',pct(A.r2),pct(B.r2)],['Active Return',pct(A.active),'N/A'],['Tracking Error',pct(A.te),'N/A'],['Information Ratio',num(A.info),'N/A']];
-   const capture=[['Upside Capture Ratio (%)',num(A.upCap),num(B.upCap)],['Downside Capture Ratio (%)',num(A.downCap),num(B.downCap)],['Up/Down Spread',num(A.spread),num(B.spread)],['Up/Down Ratio',num(A.upDown),num(B.upDown)],['Max Run-up',`${A.runup>=0?'+':''}${A.runup.toFixed(2)}%`,`${B.runup>=0?'+':''}${B.runup.toFixed(2)}%`]];
-   // v44: Bam-style Up vs. Down Market Performance.
-   // Uses the same common-period monthly returns already used by Metrics.
-   const regimeDefs=[['Up Market',v=>v>=0.02],['Sideways',v=>v>-0.02&&v<0.02],['Down Market',v=>v<=-0.02]];
-   const regimeRows=regimeDefs.map(([label,test])=>{
-     const rr=M.rows.filter(r=>test(r[2])),above=rr.filter(r=>r[1]>r[2]).length,below=rr.length-above;
-     return {label,above,below,total:rr.length,pctAbove:rr.length?100*above/rr.length:NaN,avgActive:rr.length?mean(rr.map(r=>r[1]-r[2])):NaN};
-   });
-   const totalAbove=regimeRows.reduce((s,r)=>s+r.above,0),totalBelow=regimeRows.reduce((s,r)=>s+r.below,0),totalN=regimeRows.reduce((s,r)=>s+r.total,0);
-   const totalActive=M.rows.length?mean(M.rows.map(r=>r[1]-r[2])):NaN;
-   const regimeTable=`<div class="metric-regime v44-regime"><h3>Up vs. Down Market Performance <span>(${M.n} months)</span></h3><div class="v44-regime-table"><div class="h">Market Type</div><div class="h">Above BM</div><div class="h">Below BM</div><div class="h">Total</div><div class="h">% Above</div><div class="h">Avg Active</div>${regimeRows.map(r=>`<div class="market ${r.label==='Up Market'?'up':r.label==='Down Market'?'down':''}">${E(r.label)}</div><div>${r.above}</div><div>${r.below}</div><div>${r.total}</div><div>${Number.isFinite(r.pctAbove)?Math.round(r.pctAbove)+'%':'—'}</div><div class="${r.avgActive<0?'neg':'pos'}">${pct(r.avgActive)}</div>`).join('')}<div class="total">Total</div><div class="total">${totalAbove}</div><div class="total">${totalBelow}</div><div class="total">${totalN}</div><div class="total">${totalN?Math.round(100*totalAbove/totalN)+'%':'—'}</div><div class="total ${totalActive<0?'neg':'pos'}">${pct(totalActive)}</div></div></div>`;
-   const bucketDefs=[['≤ -8%',-Infinity,-.08],['-8 to -6%',-.08,-.06],['-6 to -4%',-.06,-.04],['-4 to -2%',-.04,-.02],['-2 to 0%',-.02,0],['0 to 2%',0,.02],['2 to 4%',.02,.04],['4 to 6%',.04,.06],['6 to 8%',.06,.08],['8 to 10%',.08,.10],['10 to 15%',.10,.15],['≥ 15%',.15,Infinity]];
-   const bucketData=bucketDefs.map(([label,lo,hi])=>{const rr=M.rows.filter(r=>r[2]>=lo&&r[2]<hi);return {label,n:rr.length,main:rr.length?mean(rr.map(r=>r[1])):NaN,bm:rr.length?mean(rr.map(r=>r[2])):NaN}}).filter(r=>r.n);
-   function regimeBarChart(data){
-     if(!data.length)return '';
-     const W=720,H=330,L=42,R=10,T=16,B=80,maxAbs=Math.max(.01,...data.flatMap(d=>[Math.abs(d.main),Math.abs(d.bm)])),plotH=H-T-B,zero=T+plotH/2,scale=(plotH/2-10)/maxAbs,step=(W-L-R)/data.length,bw=Math.min(17,step*.28);
-     let bars='',labels='';
-     data.forEach((d,i)=>{const cx=L+step*(i+.5);[[d.main,-bw*.58,'mainbar'],[d.bm,bw*.58,'bmbar']].forEach(([v,dx,cl])=>{const y=v>=0?zero-v*scale:zero;bars+=`<rect class="${cl}" x="${cx+dx-bw/2}" y="${y}" width="${bw}" height="${Math.max(1,Math.abs(v*scale))}" rx="1"/>`});labels+=`<text x="${cx}" y="${H-52}" transform="rotate(-45 ${cx} ${H-52})" text-anchor="end">${E(d.label)}</text>`});
-     return `<div class="v44-regime-chart"><svg viewBox="0 0 ${W} ${H}"><line class="zero" x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}"/>${bars}${labels}<text class="axis-title" x="${W/2}" y="${H-7}" text-anchor="middle">Benchmark Return Range</text></svg><div class="v44-chart-legend"><span class="main">${E(METRIC_PORTFOLIO)}</span><span class="bm">${E(bmName)}</span></div></div>`;
-   }
-   const regimeChart=regimeBarChart(bucketData);
-   mt.innerHTML=`<div class="metrics-toolbar"><label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label><div id="metricsBmSwitch"></div></div>
-     <div class="metrics-definition">Common period · Monthly returns · RF/MAR 0% · Sortino downside deviation = √mean(min(r,0)²)</div>
-     <h3 class="metrics-title">Core Metrics</h3><div class="metric-kpi-grid">${core.map(([l,x,y])=>`<div class="metric-kpi"><span>${E(l)}</span><b>${E(x)}</b><small>${E(bmName)} ${E(y)}</small></div>`).join('')}</div>
-     ${section('Return',returns,true)}${section('Risk & Downside',risk,true)}${section('Drawdown',draw)}${section('Benchmark & Alpha',benchmark)}${section('Market Capture',capture)}
-     ${regimeTable}${regimeChart}<div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
+   const rows=[
+    ['Arithmetic Mean (monthly)',pct(A.am),pct(B.am)],['Arithmetic Mean (annualized)',pct(A.annMean),pct(B.annMean)],
+    ['Geometric Mean (monthly)',pct(A.geo),pct(B.geo)],['Geometric Mean (annualized)',pct(A.annual),pct(B.annual)],
+    ['Standard Deviation (monthly)',pct(A.sdm),pct(B.sdm)],['Standard Deviation (annualized)',pct(A.sda),pct(B.sda)],
+    ['Downside Deviation (monthly)',pct(A.downDev),pct(B.downDev)],['Best Year',pct(A.best),pct(B.best)],['Worst Year',pct(A.worst),pct(B.worst)],
+    ['Maximum Drawdown',pct(A.mdd),pct(B.mdd)],['MDD Date',A.dd.maxDate||'N/A',B.dd.maxDate||'N/A'],
+    ['Drawdown Length',mo(A.dd.worst?.length),mo(B.dd.worst?.length)],['Recovery Time',mo(A.dd.worst?.recovery),mo(B.dd.worst?.recovery)],
+    ['Underwater Period',mo(A.dd.worst?.underwater),mo(B.dd.worst?.underwater)],['Avg Underwater Period',mo(Number.isFinite(A.dd.avgUnder)?A.dd.avgUnder.toFixed(1):null),mo(Number.isFinite(B.dd.avgUnder)?B.dd.avgUnder.toFixed(1):null)],
+    ['PTU(%)',num(A.ptu),num(B.ptu)],['Peak Date',A.dd.worst?.peakDate||'N/A',B.dd.worst?.peakDate||'N/A'],['Trough Date',A.dd.worst?.troughDate||'N/A',B.dd.worst?.troughDate||'N/A'],['Recovery Date',A.dd.worst?.recoveryDate||'Ongoing',B.dd.worst?.recoveryDate||'Ongoing'],
+    ['Benchmark Correlation',num(A.rho),num(B.rho)],['Beta',num(A.beta),num(B.beta)],['Alpha (annualized)',pct(A.alpha),pct(B.alpha)],['R²',pct(A.r2),pct(B.r2)],
+    ['Sharpe Ratio',num(A.sharpe),num(B.sharpe)],['Sortino Ratio',num(A.sortino),num(B.sortino)],['Calmar Ratio',num(A.calmar),num(B.calmar)],['Analytical Value-at-Risk (5%)',pct(A.var95),pct(B.var95)],
+    ['Upside Capture Ratio (%)',num(A.upCap),num(B.upCap)],['Downside Capture Ratio (%)',num(A.downCap),num(B.downCap)],['Up/Down Spread',num(A.spread),num(B.spread)],['Up/Down Ratio',num(A.upDown),num(B.upDown)],
+    ['Positive Periods',A.positive,B.positive],['Gain/Loss Ratio',num(A.gainLoss),num(B.gainLoss)],['Skewness',num(A.skew),num(B.skew)],['Excess Kurtosis',num(A.kurt),num(B.kurt)],
+    ['Volatility Drag',pct(A.volDrag),pct(B.volDrag)],['Max Consecutive Loss',String(A.maxLoss),String(B.maxLoss)],['Max Run-up',`${A.runup>=0?'+':''}${A.runup.toFixed(2)}%`,`${B.runup>=0?'+':''}${B.runup.toFixed(2)}%`],
+    ['New High Frequency',`${A.newHigh.toFixed(2)}%`,`${B.newHigh.toFixed(2)}%`],['Active Return',pct(A.active),'N/A'],['Tracking Error',pct(A.te),'N/A'],['Information Ratio',num(A.info),'N/A']
+   ];
+   mt.innerHTML=`<div class="metrics-toolbar">
+     <label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label>
+     <div id="metricsBmSwitch"></div></div>
+     <h3 class="metrics-title">Risk and Return Metrics</h3>
+     <div class="metrics-compare-table"><div class="metrics-row metrics-head"><span>Metric</span><b>${E(METRIC_PORTFOLIO)}</b><b>${E(bmName)}</b></div>
+     ${rows.map(([l,x,y])=>`<div class="metrics-row"><span>${E(l)}</span><b class="${String(x).startsWith('-')?'neg':''}">${E(x)}</b><b class="${String(y).startsWith('-')?'neg':''}">${E(y)}</b></div>`).join('')}</div>
+     <div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
    mt.querySelector('#metricsPortfolio').onchange=e=>{METRIC_PORTFOLIO=e.target.value;drawMetrics()};
    bmSwitch('metricsBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
  }
@@ -331,7 +320,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const mean=rs.reduce((s,v)=>s+v,0)/rs.length,variance=rs.reduce((s,v)=>s+(v-mean)**2,0)/Math.max(1,rs.length-1),vol=Math.sqrt(variance)*Math.sqrt(12)*100;
    let peak=1,mdd=0;wealth.slice(1).forEach(w=>{peak=Math.max(peak,w);mdd=Math.min(mdd,w/peak-1)});
    const annual={};rows.forEach(x=>{const y=x[0].slice(0,4);annual[y]=(annual[y]??1)*(1+x[col])});const yr=Object.values(annual).map(v=>(v-1)*100);
-   const rf=0,sh=(vol?mean*12*100/vol:0),downDev=Math.sqrt(rs.reduce((s,v)=>s+Math.min(v,0)**2,0)/Math.max(1,rs.length))*Math.sqrt(12)*100,sortino=downDev?mean*12*100/downDev:0;
+   const rf=0,sh=(vol?mean*12*100/vol:0),downs=rs.filter(v=>v<0),downDev=Math.sqrt(downs.reduce((s,v)=>s+v*v,0)/Math.max(1,downs.length))*Math.sqrt(12)*100,sortino=downDev?mean*12*100/downDev:0;
    return{start:rows[0][0],end:rows.at(-1)[0],months:rows.length,endBalance:100000*wealth.at(-1),cagr,vol,best:Math.max(...yr),worst:Math.min(...yr),mdd:mdd*100,sharpe:sh,sortino};
  }
  function corr(rows){
@@ -458,7 +447,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  bind(document.getElementById('annualPage'),(n,b)=>{
    const r=a[n]?.annual||[],br=a[bmName]?.annual||[],bmMap=new Map(br.map(x=>[x[0],x[1]]));
    let wm=1,wb=1;const balance=new Map(),bbalance=new Map();[...r].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wm*=1+Number(x[1])/100;balance.set(x[0],wm*100000)});[...br].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wb*=1+Number(x[1])/100;bbalance.set(x[0],wb*100000)});
-   b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>${E(bmName)}<br>Return</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>Bal</th><th>${E(bmName)}<br>Return</th><th>Bal</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td>${money(balance.get(x[0]))}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td><td>${money(bbalance.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
    bmSwitch('annualBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  });
 
@@ -466,7 +455,6 @@ function renderFastAnalytics(d,bmName=FAST_BM){
 
 // Fast v5 menu / section navigation
 document.addEventListener('DOMContentLoaded',()=>{
- // Visible build marker: confirms the browser is running this exact UI update.
  const btn=document.getElementById('fastMenuButton'),menu=document.getElementById('fastMenu'),back=document.getElementById('fastMenuBackdrop'),close=document.getElementById('fastMenuClose');
  if(!btn||!menu||!back)return;
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
@@ -495,3 +483,21 @@ document.addEventListener('DOMContentLoaded',()=>{
  }));
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 });
+
+
+function mtEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function mtAllocText(obj){const a=Object.entries(obj||{}).filter(([,v])=>Number(v)>0).sort((x,y)=>Number(y[1])-Number(x[1]));return a.length?a.map(([k,v])=>`${mtEsc(k)} <b>${Number(v).toFixed(1)}%</b>`).join('<span class="mt-comma">, </span>'):'—';}
+function mtPct(v){const n=Number(v);if(!Number.isFinite(n))return '—';return `${n>=0?'+':''}${n.toFixed(2)}%`;}
+function renderMonthlyTrade(d){
+ const root=document.getElementById('monthlyTradeContent'); if(!root)return;
+ const asof=document.getElementById('mtAsOf'); if(asof)asof.textContent=`as of ${d.asof||'—'}`;
+ const current=d.execution||{}, prev=(d.action&&d.action.previous)||'—', changed=!!(d.action&&d.action.changed), month=d.month||'—';
+ const ret=(d.returns||[]).find(r=>String(r[0]||'').startsWith(month)); const mtd=ret&&Number.isFinite(Number(ret[3]))?Number(ret[3]):null;
+ const added=(d.action&&d.action.added)||[], removed=(d.action&&d.action.removed)||[];
+ const act=changed?`${added.length?`追加 ${added.join(' / ')}`:''}${added.length&&removed.length?' ｜ ':''}${removed.length?`除外 ${removed.join(' / ')}`:''}`:'前月から銘柄変更なし';
+ root.innerHTML=`<div class="mt-current"><div class="mt-kicker">THIS MONTH</div><div class="mt-month">${mtEsc(month)}</div><div class="mt-position">${mtAllocText(current)}</div><div class="mt-return ${mtd!=null&&mtd<0?'neg':''}"><span>MTD</span><strong>${mtd==null?'—':mtPct(mtd)}</strong></div></div>
+ <div class="mt-action ${changed?'changed':''}"><div class="mt-action-label">${changed?'REBALANCE':'HOLD'}</div><div><b>${mtEsc(act)}</b></div><div class="mt-prev">Previous: ${mtEsc(prev)}</div></div>
+ <div class="mt-exec-title">Execution</div><div class="mt-exec-grid">${Object.entries(current).sort((a,b)=>Number(b[1])-Number(a[1])).map(([k,v])=>`<div class="mt-exec-row"><span>${mtEsc(k)}</span><strong>${Number(v).toFixed(1)}%</strong></div>`).join('')}</div>
+ <div class="mt-note">月初リバランス用の実運用表示。売買判定・配分計算はFastでは行わず、Python正本のsnapshotをそのまま表示します。</div>`;
+}
+
