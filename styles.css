@@ -2212,3 +2212,47 @@ div.ui-update-badge{
 #performance .perf-period-mode .perf-mode{
   font-size:13px !important;
 }
+
+/* v58 Research Performance typography balance — scoped to this page only */
+
+/* Comparison label + 1Y/2Y/3Y/5Y/10Y/ALL: slightly larger */
+#performance .perf-toolbar > strong,
+#performance .perf-toolbar .perf-period,
+#performance .perf-periods .perf-period{
+  font-size:16px !important;
+}
+
+/* LOG / LINEAR / PERIOD MODE / Common / Full: one step smaller */
+#performance .perf-scale-row .perf-mode{
+  font-size:13px !important;
+}
+#performance .perf-period-mode > span{
+  font-size:9.5px !important;
+}
+#performance .perf-period-mode .perf-mode{
+  font-size:12px !important;
+}
+
+/* Chart-period explanatory line: smaller and quieter */
+#performance #perfMeta{
+  font-size:10px !important;
+  line-height:1.35 !important;
+}
+
+/* Chart axis text + in-chart tooltip/legend: slightly larger.
+   SVG selectors are scoped so other pages/charts remain untouched. */
+#performance #perfChart svg text{
+  font-size:12px !important;
+}
+#performance #perfChart .perf-tooltip,
+#performance #perfChart .perf-tooltip *,
+#performance #perfChart .chart-tooltip,
+#performance #perfChart .chart-tooltip *{
+  font-size:12px !important;
+}
+
+/* Legend immediately below chart: slightly larger */
+#performance #perfPeriodReturns,
+#performance #perfPeriodReturns *{
+  font-size:12px !important;
+}
