@@ -501,3 +501,13 @@ function renderMonthlyTrade(d){
  <div class="mt-note">月初リバランス用の実運用表示。売買判定・配分計算はFastでは行わず、Python正本のsnapshotをそのまま表示します。</div>`;
 }
 
+
+// Fast v46 — Monthly Trade route
+document.addEventListener('click',(ev)=>{
+ const b=ev.target.closest('[data-target="monthlyTrade"]'); if(!b)return;
+ ['top','summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification','monthlyTrade'].forEach(id=>{
+  const el=document.getElementById(id); if(!el)return;
+  if(id==='monthlyTrade')el.removeAttribute('hidden'); else el.setAttribute('hidden','');
+ });
+ const mt=document.getElementById('monthlyTrade'); if(mt){mt.style.display='block';mt.scrollIntoView({block:'start'});}
+},true);
