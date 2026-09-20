@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v79 Monthly Trade — collapsible Selection Portfolio wrapper around the frozen v78 grouped picker; display-only. Python snapshot remains canonical.
+// v80 Monthly Trade — polished collapsible Selection Portfolio header; FoF / Show All removed while month count is preserved. Display-only; Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
 
 function renderMonthlyTrade(d){
@@ -582,8 +582,7 @@ function renderMonthlyTrade(d){
     </details>
 
     <div class="mt-history-head">
-      <div><strong>Monthly Trade History</strong><span class="mt-fof">FoF</span><span class="mt-count">(${rows.length} months)</span></div>
-      <span class="mt-showall">Show All</span>
+      <div><strong>Monthly Trade History</strong><span class="mt-count">(${rows.length} months)</span></div>
     </div>
 
     <div class="mt-table">
