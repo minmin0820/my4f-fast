@@ -2162,3 +2162,5 @@ div.ui-update-badge{
  #monthlyTrade .mt-tr>div{padding:10px 4px}
  #monthlyTrade .mt-history-head strong{font-size:19px}
 }
+
+#monthlyTrade .mt-missing{font-size:11px;color:#b45309;font-weight:700;white-space:nowrap}

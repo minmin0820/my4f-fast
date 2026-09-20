@@ -543,7 +543,8 @@ function renderMonthlyTrade(d){
     if(key===currentMonth && monthlyTradeSelected==='麒麟「現世」' && !pos){
       pos=d.execution||null; start=d.execution_start||'—';
     }
-    return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth};
+    return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth,
+      incomplete:(!pos || start==='—')};
   });
 
   root.innerHTML=`
@@ -565,8 +566,8 @@ function renderMonthlyTrade(d){
         const neg=Number(r.return_pct)<0;
         return `<div class="mt-tr">
           <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}</div>
-          <div class="mt-start">${E(r.position_start)}</div>
-          <div class="mt-position">${positions(r.position)}</div>
+          <div class="mt-start">${r.incomplete?'<span class="mt-missing">未収録</span>':E(r.position_start)}</div>
+          <div class="mt-position">${r.incomplete?'<span class="mt-missing">正本データなし</span>':positions(r.position)}</div>
           <div class="mt-return ${neg?'neg':''}">${ret(r.return_pct)}</div>
         </div>`;
       }).join('')}
