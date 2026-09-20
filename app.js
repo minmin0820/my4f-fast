@@ -348,7 +348,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const main=SUMMARY_PORTFOLIO,rows=commonMonthly(main,bmName),s=summaryStats(rows,1),bs=summaryStats(rows,2),c=corr(rows);
    if(!s||!bs){root.innerHTML='<div class="analytics-empty">データなし</div>';return}
    const tr=(lab,a1,a2,cls='')=>`<tr><td>${lab}</td><td class="${cls}">${a1}</td><td class="${cls}">${a2}</td></tr>`;
-   const summaryTabs=`<div class="summary-portfolio-tabs">${names.map(n=>`<button type="button" data-summary-series="${E(n)}" class="${n===main?'active':''}">${E(n)}</button>`).join('')}</div>`;
+   const summaryTabs=`<div class="summary-portfolio-dropdown"><label for="summaryPortfolioSelect">Portfolio</label><select id="summaryPortfolioSelect" aria-label="Portfolio">${names.map(n=>`<option value="${E(n)}"${n===main?' selected':''}>${E(n)}</option>`).join('')}</select></div>`;
    root.innerHTML=`${summaryTabs}<div id="summaryBmSwitch"></div><div class="summary-compare-title"><b>${E(main)}</b><span>vs</span><b>${E(bmName)}</b></div><div class="analytics-table-scroll"><table class="analytics-table summary-compare-table"><thead><tr><th>Metric</th><th>${E(main)}</th><th>${E(bmName)}</th></tr></thead><tbody>
    ${tr('Start Balance','$100,000','$100,000')}${tr('End Balance',money(s.endBalance),money(bs.endBalance))}
    ${tr('Annualized Return (CAGR)',fmt(s.cagr),fmt(bs.cagr))}
@@ -360,11 +360,12 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    ${tr('Sortino Ratio',Number(s.sortino).toFixed(2),Number(bs.sortino).toFixed(2))}
    ${tr('Benchmark Correlation',c==null?'—':c.toFixed(2),'1.00')}
    </tbody></table></div><p class="analysis-period">Analysis Period: ${s.start} to ${s.end} (${s.months} months)</p>`;
-   root.querySelectorAll('[data-summary-series]').forEach(btn=>btn.onclick=()=>{
-     SUMMARY_PORTFOLIO=btn.dataset.summarySeries;
+   const summarySelect=root.querySelector('#summaryPortfolioSelect');
+   if(summarySelect) summarySelect.onchange=()=>{
+     SUMMARY_PORTFOLIO=summarySelect.value;
      window.__MY4F_SUMMARY_PORTFOLIO__=SUMMARY_PORTFOLIO;
      renderSummaryCompare();
-   });
+   };
    bmSwitch('summaryBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  }
  renderSummaryCompare();
