@@ -2261,3 +2261,33 @@ div.ui-update-badge{
 #performance .perf-start-row-outside{
   margin:10px 0 8px 0;
 }
+
+/* v60 Summary — all portfolio tabs + centered table headers only */
+#summaryPage .summary-portfolio-tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:0 0 10px;
+}
+#summaryPage .summary-portfolio-tabs button{
+  flex:1 1 calc(33.333% - 6px);
+  min-width:0;
+  min-height:30px;
+  padding:5px 7px;
+  border:1px solid #d7dee5;
+  border-radius:10px;
+  background:#fff;
+  color:#64748b;
+  font-size:11px;
+  font-weight:700;
+  line-height:1.15;
+}
+#summaryPage .summary-portfolio-tabs button.active{
+  border-color:#0788b5;
+  background:#eef9fd;
+  color:#087da6;
+}
+#summaryPage .summary-compare-table thead th{
+  text-align:center !important;
+  vertical-align:middle !important;
+}

@@ -158,6 +158,9 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pick=id=>`<div class="analytics-chips">${names.map((n,i)=>`<button data-series="${E(n)}" class="${i?'':'active'}">${E(n)}</button>`).join('')}</div><div id="${id}Body"></div>`;
  const mt=document.getElementById('metricsPage');
+ let SUMMARY_PORTFOLIO=(window.__MY4F_SUMMARY_PORTFOLIO__ && names.includes(window.__MY4F_SUMMARY_PORTFOLIO__))
+   ? window.__MY4F_SUMMARY_PORTFOLIO__
+   : (names.includes('麒麟「現世」')?'麒麟「現世」':names.find(n=>!['SPY','TQQQ'].includes(n))||names[0]);
  let METRIC_PORTFOLIO=(ss.find(x=>x.name==='麒麟「現世」')?.name||ss.find(x=>!['SPY','TQQQ'].includes(x.name))?.name||ss[0]?.name);
  function metricHistory(name){
    const raw=p?.history?.[name];
@@ -341,10 +344,12 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  }
  function money(v){if(!Number.isFinite(v))return'—';return v>=1e6?'$'+(v/1e6).toFixed(2)+'M':v>=1e3?'$'+(v/1e3).toFixed(1)+'K':'$'+v.toFixed(0)}
  function renderSummaryCompare(){
-   const root=document.getElementById('summaryComparePage');if(!root)return;const main='麒麟「現世」',rows=commonMonthly(main,bmName),s=summaryStats(rows,1),bs=summaryStats(rows,2),c=corr(rows);
+   const root=document.getElementById('summaryComparePage');if(!root)return;
+   const main=SUMMARY_PORTFOLIO,rows=commonMonthly(main,bmName),s=summaryStats(rows,1),bs=summaryStats(rows,2),c=corr(rows);
    if(!s||!bs){root.innerHTML='<div class="analytics-empty">データなし</div>';return}
    const tr=(lab,a1,a2,cls='')=>`<tr><td>${lab}</td><td class="${cls}">${a1}</td><td class="${cls}">${a2}</td></tr>`;
-   root.innerHTML=`<div id="summaryBmSwitch"></div><div class="summary-compare-title"><b>${E(main)}</b><span>vs</span><b>${E(bmName)}</b></div><div class="analytics-table-scroll"><table class="analytics-table summary-compare-table"><thead><tr><th>Metric</th><th>${E(main)}</th><th>${E(bmName)}</th></tr></thead><tbody>
+   const summaryTabs=`<div class="summary-portfolio-tabs">${names.map(n=>`<button type="button" data-summary-series="${E(n)}" class="${n===main?'active':''}">${E(n)}</button>`).join('')}</div>`;
+   root.innerHTML=`${summaryTabs}<div id="summaryBmSwitch"></div><div class="summary-compare-title"><b>${E(main)}</b><span>vs</span><b>${E(bmName)}</b></div><div class="analytics-table-scroll"><table class="analytics-table summary-compare-table"><thead><tr><th>Metric</th><th>${E(main)}</th><th>${E(bmName)}</th></tr></thead><tbody>
    ${tr('Start Balance','$100,000','$100,000')}${tr('End Balance',money(s.endBalance),money(bs.endBalance))}
    ${tr('Annualized Return (CAGR)',fmt(s.cagr),fmt(bs.cagr))}
    ${tr('Standard Deviation',fmt(s.vol),fmt(bs.vol))}
@@ -355,6 +360,11 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    ${tr('Sortino Ratio',Number(s.sortino).toFixed(2),Number(bs.sortino).toFixed(2))}
    ${tr('Benchmark Correlation',c==null?'—':c.toFixed(2),'1.00')}
    </tbody></table></div><p class="analysis-period">Analysis Period: ${s.start} to ${s.end} (${s.months} months)</p>`;
+   root.querySelectorAll('[data-summary-series]').forEach(btn=>btn.onclick=()=>{
+     SUMMARY_PORTFOLIO=btn.dataset.summarySeries;
+     window.__MY4F_SUMMARY_PORTFOLIO__=SUMMARY_PORTFOLIO;
+     renderSummaryCompare();
+   });
    bmSwitch('summaryBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  }
  renderSummaryCompare();
