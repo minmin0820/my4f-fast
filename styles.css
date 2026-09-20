@@ -2179,3 +2179,25 @@ div.ui-update-badge{
   font-weight:700;
   white-space:normal;
 }
+
+/* v56 Monthly Trade overlay type colors — scoped only */
+#monthlyTrade .mt-overlay-badge.is-astate{
+  color:#b91c1c;
+  background:#fee2e2;
+  border-color:#fecaca;
+}
+#monthlyTrade .mt-overlay-badge.is-booster{
+  color:#6d28d9;
+  background:#ede9fe;
+  border-color:#ddd6fe;
+}
+#monthlyTrade .mt-overlay-badge.is-promotion{
+  color:#b45309;
+  background:#fef3c7;
+  border-color:#fde68a;
+}
+#monthlyTrade .mt-overlay-badge.is-other{
+  color:#374151;
+  background:#f3f4f6;
+  border-color:#e5e7eb;
+}

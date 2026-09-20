@@ -567,7 +567,7 @@ function renderMonthlyTrade(d){
       ${rows.map(r=>{
         const neg=Number(r.return_pct)<0;
         return `<div class="mt-tr">
-          <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}${r.overlay?`<span class="mt-overlay-badge">${E(r.overlay)}</span>`:''}</div>
+          <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}${r.overlay?`<span class="mt-overlay-badge ${/^A-STATE/i.test(r.overlay)?'is-astate':/^PROMOTION100/i.test(r.overlay)?'is-promotion':/^BOOSTER/i.test(r.overlay)?'is-booster':'is-other'}">${E(r.overlay)}</span>`:''}</div>
           <div class="mt-start">${r.incomplete?'<span class="mt-missing">未収録</span>':E(r.position_start)}</div>
           <div class="mt-position">${r.incomplete?'<span class="mt-missing">正本データなし</span>':positions(r.position)}</div>
           <div class="mt-return ${neg?'neg':''}">${ret(r.return_pct)}</div>
