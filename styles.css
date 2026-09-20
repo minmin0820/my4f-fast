@@ -2498,3 +2498,12 @@ div.ui-update-badge{
   border-radius:0!important;
   padding:0!important;
 }
+
+/* v69 Metrics — center Portfolio dropdown selected text/options only */
+#metricsPage #metricsPortfolio{
+  text-align:center!important;
+  text-align-last:center!important;
+}
+#metricsPage #metricsPortfolio option{
+  text-align:center!important;
+}
