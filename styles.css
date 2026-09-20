@@ -2125,19 +2125,35 @@ div.ui-update-badge{
 .v44-regime-chart{width:100%;margin:14px 0 2px;overflow:hidden}.v44-regime-chart svg{display:block;width:100%;height:auto}.v44-regime-chart svg .zero{stroke:#cfd6dc;stroke-width:1}.v44-regime-chart svg text{font-size:9px;fill:#788397}.v44-regime-chart svg .mainbar{fill:#13a7dc}.v44-regime-chart svg .bmbar{fill:#9eacc0}.v44-regime-chart svg .axis-title{font-size:10px}
 .v44-chart-legend{display:flex;justify-content:center;gap:18px;font-size:11px}.v44-chart-legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.v44-chart-legend .main:before{background:#13a7dc}.v44-chart-legend .bm:before{background:#9eacc0}
 
-/* v45 Monthly Trade only — Frozen v44 styles outside #monthlyTrade are untouched */
-#monthlyTrade{display:none}
+/* v46 Monthly Trade only — all Frozen v45 UI outside #monthlyTrade is untouched */
+#monthlyTrade{display:none;padding:0}
 #monthlyTrade.page-active{display:block}
-#monthlyTrade .mt-live{display:flex;gap:8px;align-items:center;padding:10px 12px;margin:10px 0;border-radius:11px;background:#eefaf2;color:#16823d;font-size:13px}
-#monthlyTrade .mt-live b{font-size:11px;letter-spacing:.08em}
-#monthlyTrade .mt-card{border:1px solid #d9e0e7;border-radius:14px;overflow:hidden;background:#fff}
-#monthlyTrade .mt-head{display:flex;justify-content:space-between;align-items:flex-end;padding:13px;border-bottom:1px solid #e3e8ee}
-#monthlyTrade .mt-head>div{display:flex;flex-direction:column}
-#monthlyTrade small{font-size:10px;color:#738195;font-weight:800;letter-spacing:.08em}
-#monthlyTrade .mt-head strong{font-size:22px}
-#monthlyTrade .mt-mtd{text-align:right}
-#monthlyTrade .mt-rows>div{display:flex;justify-content:space-between;padding:12px 13px;border-bottom:1px solid #e3e8ee;font-size:19px}
-#monthlyTrade .mt-rows span{color:#08729f;font-weight:750}
-#monthlyTrade .mt-total{display:flex;justify-content:space-between;padding:9px 13px;background:#f8fafc;font-size:13px}
-#monthlyTrade .mt-prev{margin-top:11px;padding:11px 13px;border:1px solid #e1e6ec;border-radius:11px;font-size:13px}
-#monthlyTrade .mt-prev div{margin-top:4px;color:#4c5b6d}
+#monthlyTrade>h2{font-size:28px;line-height:1.05;margin:4px 0 3px}
+#monthlyTrade>p.muted{margin:0 0 12px}
+#monthlyTrade .mt-topline{margin:4px 0 12px}
+#monthlyTrade .mt-asof{font-size:13px;color:#687a91}
+#monthlyTrade .mt-strategy{display:flex;align-items:center;justify-content:space-between;border:2px solid #0a75a8;border-radius:11px;padding:10px 14px;margin:0 0 16px;font-size:15px;background:#fff}
+#monthlyTrade .mt-chevron{font-size:18px;color:#4d5b6d}
+#monthlyTrade .mt-history-head{border-top:1px solid #e1e7ec;padding:16px 0 12px}
+#monthlyTrade .mt-history-head>div{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+#monthlyTrade .mt-history-head strong{font-size:20px;line-height:1.2}
+#monthlyTrade .mt-fof{font-size:14px;font-weight:800}
+#monthlyTrade .mt-count{font-size:13px;color:#6f8095}
+#monthlyTrade .mt-showall{display:block;margin-top:14px;color:#0879ad;font-size:14px}
+#monthlyTrade .mt-table{width:100%;margin-top:13px}
+#monthlyTrade .mt-tr{display:grid;grid-template-columns:23% 22% 34% 21%;align-items:center;border-bottom:1px solid #273746;min-height:48px}
+#monthlyTrade .mt-th{min-height:55px;color:#687a91;font-size:12px;font-weight:800;text-align:center}
+#monthlyTrade .mt-th>div:first-child{text-align:left;padding-left:7px}
+#monthlyTrade .mt-tr>div{min-width:0;padding:10px 5px}
+#monthlyTrade .mt-month{font-size:13px;font-weight:650;display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+#monthlyTrade .mt-mtd-badge{font-size:10px;font-weight:500;color:#6d7f94;border:1px solid #d8e0e7;border-radius:5px;padding:2px 4px}
+#monthlyTrade .mt-start{font-size:13px;color:#6f8095;text-align:center;white-space:nowrap}
+#monthlyTrade .mt-position{font-size:13px;line-height:1.35;color:#0078ae;text-align:center;font-weight:650;overflow-wrap:anywhere}
+#monthlyTrade .mt-return{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#monthlyTrade .mt-return.neg{color:#dc342f}
+#monthlyTrade .mt-history-note{margin-top:12px}
+@media(max-width:520px){
+ #monthlyTrade .mt-tr{grid-template-columns:23% 22% 34% 21%}
+ #monthlyTrade .mt-tr>div{padding:10px 4px}
+ #monthlyTrade .mt-history-head strong{font-size:19px}
+}

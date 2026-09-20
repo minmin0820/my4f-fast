@@ -498,28 +498,72 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v45 Monthly Trade — display-only. Python snapshot remains canonical.
+// v46 Monthly Trade — display-only. Python snapshot remains canonical.
 function renderMonthlyTrade(d){
   const root=document.getElementById('monthlyTradeContent'); if(!root)return;
   const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const exec=d.execution||{}, month=d.month||'—', prev=(d.action&&d.action.previous)||'—';
-  const changed=!!(d.action&&d.action.changed), added=(d.action&&d.action.added)||[], removed=(d.action&&d.action.removed)||[];
-  const entries=Object.entries(exec).filter(([,v])=>Number(v)>0).sort((a,b)=>Number(b[1])-Number(a[1]));
-  const total=entries.reduce((a,[,v])=>a+Number(v),0);
-  const ret=(d.returns||[]).find(r=>String(r[0]||'').startsWith(month));
-  const mtd=ret&&Number.isFinite(Number(ret[3]))?Number(ret[3]):null;
-  const pct=v=>v==null?'—':`${Number(v)>=0?'+':''}${Number(v).toFixed(2)}%`;
-  const action=changed
-    ? `${added.length?`追加 ${added.join(' / ')}`:''}${added.length&&removed.length?' ｜ ':''}${removed.length?`除外 ${removed.join(' / ')}`:''}`
-    : '前月から銘柄変更なし';
+  const month=d.month||'—';
+  const asof=d.asof||d.updated_at||d.generated_at||'—';
+
+  // Canonical history only. No allocation is inferred in Fast.
+  const hist = Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : [];
+  const currentEntries=Object.entries(d.execution||{}).filter(([,v])=>Number(v)>0);
+  const currentRow = currentEntries.length ? [{
+    month,
+    position_start:(d.execution_start||'—'),
+    position:Object.fromEntries(currentEntries),
+    return_pct:null,
+    mtd:true
+  }] : [];
+
+  // If canonical history is not yet bridged, show current canonical execution only.
+  const rows = hist.length ? hist : currentRow;
+
+  const monthLabel=x=>{
+    const s=String(x||'');
+    const mm=s.match(/^(\d{4})-(\d{2})/);
+    if(!mm)return E(s||'—');
+    const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${names[Number(mm[2])-1]} ${mm[1]}`;
+  };
+  const positions=p=>{
+    if(!p)return '—';
+    if(typeof p==='string')return E(p);
+    return Object.entries(p).filter(([,v])=>Number(v)>0)
+      .map(([k,v])=>`${E(k)} ${Number(v).toFixed(1)}%`).join('<br>');
+  };
+  const ret=v=>{
+    if(v===null||v===undefined||v===''||!Number.isFinite(Number(v)))return '—';
+    const n=Number(v); return `${n>=0?'+':''}${n.toFixed(2)}%`;
+  };
+
   root.innerHTML=`
-    <div class="mt-live"><b>${changed?'REBALANCE':'HOLD'}</b><span>${E(action)}</span></div>
-    <div class="mt-card">
-      <div class="mt-head"><div><small>TRADE MONTH</small><strong>${E(month)}</strong></div><div class="mt-mtd"><small>MTD</small><strong>${pct(mtd)}</strong></div></div>
-      <div class="mt-rows">${entries.map(([k,v])=>`<div><span>${E(k)}</span><b>${Number(v).toFixed(1)}%</b></div>`).join('')}</div>
-      <div class="mt-total"><span>Total</span><b>${total.toFixed(1)}%</b></div>
+    <div class="mt-topline">
+      <div class="mt-asof">as of ${E(asof)}</div>
     </div>
-    <div class="mt-prev"><small>PREVIOUS MONTH</small><div>${E(prev)}</div></div>
-    <p class="analytics-note">月初に上記比率へリバランス。Fastは表示専用で、売買判定・配分計算はPython正本のsnapshotを使用します。</p>`;
+    <div class="mt-strategy"><span>麒麟「現世」</span><span class="mt-chevron">⌄</span></div>
+
+    <div class="mt-history-head">
+      <div><strong>Monthly Trade History</strong><span class="mt-fof">FoF</span>${hist.length?`<span class="mt-count">(${hist.length} months)</span>`:''}</div>
+      <span class="mt-showall">Show All</span>
+    </div>
+
+    <div class="mt-table">
+      <div class="mt-tr mt-th">
+        <div>Month</div><div>Position<br>Start</div><div>Position</div><div>Return</div>
+      </div>
+      ${rows.map(r=>{
+        const rv=r.return_pct ?? r.return ?? r.monthly_return;
+        const neg=Number(rv)<0;
+        return `<div class="mt-tr">
+          <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}</div>
+          <div class="mt-start">${E(r.position_start||r.start||'—')}</div>
+          <div class="mt-position">${positions(r.position||r.positions||r.execution)}</div>
+          <div class="mt-return ${neg?'neg':''}">${ret(rv)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    ${!hist.length?'<p class="analytics-note mt-history-note">過去の月次Position履歴はsnapshot未収録のため、現在のPython正本Executionのみ表示しています。履歴は推測・再計算しません。</p>':''}
+  `;
 }
 
