@@ -2387,3 +2387,15 @@ div.ui-update-badge{
 .analytics-shell .subsection-title{
   text-align:center!important;
 }
+
+/* v63 Annual Returns — one more step larger; no other page changes */
+#annualPage .annual-bar-svg{
+  min-height:460px!important;
+}
+#annualPage .annual-bar-svg text{
+  font-size:16px!important;
+  font-weight:600!important;
+}
+#annualPage .compare-legend{
+  font-size:18px!important;
+}

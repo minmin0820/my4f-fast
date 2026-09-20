@@ -462,7 +462,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function annualBars(mainRows,bmRows,mainName,bmName){
    const bmMap=new Map(bmRows.map(x=>[x[0],Number(x[1])])),rows=mainRows.map(x=>[x[0],Number(x[1]),bmMap.get(x[0])]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
    if(!rows.length)return'<div class="analytics-empty">データなし</div>';
-   const W=760,H=360,L=54,R=16,T=20,B=52,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
+   const W=760,H=430,L=60,R=18,T=22,B=62,all=rows.flatMap(x=>[x[1],x[2]]),mn=Math.min(0,...all),mx=Math.max(0,...all),span=mx-mn||1,zero=T+(H-T-B)*(1-(0-mn)/span),group=(W-L-R)/rows.length,bw=Math.max(3,Math.min(14,group*.3)),Y=v=>T+(H-T-B)*(1-(v-mn)/span);
    let s=`<div class="annual-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="annual-bar-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>`;
    rows.forEach((x,i)=>{const cx=L+group*(i+.5),y1=Y(x[1]),y2=Y(x[2]);s+=`<rect x="${cx-bw-1}" y="${Math.min(y1,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y1))}" class="annual-main-bar"/><rect x="${cx+1}" y="${Math.min(y2,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y2))}" class="annual-bm-bar"/>`;if(i%Math.max(1,Math.ceil(rows.length/8))===0)s+=`<text x="${cx}" y="${H-12}" text-anchor="middle">${E(x[0])}</text>`});
    return s+`</svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
