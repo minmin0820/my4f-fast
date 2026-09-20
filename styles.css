@@ -2442,3 +2442,28 @@ div.ui-update-badge{
   margin-bottom:0!important;
   padding:2px 0 4px!important;
 }
+
+/* v66 Annual Returns — preserve v65 tight balance, enlarge whole chart */
+#annualPage .annual-chart-wrap{
+  padding:5px 6px 4px!important;
+}
+#annualPage .annual-bar-svg{
+  min-height:0!important;
+  width:100%!important;
+  height:auto!important;
+  display:block!important;
+}
+#annualPage .annual-bar-svg text{
+  font-size:17px!important;
+  font-weight:650!important;
+}
+#annualPage .annual-y-label{
+  font-size:17px!important;
+  font-weight:700!important;
+}
+#annualPage .compare-legend{
+  font-size:19px!important;
+  gap:26px!important;
+  padding:3px 0 5px!important;
+  margin:0!important;
+}
