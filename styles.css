@@ -2201,3 +2201,14 @@ div.ui-update-badge{
   background:#f3f4f6;
   border-color:#e5e7eb;
 }
+
+/* v57 Research Performance: LOG/LINEAR + PERIOD MODE controls slightly smaller */
+#performance .perf-scale-row .perf-mode{
+  font-size:14px !important;
+}
+#performance .perf-period-mode > span{
+  font-size:10px !important;
+}
+#performance .perf-period-mode .perf-mode{
+  font-size:13px !important;
+}
