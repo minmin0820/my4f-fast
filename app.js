@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v47 Monthly Trade — display-only. Python snapshot remains canonical.
+// v78 Monthly Trade — Performance-style grouped portfolio picker; display-only. Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
 
 function renderMonthlyTrade(d){
@@ -569,10 +569,10 @@ function renderMonthlyTrade(d){
 
   root.innerHTML=`
     <div class="mt-topline"><div class="mt-asof">as of ${E(d.asof||d.updated_at||d.generated_at||'—')}</div></div>
-    <div class="mt-strategy-wrap">
-      <select id="mtStrategySelect" class="mt-strategy-select" aria-label="Monthly Trade strategy">
-        ${strategies.map(k=>`<option value="${E(k)}"${k===monthlyTradeSelected?' selected':''}>${E(k)}</option>`).join('')}
-      </select>
+    <div class="mt-strategy-wrap mt-perf-picker">
+      <div class="perf-picker-title">Select Portfolio <span>1 selected</span></div>
+      <div id="mtGroupTabs" class="perf-group-tabs"></div>
+      <div id="mtGroupPanel" class="perf-group-panel mt-group-panel"></div>
     </div>
 
     <div class="mt-history-head">
@@ -595,7 +595,27 @@ function renderMonthlyTrade(d){
     <p class="analytics-note mt-history-note">ReturnはPython正本の既存月次履歴を最古月まで表示。Position / Position Startは正本に履歴がある月だけ表示し、Fast側では推測・再計算しません。</p>
   `;
 
-  const sel=document.getElementById('mtStrategySelect');
-  if(sel) sel.addEventListener('change',e=>{monthlyTradeSelected=e.target.value;renderMonthlyTrade(d)});
+  const mtGroupMap={
+    'All':strategies,
+    'Frozen':strategies.filter(n=>/^Frozen /.test(n)),
+    '4F':strategies.filter(n=>/^(Frozen 4F|4F )/.test(n)),
+    'KIRIN':strategies.filter(n=>/麒麟/.test(n)),
+    'Benchmark':strategies.filter(n=>['SPY','TQQQ'].includes(n)),
+    'Seiryu':strategies.filter(n=>/^Seiryu /.test(n)),
+    'Byakko':strategies.filter(n=>/^Byakko /.test(n)),
+    'Suzaku':strategies.filter(n=>/^Suzaku /.test(n)),
+    'Genbu':strategies.filter(n=>/^Genbu /.test(n))
+  };
+  Object.keys(mtGroupMap).forEach(k=>{if(!mtGroupMap[k].length)delete mtGroupMap[k]});
+  let mtActiveGroup='All';
+  const tabs=root.querySelector('#mtGroupTabs'),panel=root.querySelector('#mtGroupPanel');
+  function renderMtGroups(){
+    if(!tabs||!panel)return;
+    tabs.innerHTML=Object.keys(mtGroupMap).map(k=>`<button type="button" class="perf-group-tab ${k===mtActiveGroup?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');
+    tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{mtActiveGroup=b.dataset.group;renderMtGroups()});
+    panel.innerHTML=(mtGroupMap[mtActiveGroup]||[]).map(n=>`<button type="button" class="perf-group-item ${n===monthlyTradeSelected?'active':''}" data-name="${E(n)}">${E(n)}</button>`).join('');
+    panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{monthlyTradeSelected=b.dataset.name;renderMonthlyTrade(d)});
+  }
+  renderMtGroups();
 }
 

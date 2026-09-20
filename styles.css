@@ -2539,3 +2539,10 @@ div.ui-update-badge{
 #monthlyReturnsPage #monthlyPortfolioSelect option{
   text-align:center;
 }
+
+
+/* v78 Monthly Trade — reuse Research Performance grouped portfolio picker. */
+#monthlyTrade .mt-perf-picker{margin:0 0 18px}
+#monthlyTrade .mt-perf-picker .perf-picker-title{margin-bottom:8px}
+#monthlyTrade .mt-group-panel{margin-bottom:0}
+#monthlyTrade .mt-group-panel .perf-group-item{font-size:11px;line-height:1.15}
