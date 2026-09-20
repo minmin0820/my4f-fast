@@ -528,9 +528,17 @@ function renderMonthlyTrade(d){
   Object.keys(histories).forEach(k=>{if(Array.isArray(histories[k])&&histories[k].length&&!strategies.includes(k))strategies.push(k)});
   if(!strategies.includes(monthlyTradeSelected)) monthlyTradeSelected=strategies.includes('麒麟「現世」')?'麒麟「現世」':(strategies[0]||'麒麟「現世」');
 
-  const hist=(histories[monthlyTradeSelected]||[]).slice().sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
   const canonicalTrade=d.monthly_trade_history_by_strategy?.[monthlyTradeSelected] || 
     (monthlyTradeSelected==='麒麟「現世」' && Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : []);
+  // v73: Monthly Trade rows are anchored to canonical trade-history months.
+  // Performance history is used only to attach Return values. This prevents
+  // newly extended return histories from turning valid trade rows into
+  // "未収録 / 正本データなし".
+  const perfHist=(histories[monthlyTradeSelected]||[]).slice();
+  const returnMap=new Map(perfHist.map(x=>[String(x?.[0]||'').slice(0,7),x?.[1]]));
+  const hist=(canonicalTrade||[]).length
+    ? (canonicalTrade||[]).map(r=>[String(r.month||'').slice(0,7), returnMap.get(String(r.month||'').slice(0,7))])
+    : perfHist;
   const tradeMap=new Map((canonicalTrade||[]).map(r=>[String(r.month||'').slice(0,7),r]));
   const currentMonth=String(d.month||'').slice(0,7);
 
