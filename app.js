@@ -525,8 +525,11 @@ function renderMonthlyTrade(d){
   const positions=p=>{
     if(!p)return '—';
     if(typeof p==='string')return E(p);
+    const vals=Object.values(p).map(Number).filter(Number.isFinite);
+    const total=vals.reduce((a,b)=>a+b,0);
+    const scale=total>0 && total<=1.000001 ? 100 : 1;
     return Object.entries(p).filter(([,v])=>Number(v)>0)
-      .map(([k,v])=>`${E(k)} ${Number(v).toFixed(1)}%`).join('<br>');
+      .map(([k,v])=>`${E(k)} ${(Number(v)*scale).toFixed(1)}%`).join('<br>');
   };
   const ret=v=>{
     if(v===null||v===undefined||v===''||!Number.isFinite(Number(v)))return '—';
