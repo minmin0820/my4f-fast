@@ -48,6 +48,41 @@ function bmSwitch(id,current,onChange){
  el.innerHTML=`<div class="bm-switch"><span>BM</span><button type="button" data-bm="SPY" class="${current==='SPY'?'active':''}">SPY</button><button type="button" data-bm="TQQQ" class="${current==='TQQQ'?'active':''}">TQQQ</button></div>`;
  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{FAST_BM=b.dataset.bm;onChange(FAST_BM);});
 }
+
+// v84 — shared compact Selection Portfolio fold picker for analytics pages, including Rolling Returns.
+function portfolioFoldGroups(names){
+ const groups={
+  'All':names,
+  'Frozen':names.filter(n=>/^Frozen /.test(n)),
+  '4F':names.filter(n=>/^(Frozen 4F|4F )/.test(n)),
+  'KIRIN':names.filter(n=>/麒麟/.test(n)),
+  'Benchmark':names.filter(n=>['SPY','TQQQ'].includes(n)),
+  'Seiryu':names.filter(n=>/^Seiryu /.test(n)),
+  'Byakko':names.filter(n=>/^Byakko /.test(n)),
+  'Suzaku':names.filter(n=>/^Suzaku /.test(n)),
+  'Genbu':names.filter(n=>/^Genbu /.test(n))
+ };
+ Object.keys(groups).forEach(k=>{if(!groups[k].length)delete groups[k]});
+ return groups;
+}
+function portfolioFoldHTML(id,names,selected){
+ const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ return `<details class="analytics-portfolio-fold perf-picker perf-picker-fold" data-picker="${E(id)}"><summary class="analytics-picker-summary"><span>Selection Portfolio</span><span class="analytics-selected-name">${E(selected)}</span></summary><div class="perf-picker-body analytics-picker-body"><div class="perf-picker-title">Select Portfolio <span>1 selected</span></div><div class="perf-group-tabs analytics-picker-tabs"></div><div class="perf-group-panel analytics-picker-panel"></div></div></details>`;
+}
+function wirePortfolioFold(root,id,names,selected,onSelect){
+ const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const wrap=root?.querySelector(`[data-picker="${id}"]`); if(!wrap)return;
+ const tabs=wrap.querySelector('.analytics-picker-tabs'),panel=wrap.querySelector('.analytics-picker-panel'),groups=portfolioFoldGroups(names);
+ let active='All';
+ const draw=()=>{
+  tabs.innerHTML=Object.keys(groups).map(k=>`<button type="button" class="perf-group-tab ${k===active?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.group;draw()});
+  panel.innerHTML=(groups[active]||[]).map(n=>`<button type="button" class="perf-group-item ${n===selected?'active':''}" data-name="${E(n)}">${E(n)}</button>`).join('');
+  panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.name;wrap.open=false;onSelect(selected)});
+ };
+ draw();
+}
+
 function renderMonthlyReturnsPage(d,bm='SPY'){
  const root=document.getElementById('monthlyReturnsPage');if(!root)return;
  const hist=d?.performance?.history||{},names=Object.keys(hist).filter(n=>Array.isArray(hist[n])&&hist[n].length);
@@ -56,10 +91,9 @@ function renderMonthlyReturnsPage(d,bm='SPY'){
  const bmMap=new Map(bmRows.map(x=>[String(x[0]),Number(x[1])]));
  const rows=mainRows.map(x=>[String(x[0]),Number(x[1]),bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
  const cell=v=>Number.isFinite(Number(v))?`<span class="${Number(v)>=0?'ret-pos':'ret-neg'}">${pct(Number(v))}</span>`:'—';
- const portfolioSelect=`<div class="monthly-portfolio-dropdown"><label for="monthlyPortfolioSelect">Portfolio</label><select id="monthlyPortfolioSelect" aria-label="Portfolio">${names.map(n=>`<option value="${esc(n)}"${n===main?' selected':''}>${esc(n)}</option>`).join('')}</select></div>`;
+ const portfolioSelect=portfolioFoldHTML('monthlyReturnsPicker',names,main);
  root.innerHTML=`${portfolioSelect}<div id="monthlyBmSwitch"></div><div class="monthly-compare-head"><span>Strategy</span><b>${esc(main)}</b><span class="bm-pill">BM: ${bm}</span></div><p class="analytics-note">表示可能な最古 ${rows[0]?.[0]||'—'} → ${rows.at(-1)?.[0]||'—'} ｜ ${rows.length} months</p><div class="analytics-table-scroll monthly-full-scroll"><table class="analytics-table monthly-compare-table"><thead><tr><th>Month</th><th>${esc(main)}</th><th>${bm}</th><th>差</th></tr></thead><tbody>${[...rows].reverse().map(x=>{const dif=Number.isFinite(x[2])?x[1]-x[2]:null;return`<tr><td>${esc(x[0])}</td><td>${cell(x[1])}</td><td>${cell(x[2])}</td><td>${dif==null?'—':cell(dif)}</td></tr>`}).join('')}</tbody></table></div>`;
- const sel=root.querySelector('#monthlyPortfolioSelect');
- if(sel)sel.onchange=()=>{window.__MY4F_MONTHLY_PORTFOLIO__=sel.value;renderMonthlyReturnsPage(d,bm);};
+ wirePortfolioFold(root,'monthlyReturnsPicker',names,main,next=>{window.__MY4F_MONTHLY_PORTFOLIO__=next;renderMonthlyReturnsPage(d,bm);});
  bmSwitch('monthlyBmSwitch',bm,next=>{FAST_BM=next;renderMonthlyReturnsPage(d,next);renderFastAnalytics(d,next);});
 }
 // Fast v4.5 — Research Performance. Display only; all source returns/metrics come from Python snapshot.
@@ -267,17 +301,17 @@ function renderFastAnalytics(d,bmName=FAST_BM){
      return `<div class="v44-regime-chart"><svg viewBox="0 0 ${W} ${H}"><line class="zero" x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}"/>${bars}${labels}<text class="axis-title" x="${W/2}" y="${H-7}" text-anchor="middle">Benchmark Return Range</text></svg><div class="v44-chart-legend"><span class="main">${E(METRIC_PORTFOLIO)}</span><span class="bm">${E(bmName)}</span></div></div>`;
    }
    const regimeChart=regimeBarChart(bucketData);
-   mt.innerHTML=`<div class="metrics-toolbar"><label>Portfolio<select id="metricsPortfolio">${portfolios.map(n=>`<option value="${E(n)}" ${n===METRIC_PORTFOLIO?'selected':''}>${E(n)}</option>`).join('')}</select></label><div id="metricsBmSwitch"></div></div>
+   mt.innerHTML=`<div class="metrics-toolbar metrics-toolbar-v83">${portfolioFoldHTML('metricsPicker',portfolios,METRIC_PORTFOLIO)}<div id="metricsBmSwitch"></div></div>
      <div class="metrics-definition">Common period · Monthly returns · RF/MAR 0% · Sortino downside deviation = √mean(min(r,0)²)</div>
      <h3 class="metrics-title">Core Metrics</h3><div class="metric-kpi-grid">${core.map(([l,x,y])=>`<div class="metric-kpi"><span>${E(l)}</span><b>${E(x)}</b><small>${E(bmName)} ${E(y)}</small></div>`).join('')}</div>
      ${section('Return',returns,true)}${section('Risk & Downside',risk,true)}${section('Drawdown',draw)}${section('Benchmark & Alpha',benchmark)}${section('Market Capture',capture)}
      ${regimeTable}${regimeChart}<div class="analysis-period">Analysis Period: ${E(M.start||'—')} to ${E(M.end||'—')} (${M.n} months)</div>`;
-   mt.querySelector('#metricsPortfolio').onchange=e=>{METRIC_PORTFOLIO=e.target.value;drawMetrics()};
+   wirePortfolioFold(mt,'metricsPicker',portfolios,METRIC_PORTFOLIO,next=>{METRIC_PORTFOLIO=next;drawMetrics()});
    bmSwitch('metricsBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
  }
  drawMetrics();
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
- function bind(root,fn){if(!root)return;root.innerHTML=pick(root.id);const body=root.querySelector(`#${root.id}Body`),bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}
+ function bind(root,fn,fold=false){if(!root)return;let selected=names.includes('麒麟「現世」')?'麒麟「現世」':names[0];const renderShell=()=>{root.innerHTML=fold?`${portfolioFoldHTML(root.id+'Picker',names,selected)}<div id="${root.id}Body"></div>`:pick(root.id);const body=root.querySelector(`#${root.id}Body`);if(fold){wirePortfolioFold(root,root.id+'Picker',names,selected,next=>{selected=next;renderShell();fn(selected,root.querySelector(`#${root.id}Body`))});fn(selected,body)}else{const bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}};renderShell()}
  bind(document.getElementById('rollingPage'),(n,b)=>{
    const hist=p?.history||{}, mainRows=Array.isArray(hist[n])?hist[n]:[], bmRows=Array.isArray(hist[bmName])?hist[bmName]:[];
    const clean=arr=>arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -316,7 +350,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    };
    b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));
    draw(36);
- });
+ },true);
  function compareChart(rows,mainName,bmName){
    if(!rows?.length)return'<div class="analytics-empty">データなし</div>';
    const all=rows.flatMap(x=>[Number(x[1]),Number(x[2])]).filter(Number.isFinite);
@@ -352,7 +386,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const main=SUMMARY_PORTFOLIO,rows=commonMonthly(main,bmName),s=summaryStats(rows,1),bs=summaryStats(rows,2),c=corr(rows);
    if(!s||!bs){root.innerHTML='<div class="analytics-empty">データなし</div>';return}
    const tr=(lab,a1,a2,cls='')=>`<tr><td>${lab}</td><td class="${cls}">${a1}</td><td class="${cls}">${a2}</td></tr>`;
-   const summaryTabs=`<div class="summary-portfolio-dropdown"><label for="summaryPortfolioSelect">Portfolio</label><select id="summaryPortfolioSelect" aria-label="Portfolio">${names.map(n=>`<option value="${E(n)}"${n===main?' selected':''}>${E(n)}</option>`).join('')}</select></div>`;
+   const summaryTabs=portfolioFoldHTML('summaryPicker',names,main);
    root.innerHTML=`${summaryTabs}<div id="summaryBmSwitch"></div><div class="summary-compare-title"><b>${E(main)}</b><span>vs</span><b>${E(bmName)}</b></div><div class="analytics-table-scroll"><table class="analytics-table summary-compare-table"><thead><tr><th>Metric</th><th>${E(main)}</th><th>${E(bmName)}</th></tr></thead><tbody>
    ${tr('Start Balance','$100,000','$100,000')}${tr('End Balance',money(s.endBalance),money(bs.endBalance))}
    ${tr('Annualized Return (CAGR)',fmt(s.cagr),fmt(bs.cagr))}
@@ -364,12 +398,11 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    ${tr('Sortino Ratio',Number(s.sortino).toFixed(2),Number(bs.sortino).toFixed(2))}
    ${tr('Benchmark Correlation',c==null?'—':c.toFixed(2),'1.00')}
    </tbody></table></div><p class="analysis-period">Analysis Period: ${s.start} to ${s.end} (${s.months} months)</p>`;
-   const summarySelect=root.querySelector('#summaryPortfolioSelect');
-   if(summarySelect) summarySelect.onchange=()=>{
-     SUMMARY_PORTFOLIO=summarySelect.value;
+   wirePortfolioFold(root,'summaryPicker',names,main,next=>{
+     SUMMARY_PORTFOLIO=next;
      window.__MY4F_SUMMARY_PORTFOLIO__=SUMMARY_PORTFOLIO;
      renderSummaryCompare();
-   };
+   });
    bmSwitch('summaryBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  }
  renderSummaryCompare();
@@ -461,7 +494,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
      svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)show(e)});
      svg.addEventListener('click',show);
    }
- });
+ },true);
 
  function annualBars(mainRows,bmRows,mainName,bmName){
    const bmMap=new Map(bmRows.map(x=>[x[0],Number(x[1])])),rows=mainRows.map(x=>[x[0],Number(x[1]),bmMap.get(x[0])]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
@@ -479,7 +512,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    let wm=1,wb=1;const balance=new Map(),bbalance=new Map();[...r].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wm*=1+Number(x[1])/100;balance.set(x[0],wm*100000)});[...br].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wb*=1+Number(x[1])/100;bbalance.set(x[0],wb*100000)});
    b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>${E(bmName)}<br>Return</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
    bmSwitch('annualBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
- });
+ },true);
 
 }
 

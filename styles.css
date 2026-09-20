@@ -2721,3 +2721,80 @@ div.ui-update-badge{
   }
   #monthlyTrade .mt-strategy-wrap:not([open]) .mt-selected-name{padding:3px 6px}
 }
+
+/* v83 — compact Selection Portfolio fold picker shared across Summary, Metrics,
+   Monthly Return, Drawdown and Annual Return. Monthly Trade v82 stays unchanged. */
+.analytics-portfolio-fold{
+  margin:0 0 12px;
+  border:1px solid #d9e1e8;
+  border-radius:13px;
+  background:#fff;
+  overflow:hidden;
+  box-shadow:0 1px 2px rgba(20,45,70,.03);
+}
+.analytics-picker-summary{
+  list-style:none;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) minmax(0,48%);
+  align-items:center;
+  column-gap:8px;
+  height:42px;
+  box-sizing:border-box;
+  padding:5px 10px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:800;
+  color:#23364d;
+}
+.analytics-picker-summary::-webkit-details-marker{display:none}
+.analytics-picker-summary::before{
+  content:'›';
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  border-radius:7px;
+  background:#f2f6f9;
+  color:#64788e;
+  font-size:18px;
+  font-weight:500;
+  line-height:1;
+  transform:rotate(0deg);
+  transition:transform .16s ease;
+}
+.analytics-portfolio-fold[open] .analytics-picker-summary::before{transform:rotate(90deg)}
+.analytics-selected-name{
+  justify-self:end;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  padding:3px 7px;
+  border:1px solid #dbe5eb;
+  border-radius:8px;
+  background:#f7fafc;
+  color:#263a50;
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1.15;
+}
+.analytics-portfolio-fold[open] .analytics-picker-summary{
+  height:auto;
+  min-height:46px;
+  padding:7px 10px;
+  border-bottom:1px solid #e7edf1;
+}
+.analytics-portfolio-fold[open] .analytics-selected-name{
+  border-color:#b9dfea;
+  background:#eef9fd;
+  color:#087da6;
+}
+.analytics-picker-body{padding:12px 12px 13px}
+.metrics-toolbar-v83{display:block !important}
+.metrics-toolbar-v83 .analytics-portfolio-fold{width:100%}
+.metrics-toolbar-v83 #metricsBmSwitch{margin-top:8px}
+@media(max-width:430px){
+  .analytics-picker-summary{height:40px;padding:4px 8px;column-gap:7px}
+  .analytics-picker-summary::before{width:21px;height:21px;font-size:18px}
+  .analytics-selected-name{padding:3px 6px}
+}
