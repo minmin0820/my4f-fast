@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v81 Monthly Trade — compact Selection Portfolio header; behavior/data unchanged. Display-only; Python snapshot remains canonical.
+// v82 Monthly Trade — visibly compact collapsed Selection Portfolio bar; behavior/data unchanged. Display-only; Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
 
 function renderMonthlyTrade(d){

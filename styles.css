@@ -2686,3 +2686,38 @@ div.ui-update-badge{
   #monthlyTrade .mt-picker-summary::before{width:22px;height:22px;font-size:19px}
   #monthlyTrade .mt-selected-name{padding:4px 7px}
 }
+
+/* v82 Monthly Trade — visibly compact collapsed Selection Portfolio bar. */
+#monthlyTrade .mt-strategy-wrap:not([open]) .mt-picker-summary{
+  min-height:0 !important;
+  height:42px !important;
+  box-sizing:border-box;
+  padding:5px 10px !important;
+}
+#monthlyTrade .mt-strategy-wrap:not([open]){
+  border-radius:13px;
+}
+#monthlyTrade .mt-strategy-wrap:not([open]) .mt-picker-summary::before{
+  width:22px;
+  height:22px;
+  border-radius:7px;
+  font-size:18px;
+}
+#monthlyTrade .mt-strategy-wrap:not([open]) .mt-selected-name{
+  padding:3px 7px;
+  border-radius:8px;
+  line-height:1.15;
+}
+@media(max-width:430px){
+  #monthlyTrade .mt-strategy-wrap:not([open]) .mt-picker-summary{
+    height:40px !important;
+    padding:4px 8px !important;
+    column-gap:7px;
+  }
+  #monthlyTrade .mt-strategy-wrap:not([open]) .mt-picker-summary::before{
+    width:21px;
+    height:21px;
+    font-size:18px;
+  }
+  #monthlyTrade .mt-strategy-wrap:not([open]) .mt-selected-name{padding:3px 6px}
+}
