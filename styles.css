@@ -2256,3 +2256,8 @@ div.ui-update-badge{
 #performance #perfPeriodReturns *{
   font-size:12px !important;
 }
+
+/* v59 Research Performance — move From outside Select Portfolios only */
+#performance .perf-start-row-outside{
+  margin:10px 0 8px 0;
+}

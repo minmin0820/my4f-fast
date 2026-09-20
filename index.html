@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260920-v58">
+<link rel="stylesheet" href="styles.css?v=20260920-v59">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -39,7 +39,7 @@
 <div class="page-scroll"><main>
 <header><div class="header-line"><h1>麒麟「現世」</h1></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
-<div class="update-proof">✓ v58 Performance Typography Balance</div>
+<div class="update-proof">✓ v59 From Outside Selector</div>
 <div id="syncPanel" style="margin:0 0 12px;padding:10px 11px;border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;font-size:13px;line-height:1.45"><div style="font-weight:850">⏳ Live Data Bridge — 確認中</div><div id="syncUpdated" style="margin-top:3px;color:#64748b">最新更新：—</div><div id="syncDetail" style="margin-top:2px;color:#64748b">Python正本との連携状態を確認しています</div></div>
 
 <section><h2>今月のアクション</h2><div id="action" class="action"></div><p id="actionDetail" class="muted"></p><p class="muted">現世ルール：天界Exactで10%未満のtickerは非保有 → survivor再正規化 → 5%刻み・合計100%。</p></section>
@@ -75,12 +75,12 @@
     <div class="perf-picker-title">Select Portfolios <span>(max 4)</span></div>
     <div id="perfGroupTabs" class="perf-group-tabs" aria-label="Portfolio groups"></div>
     <div id="perfGroupPanel" class="perf-group-panel"></div>
-    <div class="perf-start-row">
-      <label for="perfStartYear">From:</label>
-      <select id="perfStartYear" aria-label="Start year"><option value="ALL">ALL</option></select>
-    </div>
   </div>
 </details>
+<div class="perf-start-row perf-start-row-outside">
+  <label for="perfStartYear">From:</label>
+  <select id="perfStartYear" aria-label="Start year"><option value="ALL">ALL</option></select>
+</div>
 <div class="perf-compare-head"><strong>Comparison</strong><div id="perfPeriods" class="perf-periods"><button type="button" class="perf-period" data-period="1Y">1Y</button><button type="button" class="perf-period" data-period="2Y">2Y</button><button type="button" class="perf-period" data-period="3Y">3Y</button><button type="button" class="perf-period" data-period="5Y">5Y</button><button type="button" class="perf-period" data-period="10Y">10Y</button><button type="button" class="perf-period active" data-period="ALL">ALL</button></div></div><div class="perf-scale-row"><button id="perfLogToggle" class="perf-mode active" type="button">LOG</button><button id="perfLinearToggle" class="perf-mode" type="button">LINEAR</button></div><div class="perf-period-mode"><span>PERIOD MODE:</span><button id="perfCommon" class="perf-mode active" type="button">Common</button><button id="perfFull" class="perf-mode" type="button">Full</button></div><div id="perfChart" class="perf-chart"></div>
 <div id="perfMeta" class="muted"></div><div id="perfPeriodReturns" class="perf-period-returns"></div>
 <div id="perfCards" class="perf-cards"></div>
@@ -140,7 +140,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260920-v58"></script>
+<script src="app.js?v=20260920-v59"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
