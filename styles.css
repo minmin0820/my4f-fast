@@ -2125,15 +2125,20 @@ div.ui-update-badge{
 .v44-regime-chart{width:100%;margin:14px 0 2px;overflow:hidden}.v44-regime-chart svg{display:block;width:100%;height:auto}.v44-regime-chart svg .zero{stroke:#cfd6dc;stroke-width:1}.v44-regime-chart svg text{font-size:9px;fill:#788397}.v44-regime-chart svg .mainbar{fill:#13a7dc}.v44-regime-chart svg .bmbar{fill:#9eacc0}.v44-regime-chart svg .axis-title{font-size:10px}
 .v44-chart-legend{display:flex;justify-content:center;gap:18px;font-size:11px}.v44-chart-legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.v44-chart-legend .main:before{background:#13a7dc}.v44-chart-legend .bm:before{background:#9eacc0}
 
-/* v46 Monthly Trade only — all Frozen v45 UI outside #monthlyTrade is untouched */
+/* v47 Monthly Trade only — all UI outside #monthlyTrade remains frozen */
 #monthlyTrade{display:none;padding:0}
 #monthlyTrade.page-active{display:block}
 #monthlyTrade>h2{font-size:28px;line-height:1.05;margin:4px 0 3px}
 #monthlyTrade>p.muted{margin:0 0 12px}
 #monthlyTrade .mt-topline{margin:4px 0 12px}
 #monthlyTrade .mt-asof{font-size:13px;color:#687a91}
-#monthlyTrade .mt-strategy{display:flex;align-items:center;justify-content:space-between;border:2px solid #0a75a8;border-radius:11px;padding:10px 14px;margin:0 0 16px;font-size:15px;background:#fff}
-#monthlyTrade .mt-chevron{font-size:18px;color:#4d5b6d}
+#monthlyTrade .mt-strategy-wrap{position:relative;margin:0 0 16px}
+#monthlyTrade .mt-strategy-select{
+ width:100%;height:54px;border:2px solid #0a75a8;border-radius:11px;background:#fff;
+ padding:0 42px 0 42px;font-size:15px;font-weight:650;color:#253141;
+ text-align:center;text-align-last:center;-webkit-appearance:auto;appearance:auto;
+}
+#monthlyTrade .mt-strategy-select option{text-align:center}
 #monthlyTrade .mt-history-head{border-top:1px solid #e1e7ec;padding:16px 0 12px}
 #monthlyTrade .mt-history-head>div{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 #monthlyTrade .mt-history-head strong{font-size:20px;line-height:1.2}

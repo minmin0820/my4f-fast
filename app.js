@@ -498,30 +498,26 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v46 Monthly Trade — display-only. Python snapshot remains canonical.
+// v47 Monthly Trade — display-only. Python snapshot remains canonical.
+let monthlyTradeSelected='麒麟「現世」';
+
 function renderMonthlyTrade(d){
   const root=document.getElementById('monthlyTradeContent'); if(!root)return;
   const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const month=d.month||'—';
-  const asof=d.asof||d.updated_at||d.generated_at||'—';
+  const perf=d.performance||{}, histories=perf.history||{};
+  const preferred=['Frozen Core','Frozen v3.45','Frozen 4F','4F Attack75','4F Promotion100','麒麟「天界」','麒麟「現世」','SPY','TQQQ'];
+  const strategies=preferred.filter(k=>Array.isArray(histories[k])&&histories[k].length);
+  Object.keys(histories).forEach(k=>{if(Array.isArray(histories[k])&&histories[k].length&&!strategies.includes(k))strategies.push(k)});
+  if(!strategies.includes(monthlyTradeSelected)) monthlyTradeSelected=strategies.includes('麒麟「現世」')?'麒麟「現世」':(strategies[0]||'麒麟「現世」');
 
-  // Canonical history only. No allocation is inferred in Fast.
-  const hist = Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : [];
-  const currentEntries=Object.entries(d.execution||{}).filter(([,v])=>Number(v)>0);
-  const currentRow = currentEntries.length ? [{
-    month,
-    position_start:(d.execution_start||'—'),
-    position:Object.fromEntries(currentEntries),
-    return_pct:null,
-    mtd:true
-  }] : [];
-
-  // If canonical history is not yet bridged, show current canonical execution only.
-  const rows = hist.length ? hist : currentRow;
+  const hist=(histories[monthlyTradeSelected]||[]).slice().sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
+  const canonicalTrade=d.monthly_trade_history_by_strategy?.[monthlyTradeSelected] || 
+    (monthlyTradeSelected==='麒麟「現世」' && Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : []);
+  const tradeMap=new Map((canonicalTrade||[]).map(r=>[String(r.month||'').slice(0,7),r]));
+  const currentMonth=String(d.month||'').slice(0,7);
 
   const monthLabel=x=>{
-    const s=String(x||'');
-    const mm=s.match(/^(\d{4})-(\d{2})/);
+    const s=String(x||''), mm=s.match(/^(\d{4})-(\d{2})/);
     if(!mm)return E(s||'—');
     const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return `${names[Number(mm[2])-1]} ${mm[1]}`;
@@ -537,33 +533,45 @@ function renderMonthlyTrade(d){
     const n=Number(v); return `${n>=0?'+':''}${n.toFixed(2)}%`;
   };
 
+  const rows=hist.map(([mo,r])=>{
+    const key=String(mo).slice(0,7), tr=tradeMap.get(key)||{};
+    let pos=tr.position||tr.positions||tr.execution||null;
+    let start=tr.position_start||tr.start||'—';
+    if(key===currentMonth && monthlyTradeSelected==='麒麟「現世」' && !pos){
+      pos=d.execution||null; start=d.execution_start||'—';
+    }
+    return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth};
+  });
+
   root.innerHTML=`
-    <div class="mt-topline">
-      <div class="mt-asof">as of ${E(asof)}</div>
+    <div class="mt-topline"><div class="mt-asof">as of ${E(d.asof||d.updated_at||d.generated_at||'—')}</div></div>
+    <div class="mt-strategy-wrap">
+      <select id="mtStrategySelect" class="mt-strategy-select" aria-label="Monthly Trade strategy">
+        ${strategies.map(k=>`<option value="${E(k)}"${k===monthlyTradeSelected?' selected':''}>${E(k)}</option>`).join('')}
+      </select>
     </div>
-    <div class="mt-strategy"><span>麒麟「現世」</span><span class="mt-chevron">⌄</span></div>
 
     <div class="mt-history-head">
-      <div><strong>Monthly Trade History</strong><span class="mt-fof">FoF</span>${hist.length?`<span class="mt-count">(${hist.length} months)</span>`:''}</div>
+      <div><strong>Monthly Trade History</strong><span class="mt-fof">FoF</span><span class="mt-count">(${rows.length} months)</span></div>
       <span class="mt-showall">Show All</span>
     </div>
 
     <div class="mt-table">
-      <div class="mt-tr mt-th">
-        <div>Month</div><div>Position<br>Start</div><div>Position</div><div>Return</div>
-      </div>
+      <div class="mt-tr mt-th"><div>Month</div><div>Position<br>Start</div><div>Position</div><div>Return</div></div>
       ${rows.map(r=>{
-        const rv=r.return_pct ?? r.return ?? r.monthly_return;
-        const neg=Number(rv)<0;
+        const neg=Number(r.return_pct)<0;
         return `<div class="mt-tr">
           <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}</div>
-          <div class="mt-start">${E(r.position_start||r.start||'—')}</div>
-          <div class="mt-position">${positions(r.position||r.positions||r.execution)}</div>
-          <div class="mt-return ${neg?'neg':''}">${ret(rv)}</div>
+          <div class="mt-start">${E(r.position_start)}</div>
+          <div class="mt-position">${positions(r.position)}</div>
+          <div class="mt-return ${neg?'neg':''}">${ret(r.return_pct)}</div>
         </div>`;
       }).join('')}
     </div>
-    ${!hist.length?'<p class="analytics-note mt-history-note">過去の月次Position履歴はsnapshot未収録のため、現在のPython正本Executionのみ表示しています。履歴は推測・再計算しません。</p>':''}
+    <p class="analytics-note mt-history-note">ReturnはPython正本の既存月次履歴を最古月まで表示。Position / Position Startは正本に履歴がある月だけ表示し、Fast側では推測・再計算しません。</p>
   `;
+
+  const sel=document.getElementById('mtStrategySelect');
+  if(sel) sel.addEventListener('change',e=>{monthlyTradeSelected=e.target.value;renderMonthlyTrade(d)});
 }
 
