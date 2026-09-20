@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v78 Monthly Trade — Performance-style grouped portfolio picker; display-only. Python snapshot remains canonical.
+// v79 Monthly Trade — collapsible Selection Portfolio wrapper around the frozen v78 grouped picker; display-only. Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
 
 function renderMonthlyTrade(d){
@@ -569,11 +569,17 @@ function renderMonthlyTrade(d){
 
   root.innerHTML=`
     <div class="mt-topline"><div class="mt-asof">as of ${E(d.asof||d.updated_at||d.generated_at||'—')}</div></div>
-    <div class="mt-strategy-wrap mt-perf-picker">
-      <div class="perf-picker-title">Select Portfolio <span>1 selected</span></div>
-      <div id="mtGroupTabs" class="perf-group-tabs"></div>
-      <div id="mtGroupPanel" class="perf-group-panel mt-group-panel"></div>
-    </div>
+    <details class="mt-strategy-wrap mt-perf-picker perf-picker perf-picker-fold">
+      <summary class="perf-picker-summary mt-picker-summary">
+        <span>Selection Portfolio</span>
+        <span class="mt-selected-name">${E(monthlyTradeSelected)}</span>
+      </summary>
+      <div class="perf-picker-body mt-picker-body">
+        <div class="perf-picker-title">Select Portfolio <span>1 selected</span></div>
+        <div id="mtGroupTabs" class="perf-group-tabs"></div>
+        <div id="mtGroupPanel" class="perf-group-panel mt-group-panel"></div>
+      </div>
+    </details>
 
     <div class="mt-history-head">
       <div><strong>Monthly Trade History</strong><span class="mt-fof">FoF</span><span class="mt-count">(${rows.length} months)</span></div>
