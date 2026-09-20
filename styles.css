@@ -2399,3 +2399,31 @@ div.ui-update-badge{
 #annualPage .compare-legend{
   font-size:18px!important;
 }
+
+/* v64 Annual Returns — compact chart + readable percentage axis only */
+#annualPage .annual-chart-wrap{
+  padding:6px 6px 4px!important;
+}
+#annualPage .annual-bar-svg{
+  min-height:300px!important;
+  height:auto!important;
+}
+#annualPage .annual-bar-svg text{
+  font-size:15px!important;
+  font-weight:600!important;
+}
+#annualPage .compare-legend{
+  margin-top:2px!important;
+  margin-bottom:2px!important;
+  font-size:17px!important;
+}
+
+#annualPage .annual-grid{
+  stroke:#e5e7eb;
+  stroke-width:1;
+}
+#annualPage .annual-y-label{
+  font-size:15px!important;
+  font-weight:700!important;
+  fill:#64748b;
+}
