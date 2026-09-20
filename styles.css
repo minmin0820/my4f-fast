@@ -2488,3 +2488,13 @@ div.ui-update-badge{
   line-height:1.2!important;
   white-space:nowrap!important;
 }
+
+/* v68 Metrics — remove benchmark legend frame only */
+#metricsPage .v44-regime-chart .v44-chart-legend .bm{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  border-radius:0!important;
+  padding:0!important;
+}
