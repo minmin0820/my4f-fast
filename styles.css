@@ -2164,3 +2164,18 @@ div.ui-update-badge{
 }
 
 #monthlyTrade .mt-missing{font-size:11px;color:#b45309;font-weight:700;white-space:nowrap}
+
+/* v54 Monthly Trade overlay timing — scoped, no layout-width change */
+#monthlyTrade .mt-overlay-badge{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin-top:3px;
+  padding:2px 5px;
+  border:1px solid currentColor;
+  border-radius:5px;
+  font-size:9px;
+  line-height:1.15;
+  font-weight:700;
+  white-space:normal;
+}

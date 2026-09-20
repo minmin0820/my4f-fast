@@ -536,6 +536,7 @@ function renderMonthlyTrade(d){
     const n=Number(v); return `${n>=0?'+':''}${n.toFixed(2)}%`;
   };
 
+  const overlayMap=((d.monthly_trade_overlay_by_strategy||{})[monthlyTradeSelected])||{};
   const rows=hist.map(([mo,r])=>{
     const key=String(mo).slice(0,7), tr=tradeMap.get(key)||{};
     let pos=tr.position||tr.positions||tr.execution||null;
@@ -544,6 +545,7 @@ function renderMonthlyTrade(d){
       pos=d.execution||null; start=d.execution_start||'—';
     }
     return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth,
+      overlay:(overlayMap[key]||''),
       incomplete:(!pos || start==='—')};
   });
 
@@ -565,7 +567,7 @@ function renderMonthlyTrade(d){
       ${rows.map(r=>{
         const neg=Number(r.return_pct)<0;
         return `<div class="mt-tr">
-          <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}</div>
+          <div class="mt-month">${monthLabel(r.month)}${r.mtd?'<span class="mt-mtd-badge">MTD</span>':''}${r.overlay?`<span class="mt-overlay-badge">${E(r.overlay)}</span>`:''}</div>
           <div class="mt-start">${r.incomplete?'<span class="mt-missing">未収録</span>':E(r.position_start)}</div>
           <div class="mt-position">${r.incomplete?'<span class="mt-missing">正本データなし</span>':positions(r.position)}</div>
           <div class="mt-return ${neg?'neg':''}">${ret(r.return_pct)}</div>
