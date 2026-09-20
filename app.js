@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
  const closeMenu=()=>{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');back.classList.remove('show');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');setTimeout(()=>{if(!menu.classList.contains('open'))back.hidden=true},180)};
 
- const pageIds=['summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
+ const pageIds=['monthlyTrade','summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
  const allPages=()=>pageIds.map(id=>document.getElementById(id)).filter(Boolean);
  const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
  function showFastPage(id){
@@ -500,14 +500,3 @@ function renderMonthlyTrade(d){
  <div class="mt-exec-title">Execution</div><div class="mt-exec-grid">${Object.entries(current).sort((a,b)=>Number(b[1])-Number(a[1])).map(([k,v])=>`<div class="mt-exec-row"><span>${mtEsc(k)}</span><strong>${Number(v).toFixed(1)}%</strong></div>`).join('')}</div>
  <div class="mt-note">月初リバランス用の実運用表示。売買判定・配分計算はFastでは行わず、Python正本のsnapshotをそのまま表示します。</div>`;
 }
-
-
-// Fast v46 — Monthly Trade route
-document.addEventListener('click',(ev)=>{
- const b=ev.target.closest('[data-target="monthlyTrade"]'); if(!b)return;
- ['top','summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification','monthlyTrade'].forEach(id=>{
-  const el=document.getElementById(id); if(!el)return;
-  if(id==='monthlyTrade')el.removeAttribute('hidden'); else el.setAttribute('hidden','');
- });
- const mt=document.getElementById('monthlyTrade'); if(mt){mt.style.display='block';mt.scrollIntoView({block:'start'});}
-},true);

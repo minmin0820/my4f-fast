@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260920-v46">
+<link rel="stylesheet" href="styles.css?v=20260920-v47">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -37,8 +37,8 @@
   <div class="fast-menu-foot">Fast UI / Python canonical</div>
 </aside><div id="top" class="fast-anchor"></div>
 <div class="page-scroll"><main>
-<div class="v46-update-marker">✓ v46 Monthly Trade表示修正・選択UI再コンパクト化</div>
-<header><div class="header-line"><h1>麒麟「現世」</h1><span class="version-badge">Fast v46</span></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
+<div class="v46-update-marker">✓ v47 Monthly Trade単独ページ化</div>
+<header><div class="header-line"><h1>麒麟「現世」</h1><span class="version-badge">Fast v47</span></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
 <div id="syncPanel" style="margin:0 0 12px;padding:10px 11px;border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;font-size:13px;line-height:1.45"><div style="font-weight:850">⏳ Live Data Bridge — 確認中</div><div id="syncUpdated" style="margin-top:3px;color:#64748b">最新更新：—</div><div id="syncDetail" style="margin-top:2px;color:#64748b">Python正本との連携状態を確認しています</div></div>
 
@@ -80,7 +80,7 @@
 <div id="perfCards" class="perf-cards"></div>
 <details><summary>全系列の指標</summary><div id="perfTable" class="perf-table-wrap"></div></details></section>
 
-<section id="monthlyTrade" class="card monthly-trade-page" hidden>
+<section id="monthlyTrade" class="card monthly-trade-page app-page">
 <div class="monthly-trade-head"><div><h2>Monthly Trade</h2><p class="muted">麒麟「現世」｜Live Execution</p></div><div class="monthly-trade-asof" id="mtAsOf">—</div></div>
 <div id="monthlyTradeContent"></div>
 </section>
@@ -133,7 +133,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260920-v46"></script>
+<script src="app.js?v=20260920-v47"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
