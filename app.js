@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-// v80 Monthly Trade — polished collapsible Selection Portfolio header; FoF / Show All removed while month count is preserved. Display-only; Python snapshot remains canonical.
+// v81 Monthly Trade — compact Selection Portfolio header; behavior/data unchanged. Display-only; Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
 
 function renderMonthlyTrade(d){
