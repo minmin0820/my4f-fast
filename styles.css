@@ -3338,3 +3338,41 @@ div.ui-update-badge{
  .operation-spec .god-role em{font-size:8.5px!important}
  .operation-spec .god-strategy{font-size:9px!important}
 }
+
+
+/* v109 — preserve canonical research roles + improve Dashboard return-card readability */
+.operation-spec .god-research-role{
+  display:block;
+  margin-top:2px;
+  font-family:"Avenir Next","Helvetica Neue",Arial,-apple-system,sans-serif;
+  font-size:8.8px;
+  line-height:1.25;
+  font-weight:650;
+  letter-spacing:.015em;
+  color:#687484;
+  white-space:normal;
+}
+.operation-spec .god-research-role small{
+  display:inline-block;
+  margin-right:5px;
+  font-size:6.8px;
+  line-height:1;
+  font-weight:850;
+  letter-spacing:.13em;
+  color:#9aa3ad;
+}
+/* Screenshot target: MTD / previous month / YTD cards and BM strip. */
+.dash-returns .sum .title{font-size:10px!important;line-height:1.25!important}
+.dash-returns .sum p{font-size:10.5px!important;line-height:1.25!important;margin-top:5px!important}
+.dash-returns .sum b{font-size:13px!important;line-height:1.2!important}
+.dash-returns .bm,.dash-returns .bm span{font-size:10px!important;line-height:1.25!important}
+.dash-returns .bm strong{font-size:13px!important;line-height:1.2!important}
+@media(max-width:430px){
+  .operation-spec .god-research-role{font-size:8.4px!important}
+  .operation-spec .god-research-role small{font-size:6.5px!important}
+  .dash-returns .sum .title{font-size:9.5px!important}
+  .dash-returns .sum p{font-size:10px!important}
+  .dash-returns .sum b{font-size:12.5px!important}
+  .dash-returns .bm,.dash-returns .bm span{font-size:9.8px!important}
+  .dash-returns .bm strong{font-size:12.5px!important}
+}

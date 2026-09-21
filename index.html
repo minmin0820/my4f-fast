@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v108">
+<link rel="stylesheet" href="styles.css?v=20260921-v109">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -100,22 +100,22 @@
 
 <h3>Four Gods — 4神の召喚法</h3>
 <div class="god-accordion">
-<details class="god-card"><summary><span class="god-title"><span class="god-name">青龍 / Seiryu</span><span class="god-role role-vanguard">VANGUARD <em>— 先鋒</em></span><span class="god-strategy">Full5P-Balanced</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
+<details class="god-card"><summary><span class="god-title"><span class="god-name">青龍 / Seiryu</span><span class="god-role role-vanguard">VANGUARD <em>— 先鋒</em></span><span class="god-research-role"><small>RESEARCH ROLE</small> Growth / Firepower</span><span class="god-strategy">Full5P-Balanced</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
 <p><b>Signal：</b><code>LQD absolute momentum vs matched historical RF</code>。5つの固定窓 <code>10D / 54D / 6M_EX1 / 12M_EX1 / 24M_RAW</code> を独立判定。</p>
 <p class="god-flow">各窓：<code>LQD return ≥ matched RF → Risk-On</code> ／ otherwise <code>Risk-Off</code><br>5判定 → <b>3-of-5 Temporal Majority</b></p>
 <p><b>Holding：</b>Majority Risk-On → <code>QQQ 50% + QLD 50%</code>。Majority Risk-Off → <code>GLD 100%</code>。月次判定。窓・vote threshold・QQQ/QLD比率はFrozen。</p>
 </div></details>
-<details class="god-card"><summary><span class="god-title"><span class="god-name">白虎 / Byakko</span><span class="god-role role-aegis">AEGIS <em>— 守護</em></span><span class="god-strategy">FrozenVIX</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
+<details class="god-card"><summary><span class="god-title"><span class="god-name">白虎 / Byakko</span><span class="god-role role-aegis">AEGIS <em>— 守護</em></span><span class="god-research-role"><small>RESEARCH ROLE</small> Long-horizon Calmar / Crisis Convexity</span><span class="god-strategy">FrozenVIX</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
 <p><b>3 sleeves：</b><code>Old VIX15D 25%</code> + <code>Old VIX20D 25%</code> + <code>New VIX20D 50%</code>。評価phaseは <code>Quarterly P1 = Jan/Apr/Jul/Oct</code>。</p>
 <p class="god-flow"><code>Old15/Old20：^VIX absolute momentum vs matched RF</code><br>Risk-On → <code>SPXL</code> ／ Risk-Off → <code>GLD</code><br><code>New20：^VIX20D gate + TQQQ vs TECL relative momentum</code><br>Risk-On → <code>TQQQ or TECL</code> ／ Risk-Off → <code>GLD</code></p>
 <p><b>Aggregation：</b>3 sleevesの実現return/holdingを <code>25/25/50</code> で固定合成。Productionのdefensive destinationは <code>GLD fixed</code>。R138 GLD/XLU126DはChallengerであり、このFrozenVIX定義には混ぜない。</p>
 </div></details>
-<details class="god-card"><summary><span class="god-title"><span class="god-name">朱雀 / Suzaku</span><span class="god-role role-phoenix">PHOENIX <em>— 逆境反攻</em></span><span class="god-strategy">TEL-3M/30M</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
+<details class="god-card"><summary><span class="god-title"><span class="god-name">朱雀 / Suzaku</span><span class="god-role role-phoenix">PHOENIX <em>— 逆境反攻</em></span><span class="god-research-role"><small>RESEARCH ROLE</small> Growth + Regime-dependent Tail Rescue</span><span class="god-strategy">TEL-3M/30M</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
 <p><b>Assets：</b>Treasury pair <code>TMV / TMF</code>、Equity pair <code>TQQQ / TECL</code>。3M_RAWと30M_RAWを独立に走らせる2層Dual Momentum。</p>
 <p class="god-flow">各lookback Lについて：<br><code>TMV_L &gt; TMF_L → TMV</code><br><code>else → TQQQ_L &gt; TECL_L ? TQQQ : TECL</code></p>
 <p><b>Aggregation：</b><code>TEL-3M_RAW 50% + TEL-30M_RAW 50%</code>。月末までの確定価格で判定し翌月へ。3Mと30Mで異なるassetが選ばれた場合も50/50でそのまま保持。</p>
 </div></details>
-<details class="god-card"><summary><span class="god-title"><span class="god-name">玄武 / Genbu</span><span class="god-role role-anchor">ANCHOR <em>— 鎮守</em></span><span class="god-strategy">MR-Majority-6D/11M/24M</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
+<details class="god-card"><summary><span class="god-title"><span class="god-name">玄武 / Genbu</span><span class="god-role role-anchor">ANCHOR <em>— 鎮守</em></span><span class="god-research-role"><small>RESEARCH ROLE</small> Stability / Sharpe / Portfolio Quality</span><span class="god-strategy">MR-Majority-6D/11M/24M</span></span><span class="god-chevron">›</span></summary><div class="god-detail">
 <p><b>Signal asset：</b><code>SPXL</code>。固定3窓 <code>6D / 11M_RAW / 24M_RAW</code>。各窓でSPXL trailing returnをmatched historical RFと比較。</p>
 <p class="god-flow">各窓：<code>SPXL return ≥ matched RF → Risk-Off vote</code><br>Risk-Off票 <b>2票以上 → XLU</b><br>0〜1票 → <b>TQQQ</b></p>
 <p><b>Timing：</b>週次。各週の最初の取引日に、前取引日までの情報だけで評価し、新holdingは次のclose-to-closeから有効。<code>TQQQ = return engine / XLU = tail-risk circuit breaker</code>。vote thresholdは2-of-3でFrozen。</p>
