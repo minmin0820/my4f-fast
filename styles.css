@@ -3009,3 +3009,48 @@ div.ui-update-badge{
   #performance .perf-bm-btn{min-width:47px!important}
   #performance #perfStartYear{min-width:66px!important;width:66px!important;height:27px!important;min-height:27px!important}
 }
+
+/* v91 — selected portfolio stays visible while scrolling on analysis pages. */
+#monthlyTrade .mt-strategy-wrap:not([open]),
+#summaryPage .analytics-portfolio-fold:not([open]),
+#metrics .analytics-portfolio-fold:not([open]),
+#monthlyReturns .analytics-portfolio-fold:not([open]),
+#drawdowns .analytics-portfolio-fold:not([open]),
+#rolling .analytics-portfolio-fold:not([open]){
+  position:sticky;
+  top:max(8px, env(safe-area-inset-top));
+  z-index:24;
+  background:rgba(255,255,255,.97);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  box-shadow:0 5px 16px rgba(15,23,42,.08);
+}
+/* Opening the picker returns it to normal flow so the full list never becomes a giant sticky panel. */
+#monthlyTrade .mt-strategy-wrap[open],
+#summaryPage .analytics-portfolio-fold[open],
+#metrics .analytics-portfolio-fold[open],
+#monthlyReturns .analytics-portfolio-fold[open],
+#drawdowns .analytics-portfolio-fold[open],
+#rolling .analytics-portfolio-fold[open]{position:relative;top:auto;z-index:1}
+
+/* v91 — unify requested page-heading typography. */
+#monthlyTrade > h2,
+#summaryPage > h2,
+#metrics > h2,
+#monthlyReturns > h2,
+#drawdowns > h2,
+#rolling > h2{
+  font-size:32px!important;
+  line-height:1.12!important;
+  letter-spacing:-.025em!important;
+  font-weight:850!important;
+  margin-top:0!important;
+}
+@media(max-width:430px){
+  #monthlyTrade > h2,
+  #summaryPage > h2,
+  #metrics > h2,
+  #monthlyReturns > h2,
+  #drawdowns > h2,
+  #rolling > h2{font-size:30px!important}
+}
