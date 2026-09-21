@@ -106,7 +106,11 @@ function renderResearchPerformance(p){
    'All': portfolioRows.map(r=>r.name),
    'Frozen': portfolioRows.filter(r=>/^Frozen /.test(r.name)).map(r=>r.name),
    '4F': portfolioRows.filter(r=>/^(Frozen 4F|4F )/.test(r.name)).map(r=>r.name),
-   'KIRIN': portfolioRows.filter(r=>/麒麟/.test(r.name)).map(r=>r.name)
+   'KIRIN': portfolioRows.filter(r=>/麒麟/.test(r.name)).map(r=>r.name),
+   'Seiryu': portfolioRows.filter(r=>/^Seiryu /.test(r.name)).map(r=>r.name),
+   'Byakko': portfolioRows.filter(r=>/^Byakko /.test(r.name)).map(r=>r.name),
+   'Suzaku': portfolioRows.filter(r=>/^Suzaku /.test(r.name)).map(r=>r.name),
+   'Genbu': portfolioRows.filter(r=>/^Genbu /.test(r.name)).map(r=>r.name)
  };
  Object.keys(groupMap).forEach(k=>{if(!groupMap[k].length)delete groupMap[k]});
  const fmt=(x,d=2)=>x==null||!Number.isFinite(Number(x))?'—':Number(x).toFixed(d),pp=x=>x==null||!Number.isFinite(Number(x))?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
