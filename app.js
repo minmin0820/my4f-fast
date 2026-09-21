@@ -161,7 +161,7 @@ function renderPerfChart(portfolios,hist,period='ALL',logScale=true,periodMode='
  const svg=box.querySelector('svg'),tip=box.querySelector('#perfTooltip'),cross=box.querySelector('#perfCrosshair');
  const colorFor=n=>n===benchmark?bmColor:palette[Math.max(0,portfolios.indexOf(n))%palette.length];
  const showAt=cx=>{const r=svg.getBoundingClientRect(),px=Math.max(0,Math.min(r.width,cx-r.left));let i=Math.round(((px/r.width*W)-L)/pw*(months.length-1));i=Math.max(0,Math.min(months.length-1,i));const rr=names.map(n=>{const v=vals[n]?.[i];return Number.isFinite(v)?`<div><span class="perf-dot ${n===benchmark?'perf-dot-bm':''}" style="--dot:${colorFor(n)}"></span><b>${n===benchmark?'BM · ':''}${esc(n)}</b><strong>${v-100>=0?'+':''}${(v-100).toFixed(1)}%</strong></div>`:''}).join('');if(!rr)return;const xx=x(i);cross.setAttribute('x1',xx);cross.setAttribute('x2',xx);cross.setAttribute('visibility','visible');tip.innerHTML=`<div class="perf-tip-date">${months[i]}</div>${rr}`;tip.hidden=false;tip.style.left=Math.max(8,Math.min(box.clientWidth-tip.offsetWidth-8,px-tip.offsetWidth/2))+'px';tip.style.top='42px'};
- svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);showAt(e.clientX)});svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)showAt(e.clientX)});svg.addEventListener('click',e=>showAt(e.clientX));
+ svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);showAt(e.clientX)});svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)showAt(e.clientX)});svg.addEventListener('click',e=>{if(e.pointerType==='mouse'||!('PointerEvent' in window))showAt(e.clientX)});
  const returns=names.map(n=>{const a=(vals[n]||[]).filter(Number.isFinite);return{name:n,value:a.length?(a.at(-1)/a[0]-1)*100:0,isBenchmark:n===benchmark,color:colorFor(n)}});return{start:months[0],end:months.at(-1),returns};
 }
 
@@ -485,7 +485,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
      };
      svg.addEventListener('pointerdown',e=>{svg.setPointerCapture?.(e.pointerId);show(e)});
      svg.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)show(e)});
-     svg.addEventListener('click',show);
+     svg.addEventListener('click',e=>{if(e.pointerType==='mouse'||!('PointerEvent' in window))show(e)});
    }
  },true);
 
@@ -651,7 +651,7 @@ function renderMonthlyTrade(d){
 }
 
 
-/* v92 — robust floating selected-portfolio indicator + touch-release tooltip dismissal. */
+/* v93 — robust floating selected-portfolio indicator + touch tooltip release fix. */
 (()=>{
   const PAGE_PICKERS=[
     ['monthlyTrade','.mt-strategy-wrap'],
@@ -703,7 +703,7 @@ function renderMonthlyTrade(d){
   const clearChartTips=()=>{
     const tip=document.getElementById('perfTooltip'); if(tip) tip.hidden=true;
     const cross=document.getElementById('perfCrosshair'); if(cross) cross.setAttribute('visibility','hidden');
-    document.querySelectorAll('.dd-tip,.chart-tooltip,.analytics-tooltip,.perf-tooltip').forEach(el=>{el.hidden=true;el.style.display='none'});
+    document.querySelectorAll('.dd-tip,.chart-tooltip,.analytics-tooltip,.perf-tooltip').forEach(el=>{el.hidden=true});
   };
   document.addEventListener('pointerup',clearChartTips,true);
   document.addEventListener('pointercancel',clearChartTips,true);
