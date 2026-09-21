@@ -3440,3 +3440,24 @@ body.fast-subpage-view #deterioration.page-active {
   opacity:1 !important;
   min-height:70vh;
 }
+
+/* v114 — Deterioration Monitor aligned with the shared analytics UI */
+#deterioration.deterioration-page{
+  margin:34px 0 42px;
+}
+#deterioration.deterioration-page h2{
+  margin:0 0 7px;
+  font-size:28px;
+  line-height:1.15;
+  letter-spacing:-.02em;
+  color:#172238;
+}
+#deterioration.deterioration-page .sub{
+  color:#8b9098;
+  margin:0 0 12px;
+}
+#deterioration #detPortfolioPicker{margin:0 0 12px}
+#deterioration #detPortfolioPicker .analytics-portfolio-fold{margin-bottom:0}
+@media(max-width:700px){
+  #deterioration.deterioration-page h2{font-size:32px!important;line-height:1.14!important}
+}

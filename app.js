@@ -789,3 +789,39 @@ function renderMonthlyTrade(d){
   document.addEventListener('touchend',clearChartTips,{capture:true,passive:true});
   document.addEventListener('touchcancel',clearChartTips,{capture:true,passive:true});
 })();
+
+// v114 — Deterioration Monitor uses the same Selection Portfolio control as analytics pages.
+(function initDeteriorationPicker(){
+  const root=document.getElementById('deterioration');
+  const mount=document.getElementById('detPortfolioPicker');
+  if(!root||!mount)return;
+  const rows=[...root.querySelectorAll('.det-table tbody tr')];
+  const names=rows.map(r=>r.cells?.[0]?.textContent?.trim()).filter(Boolean);
+  if(!names.length)return;
+  const ALL='All Portfolios';
+  let selected=ALL;
+  mount.innerHTML=portfolioFoldHTML('deteriorationPicker',[ALL,...names],selected);
+  const wrap=mount.querySelector('[data-picker="deteriorationPicker"]');
+  const tabs=wrap?.querySelector('.analytics-picker-tabs');
+  const panel=wrap?.querySelector('.analytics-picker-panel');
+  if(!wrap||!tabs||!panel)return;
+  const groups={
+    'All':[ALL,...names],
+    'シン四神':[ALL,...names.filter(n=>n.includes('シン四つ目'))],
+    'シン忍法':[ALL,...names.filter(n=>n.includes('シン分身'))],
+    '奥義':[ALL,...names.filter(n=>n.includes('奥義'))]
+  };
+  let active='All';
+  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const apply=()=>{
+    rows.forEach(r=>{const n=r.cells?.[0]?.textContent?.trim();r.hidden=selected!==ALL&&n!==selected;});
+    const label=wrap.querySelector('.analytics-selected-name');if(label)label.textContent=selected;
+  };
+  const draw=()=>{
+    tabs.innerHTML=Object.keys(groups).map(k=>`<button type="button" class="perf-group-tab ${k===active?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');
+    tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.group;draw();});
+    panel.innerHTML=(groups[active]||[]).map(n=>`<button type="button" class="perf-group-item ${n===selected?'active':''}" data-name="${E(n)}">${E(n)}</button>`).join('');
+    panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.name;wrap.open=false;apply();draw();});
+  };
+  draw();apply();
+})();

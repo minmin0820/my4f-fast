@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v113">
+<link rel="stylesheet" href="styles.css?v=20260921-v114">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -38,7 +38,7 @@
 <div class="page-scroll"><main>
 <header><div class="header-line"><h1>麒麟「現世」</h1></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
-<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v113 Deterioration Monitor Repair</div>
+<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v114 Deterioration Monitor Foundation</div>
 <div id="syncPanel" class="sync-panel-compact"><div class="sync-title">⏳ Live Data Bridge — 確認中</div><div class="sync-meta"><span id="syncUpdated">最新更新：—</span><span id="syncDetail">Python正本との連携状態を確認しています</span></div></div></div>
 
 <section class="dash-status"><div class="dash-action-row"><span class="dash-action-label">今月</span><div id="action" class="action"></div></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
@@ -99,15 +99,8 @@
 <section id="deterioration" class="app-page deterioration-page">
   <h2>Deterioration Monitor</h2>
   <p class="sub">Strategy Healthの劣化兆候を G1 / G2 / P / p̄ で一覧監視。表示はFast UI、判定正本はResearch/Python。</p>
+  <div id="detPortfolioPicker"></div>
   <div class="det-asof">as of 2026-09</div>
-  <div class="det-filter" role="group" aria-label="Deterioration Monitor filters">
-    <button type="button" class="det-chip active" data-det-filter="all">All</button>
-    <button type="button" class="det-chip" data-det-filter="membership">メンバーシップ</button>
-    <button type="button" class="det-chip" data-det-filter="shijin">シン四神</button>
-    <button type="button" class="det-chip" data-det-filter="ninja">シン忍法</button>
-    <button type="button" class="det-chip" data-det-filter="ougi">奥義</button>
-    <button type="button" class="det-clear">Clear</button>
-  </div>
   <div class="det-counts" aria-label="Health counts"><span><b>Deteriorating</b> <strong>1</strong></span><span><b>Watch</b> <strong>1</strong></span><span><b>Mixed</b> <strong>1</strong></span><span><b>Good</b> <strong>6</strong></span></div>
   <details class="det-table-card" open>
     <summary><span>Portfolio Table</span><small>click to hide</small></summary>
@@ -182,7 +175,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260921-v113"></script>
+<script src="app.js?v=20260921-v114"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
