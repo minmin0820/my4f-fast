@@ -374,7 +374,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    };
    const hide=()=>{tip.hidden=true;cross.style.visibility='hidden'};
    svg.addEventListener('pointerdown',show,{passive:true});
-   svg.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'||ev.buttons)show(ev)},{passive:true});
+   svg.addEventListener('pointermove',ev=>{if(ev.pointerType==='touch'||ev.pointerType==='pen'||ev.pointerType==='mouse'||ev.buttons)show(ev)},{passive:true});
    svg.addEventListener('touchstart',show,{passive:true});
    svg.addEventListener('touchmove',show,{passive:true});
    svg.addEventListener('pointerleave',hide,{passive:true});
