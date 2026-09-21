@@ -1,4 +1,4 @@
-// v129 — unified compact as-of annotations + dashboard retrieval timestamp restoration.
+// v133 — add Python-canonical 麒麟「現世・反攻」 display; existing UI otherwise frozen.
 const C={GLD:'#efb83f',TMV:'#9a7fe8',XLU:'#28b5aa',Seiryu:'#36afe0',Byakko:'#9a7fe8',Suzaku:'#31c996',Genbu:'#f7a00a'};
 const FALLBACK=['#4f86f7','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4','#84cc16','#ec4899'];
 const colorFor=k=>C[k]||FALLBACK[Math.abs([...String(k)].reduce((a,c)=>a+c.charCodeAt(0),0))%FALLBACK.length];
@@ -14,11 +14,11 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260921-v133`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
- for(const key of ['execution','gods']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
+ for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
- document.getElementById('asof').textContent=d.asof||'—';['allocMonth','execMonth','godsMonth'].forEach(id=>document.getElementById(id).textContent=m);
+ document.getElementById('asof').textContent=d.asof||'—';['allocMonth','execMonth','hankoMonth','godsMonth'].forEach(id=>document.getElementById(id).textContent=m);
  const changed=d.action?.changed;
  const actionText=changed===true?'🟠 保有アセット変更あり':changed===false?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 月次リバランス — 先月target確認待ち';
  document.getElementById('action').innerHTML=`<strong>${actionText}</strong>`;
@@ -28,7 +28,17 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
    const state=(raw.includes('orange')||raw.includes('🟠')||raw.includes('deterior'))?'orange':(raw.includes('yellow')||raw.includes('🟡')||raw.includes('mixed'))?'yellow':'green';
    return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`;
  }).join('');
- donut('exec',d.execution||{},'現世');donut('gods',d.gods||{},'天界');
+ donut('exec',d.execution||{},'現世');
+ if(d.hanko?.status==='PASS' && Object.keys(d.hanko_execution||{}).length){
+   donut('hanko',d.hanko_execution||{},'現世・反攻');
+   const hn=document.getElementById('hankoNote');
+   if(hn) hn.textContent=`天界 → 反攻(KRO/R314) → R289 ｜ ${d.hanko.fire?'反攻 ON '+(d.hanko.asset||''):'反攻 OFF'}`;
+ }else{
+   const hd=document.getElementById('hankoDonut'),hl=document.getElementById('hankoLegend'),hn=document.getElementById('hankoNote');
+   if(hd) hd.innerHTML='<div class="analytics-empty">FAIL-CLOSED · Research/Python 反攻 snapshot unavailable</div>';
+   if(hl) hl.innerHTML=''; if(hn) hn.textContent='天界 → 反攻(KRO/R314) → R289 ｜ FAIL-CLOSED';
+ }
+ donut('gods',d.gods||{},'天界');
  document.getElementById('risk').innerHTML=Object.entries(d.risk||{}).map(([k,v])=>`<div class="card"><span class="label">${esc(k)}</span><b class="${String(v).includes('ON')?'on':'off'}">● ${esc(v)}</b></div>`).join('');
  document.getElementById('signals').innerHTML=(d.signals||[]).map(([k,v])=>`<div class="card"><span class="label">${esc(k)}</span><b class="${['ACTIVE','NORMAL','FROZEN','REAL FORWARD','—'].includes(v)?'purple':''}">${esc(v)}</b></div>`).join('');
  const sm=[['最新 '+m+' MTD*',...(d.summary?.mtd||[])],['前月 '+prev,...(d.summary?.prev||[])],[m.slice(0,4)+' YTD*',...(d.summary?.ytd||[])]];
