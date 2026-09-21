@@ -3633,3 +3633,14 @@ body.fast-subpage-view #deterioration.page-active {
   #deterioration .det-combined-interpretation span{font-size:9.5px!important;line-height:1.6!important}
   #deterioration .det-detail p.det-canonical-note{font-size:8px!important;line-height:1.4!important}
 }
+
+
+/* v124 — Dashboard title + canonical data retrieval annotation */
+.dashboard-header .header-line h1{display:flex!important;align-items:center!important;gap:9px!important}
+.dashboard-header .header-line h1::before{content:"";width:5px;height:28px;border-radius:999px;background:#0b8fc2;flex:0 0 auto}
+.dashboard-header .dashboard-data-times{margin:6px 0 0!important;font-size:9px!important;line-height:1.35!important;color:#94a3b8!important;font-weight:500!important;letter-spacing:.01em!important}
+@media(max-width:700px){
+ .dashboard-header .header-line h1{font-size:30px!important;line-height:1.15!important}
+ .dashboard-header .header-line h1::before{height:29px!important}
+ .dashboard-header .dashboard-data-times{font-size:8.5px!important;line-height:1.35!important;white-space:normal!important}
+}

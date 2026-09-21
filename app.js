@@ -13,11 +13,18 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260921-v124`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
  for(const key of ['execution','gods']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
  document.getElementById('asof').textContent=d.asof||'—';['allocMonth','execMonth','godsMonth'].forEach(id=>document.getElementById(id).textContent=m);
+ const dataTimes=document.getElementById('dashboardDataTimes');
+ if(dataTimes){
+   const syncTime=d?.sync?.generated_at_jst||d?.sync?.generated_at||d?.generated_at_jst||d?.generated_at||d?.asof||'—';
+   const bmTime=d?.benchmarks?.retrieved_at_jst||d?.benchmarks?.retrieved_at||d?.performance?.benchmark_retrieved_at_jst||d?.performance?.benchmark_retrieved_at||syncTime;
+   const myTime=d?.portfolio_retrieved_at_jst||d?.portfolio_retrieved_at||d?.performance?.portfolio_retrieved_at_jst||d?.performance?.portfolio_retrieved_at||syncTime;
+   dataTimes.textContent=`Data retrieved: BM ${bmTime} ｜ My Portfolio ${myTime}`;
+ }
  const changed=d.action?.changed;
  const actionText=changed===true?'🟠 保有アセット変更あり':changed===false?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 月次リバランス — 先月target確認待ち';
  document.getElementById('action').innerHTML=`<strong>${actionText}</strong>`;
