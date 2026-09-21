@@ -3078,3 +3078,44 @@ div.ui-update-badge{
  .v92-portfolio-float{left:10px;right:70px;min-height:40px;padding:6px 10px}
  .v92-float-label{font-size:11px}.v92-float-name{font-size:13px}
 }
+
+
+/* v94 — Performance / Monthly Trade page titles use the same visual heading pattern as analytics pages. */
+#performance > h2,
+#monthlyTrade > h2{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  font-size:32px!important;
+  line-height:1.12!important;
+  letter-spacing:-.025em!important;
+  font-weight:850!important;
+  color:#172033!important;
+  margin-top:0!important;
+}
+#performance > h2::before,
+#monthlyTrade > h2::before{
+  content:"";
+  width:5px;
+  height:24px;
+  border-radius:999px;
+  background:#0b8fc2;
+  flex:0 0 auto;
+}
+@media(max-width:430px){
+  #performance > h2,
+  #monthlyTrade > h2{font-size:30px!important}
+}
+
+/* v94 — touch/pointer tooltip for the bottom Rolling CAGR chart. */
+#rollingPage .compare-chart-wrap{position:relative}
+#rollingPage .rolling-touch-tooltip{
+  position:absolute;z-index:8;min-width:150px;max-width:78%;
+  padding:8px 10px;border:1px solid #d8e0e8;border-radius:11px;
+  background:rgba(255,255,255,.97);box-shadow:0 6px 18px rgba(15,23,42,.12);
+  font-size:12px;line-height:1.35;pointer-events:none;color:#263442;
+}
+#rollingPage .rolling-touch-tooltip .date{font-weight:800;color:#64748b;margin-bottom:3px}
+#rollingPage .rolling-touch-tooltip .main{color:#087f7d;font-weight:800}
+#rollingPage .rolling-touch-tooltip .bm{color:#64748b;font-weight:800}
+#rollingPage .rolling-crosshair{stroke:#9aa7b8;stroke-width:1;stroke-dasharray:3 3;visibility:hidden}

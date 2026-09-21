@@ -340,6 +340,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
      const wins=both.filter(x=>x[1]>x[2]).length, winrate=both.length?100*wins/both.length:NaN;
      let best=null,worst=null; both.forEach(x=>{if(!best||x[1]>best[1])best=x;if(!worst||x[1]<worst[1])worst=x});
      chartBox.innerHTML=`<div class="bam-roll-chart-title">Annualized Rolling Return - ${w/12} ${w===12?'Year':'Years'}</div>${compareChart(both,n,bmName)}<div class="bam-roll-kpis"><div><span>Win Rate vs ${E(bmName)}</span><b>${Number.isFinite(winrate)?winrate.toFixed(1)+'%':'—'}</b></div><div><span>Sample Count</span><b>${both.length}</b></div><div><span>Best Window</span><b>${best?fmtp(best[1]):'—'}</b><small>${best?E(best[0])+' · '+E(bmName)+' '+fmtp(best[2]):''}</small></div><div><span>Worst Window</span><b>${worst?fmtp(worst[1]):'—'}</b><small>${worst?E(worst[0])+' · '+E(bmName)+' '+fmtp(worst[2]):''}</small></div></div>`;
+     bindRollingChartTooltip(chartBox,both,n,bmName);
    };
    b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));
    draw(36);
@@ -351,7 +352,32 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    const mn=Math.min(0,...all),mx=Math.max(0,...all),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1;
    const X=i=>L+(W-L-R)*i/Math.max(1,n-1),Y=v=>T+(H-T-B)*(1-(v-mn)/span),zero=Y(0);
    const line=col=>{let seg=[],s='';const flush=()=>{if(seg.length>1)s+=`<polyline points="${seg.join(' ')}" class="${col}"/>`;seg=[]};rows.forEach((r,i)=>{const v=Number(r[col==='main-line'?1:2]);Number.isFinite(v)?seg.push(`${X(i)},${Y(v)}`):flush()});flush();return s};
-   return`<div class="compare-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="analytics-svg compare-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>${line('main-line')}${line('bm-line')}<text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows.at(-1)[0])}</text></svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
+   return`<div class="compare-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="analytics-svg compare-svg"><line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" class="zero"/>${line('main-line')}${line('bm-line')}<line class="rolling-crosshair" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows.at(-1)[0])}</text></svg><div class="rolling-touch-tooltip" hidden></div><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
+ }
+ function bindRollingChartTooltip(root,rows,mainName,bmName){
+   const wrap=root?.querySelector('.compare-chart-wrap'),svg=wrap?.querySelector('.compare-svg'),tip=wrap?.querySelector('.rolling-touch-tooltip'),cross=wrap?.querySelector('.rolling-crosshair');
+   if(!wrap||!svg||!tip||!cross||!rows?.length)return;
+   const W=720,L=48,R=12,n=rows.length;
+   const show=ev=>{
+     const r=svg.getBoundingClientRect(); if(!r.width)return;
+     const clientX=ev.touches?.[0]?.clientX ?? ev.clientX; if(!Number.isFinite(clientX))return;
+     const vx=(clientX-r.left)/r.width*W;
+     const i=Math.max(0,Math.min(n-1,Math.round((vx-L)/(W-L-R)*Math.max(1,n-1))));
+     const row=rows[i]; if(!row)return;
+     const x=L+(W-L-R)*i/Math.max(1,n-1);
+     cross.setAttribute('x1',x);cross.setAttribute('x2',x);cross.style.visibility='visible';
+     const f=v=>Number.isFinite(+v)?`${+v>=0?'+':''}${(+v).toFixed(2)}%`:'—';
+     tip.innerHTML=`<div class="date">${E(row[0])}</div><div class="main">${E(mainName)} ${f(row[1])}</div><div class="bm">${E(bmName)} ${f(row[2])}</div>`;
+     tip.hidden=false;
+     const px=Math.max(6,Math.min(wrap.clientWidth-tip.offsetWidth-6,(clientX-wrap.getBoundingClientRect().left)+10));
+     tip.style.left=px+'px'; tip.style.top='10px';
+   };
+   const hide=()=>{tip.hidden=true;cross.style.visibility='hidden'};
+   svg.addEventListener('pointerdown',show,{passive:true});
+   svg.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'||ev.buttons)show(ev)},{passive:true});
+   svg.addEventListener('touchstart',show,{passive:true});
+   svg.addEventListener('touchmove',show,{passive:true});
+   svg.addEventListener('pointerleave',hide,{passive:true});
  }
 
  function commonMonthly(main,bmName){
