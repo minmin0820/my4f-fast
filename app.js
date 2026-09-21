@@ -117,7 +117,7 @@ function renderResearchPerformance(p){
  if(!p||!Array.isArray(p.series)||!p.series.length)return;
  const rows=p.series,hist=p.history||{},benchmarks=['SPY','TQQQ'].filter(x=>hist[x]),portfolioRows=rows.filter(r=>!benchmarks.includes(r.name)),defaults=['Frozen Core','Frozen v3.45','Frozen 4F'];
  let selected=new Set(defaults.filter(x=>hist[x]&&!benchmarks.includes(x)));if(!selected.size)selected=new Set(portfolioRows.slice(0,3).map(x=>x.name));
- let benchmark=benchmarks.includes('SPY')?'SPY':(benchmarks[0]||null),period='ALL',logScale=true,periodMode='COMMON',startYear='ALL',activeGroup='All';
+ let benchmark=benchmarks.includes('SPY')?'SPY':(benchmarks[0]||null),period='ALL',logScale=true,periodMode='FULL',startYear='ALL',activeGroup='All';
  const groupMap={
    'All': portfolioRows.map(r=>r.name),
    'Frozen': portfolioRows.filter(r=>/^Frozen /.test(r.name)).map(r=>r.name),
