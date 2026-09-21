@@ -3599,3 +3599,37 @@ body.fast-subpage-view #deterioration.page-active {
   #deterioration .det-governance b{font-size:10px!important}
   #deterioration .det-governance span{font-size:9.5px!important;line-height:1.55!important}
 }
+
+/* v123 — Deterioration detail: combined operational interpretation + compact canonical note */
+#deterioration .det-combined-interpretation{
+  margin-top:12px!important;
+  padding:11px 12px!important;
+  border:1px solid #e5edf3!important;
+  border-radius:11px!important;
+  background:#f8fafc!important;
+  display:grid!important;
+  gap:5px!important;
+}
+#deterioration .det-combined-interpretation b{
+  font-size:10.5px!important;
+  line-height:1.3!important;
+  color:#172033!important;
+}
+#deterioration .det-combined-interpretation span{
+  font-size:10px!important;
+  line-height:1.65!important;
+  color:#64748b!important;
+  overflow-wrap:anywhere!important;
+}
+#deterioration .det-detail p.det-canonical-note{
+  margin:8px 2px 0!important;
+  font-size:8.5px!important;
+  line-height:1.45!important;
+  color:#94a3b8!important;
+}
+@media(max-width:700px){
+  #deterioration .det-combined-interpretation{padding:10px 11px!important;margin-top:10px!important}
+  #deterioration .det-combined-interpretation b{font-size:10px!important}
+  #deterioration .det-combined-interpretation span{font-size:9.5px!important;line-height:1.6!important}
+  #deterioration .det-detail p.det-canonical-note{font-size:8px!important;line-height:1.4!important}
+}
