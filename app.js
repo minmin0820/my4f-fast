@@ -49,7 +49,7 @@ function bmSwitch(id,current,onChange){
  el.querySelectorAll('button').forEach(b=>b.onclick=()=>{FAST_BM=b.dataset.bm;onChange(FAST_BM);});
 }
 
-// v85 — responsive long-name table headers; shared compact Selection Portfolio picker preserved.
+// v86 — Performance legend wrap + Annual BM legend-key consistency; data/calculation behavior unchanged.
 function portfolioFoldGroups(names){
  const groups={
   'All':names,
