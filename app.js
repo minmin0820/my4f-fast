@@ -579,17 +579,24 @@ document.addEventListener('DOMContentLoaded',()=>{
  const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
  function showFastPage(id){
    const dashboard=id==='top';
-   allPages().forEach(el=>el.classList.toggle('page-active',!dashboard&&el.id===id));
-   document.querySelectorAll('.analytics-shell').forEach(el=>el.style.display=dashboard?'none':'contents');
+   document.body.classList.toggle('fast-dashboard-view',dashboard);
+   document.body.classList.toggle('fast-subpage-view',!dashboard);
+   document.body.dataset.fastPage=id;
+   allPages().forEach(el=>{
+     const active=!dashboard&&el.id===id;
+     el.classList.toggle('page-active',active);
+     el.style.display=active?'block':'none';
+   });
+   document.querySelectorAll('.analytics-shell').forEach(el=>el.style.display=(!dashboard&&['metrics','monthlyReturns','rolling','drawdowns','annual'].includes(id))?'contents':'none');
    dashboardNodes().forEach(el=>el.style.display=dashboard?'':'none');
-   const perf=document.getElementById('performance'); if(perf&&!dashboard)perf.style.display=id==='performance'?'':'none';
-   allPages().forEach(el=>{if(!dashboard)el.style.display=el.id===id?'':'none';});
-   document.querySelector('header').style.display=dashboard?'':'none';
-   document.querySelector('footer').style.display=dashboard?'':'none';
-   window.scrollTo({top:0,behavior:'smooth'});
+   document.querySelectorAll('.dashboard-only').forEach(el=>el.style.display=dashboard?'':'none');
+   const header=document.querySelector('header'); if(header)header.style.display=dashboard?'':'none';
+   const footer=document.querySelector('footer'); if(footer)footer.style.display=dashboard?'':'none';
+   window.scrollTo({top:0,behavior:'auto'});
  }
  window.showFastPage=showFastPage;
- showFastPage('top');
+ const initial=(location.hash||'#top').slice(1);
+ showFastPage(pageIds.includes(initial)?initial:'top');
  btn.addEventListener('click',openMenu);close?.addEventListener('click',closeMenu);back.addEventListener('click',closeMenu);
  menu.querySelectorAll('[data-target]').forEach(x=>x.addEventListener('click',()=>{
    const id=x.dataset.target;closeMenu();
