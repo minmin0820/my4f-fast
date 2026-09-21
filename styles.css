@@ -2920,7 +2920,7 @@ div.ui-update-badge{
   width:11px!important;
   height:3px!important;
   border-radius:0!important;
-  background:repeating-linear-gradient(90deg,var(--dot) 0 5px,transparent 5px 8px)!important;
+  background:repeating-linear-gradient(90deg,var(--dot) 0 3px,transparent 3px 5px)!important;
 }
 @media(max-width:430px){
   #performance .perf-bm-picker{margin-top:1px}
