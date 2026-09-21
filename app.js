@@ -35,6 +35,7 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  const by=d.benchmarks?.ytd||{};
  document.getElementById('bm').innerHTML=`<b>BM</b><span>SPY YTD<strong>${pct(by.SPY)}</strong></span><span>TQQQ YTD<strong>${pct(by.TQQQ)}</strong></span>`;
  window.__MY4F_SNAPSHOT__=d;
+ if(window.__refreshDeteriorationPicker) window.__refreshDeteriorationPicker();
  renderResearchPerformance(d.performance);
  renderFastAnalytics(d);
     renderMonthlyTrade(d);
@@ -790,37 +791,38 @@ function renderMonthlyTrade(d){
   document.addEventListener('touchcancel',clearChartTips,{capture:true,passive:true});
 })();
 
-// v116 — Deterioration Monitor: multi-select portfolio picker + centered health cards.
-(function initDeteriorationPicker(){
-  const root=document.getElementById('deterioration');
-  const mount=document.getElementById('detPortfolioPicker');
-  if(!root||!mount)return;
-  const rows=[...root.querySelectorAll('.det-table tbody tr')];
-  const names=rows.map(r=>r.dataset.detName||r.cells?.[0]?.textContent?.trim()).filter(Boolean);
-  if(!names.length)return;
-  const selected=new Set(names);
+// v117 — Deterioration Monitor: all Fast portfolios selectable, unlimited multi-select, fail-closed NOT AUDITED.
+(function(){
+ function initDeteriorationPicker(){
+  const root=document.getElementById('deterioration'),mount=document.getElementById('detPortfolioPicker'); if(!root||!mount)return;
+  const tbody=root.querySelector('.det-table tbody'); if(!tbody)return;
+  const audited=['Bunshin','R181','ERC6','R255 Split'];
+  const hist=window.__MY4F_SNAPSHOT__?.performance?.history||{};
+  const allNames=[...new Set([...audited,...Object.keys(hist).filter(n=>Array.isArray(hist[n])&&hist[n].length)])];
   const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const dot=v=>{const x=String(v||'').toUpperCase();return x.includes('ORANGE')||x.includes('DETERIORATING')?'🟠':x.includes('YELLOW')||x.includes('MIXED')?'🟡':'🟢'};
+  const dot=v=>{const x=String(v||'').toUpperCase();return x.includes('ORANGE')||x.includes('DETERIORATING')?'🟠':x.includes('YELLOW')||x.includes('MIXED')?'🟡':x.includes('GREEN')||x.includes('GOOD')||x.includes('STRONG')?'🟢':'⚪'};
   const detail={
-    'Bunshin':{status:'MIXED',cls:'mixed',g1:'YELLOW',g2:'GREEN',p:'MIXED / YELLOW',pb:'Strong / GREEN',note:'G1とPに注意信号。G2とp̄はGREENを維持。単独でstrategy failureを意味しない。'},
-    'R181':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
-    'ERC6':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
-    'R255 Split':{status:'GOOD',cls:'good',g1:'GREEN',g2:'GREEN',p:'GOOD / GREEN',pb:'Strong / GREEN',note:'4軸すべてGREEN。Frozen Health-Dot snapshotでは明確な劣化警告なし。'}
+   'Bunshin':{status:'MIXED',cls:'mixed',g1:'YELLOW',g2:'GREEN',p:'MIXED / YELLOW',pb:'Strong / GREEN',note:'G1とPに注意信号。G2とp̄はGREENを維持。単独でstrategy failureを意味しない。'},
+   'R181':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
+   'ERC6':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
+   'R255 Split':{status:'GOOD',cls:'good',g1:'GREEN',g2:'GREEN',p:'GOOD / GREEN',pb:'Strong / GREEN',note:'4軸すべてGREEN。Frozen Health-Dot snapshotでは明確な劣化警告なし。'}
   };
-  mount.innerHTML=`<details class="analytics-portfolio-fold perf-picker perf-picker-fold" data-picker="deteriorationPicker"><summary class="analytics-picker-summary"><span>Selection Portfolio</span><span class="analytics-selected-name"></span></summary><div class="perf-picker-body analytics-picker-body"><div class="perf-picker-title">Select Portfolio <span class="det-selected-count"></span></div><div class="perf-group-tabs analytics-picker-tabs"><button type="button" class="perf-group-tab active">Strategy Health</button></div><div class="perf-group-panel analytics-picker-panel"></div></div></details>`;
-  const wrap=mount.querySelector('[data-picker="deteriorationPicker"]');
-  const panel=wrap.querySelector('.analytics-picker-panel');
-  const label=wrap.querySelector('.analytics-selected-name');
-  const count=wrap.querySelector('.det-selected-count');
-  const showDetail=name=>{const d=detail[name],box=root.querySelector('#detDetail');if(!d||!box)return;box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><div class="det-detail-head"><h3>${E(name)}</h3><span class="det-status ${E(d.cls)}">${E(d.status)}</span></div><div class="det-axis-values"><span><b>G1</b><em>${dot(d.g1)}</em><strong>${E(d.g1)}</strong></span><span><b>G2</b><em>${dot(d.g2)}</em><strong>${E(d.g2)}</strong></span><span><b>P</b><em>${dot(d.p)}</em><strong>${E(d.p)}</strong></span><span><b>p̄</b><em>${dot(d.pb)}</em><strong>${E(d.pb)}</strong></span></div><p>${E(d.note)}</p>`;};
-  const apply=()=>{
-    rows.forEach(r=>{const n=r.dataset.detName||r.cells?.[0]?.textContent?.trim();r.hidden=!selected.has(n);r.classList.toggle('selected',selected.size===1&&selected.has(n));});
-    const n=selected.size; label.textContent=n===names.length?'All Portfolios':n===1?[...selected][0]:`${n} Portfolios`; count.textContent=`${n} selected`;
-    if(n===1)showDetail([...selected][0]);
-    else {const box=root.querySelector('#detDetail');if(box)box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><h3>${n===0?'No Portfolio Selected':`${n} Portfolios Selected`}</h3><p>${n===0?'Selection Portfolioから1つ以上選択してください。':'Portfolio Tableで行をタップすると、そのPortfolioの4軸詳細を表示します。'}</p>`;}
-  };
-  const draw=()=>{panel.innerHTML=names.map(n=>`<button type="button" class="perf-group-item ${selected.has(n)?'active':''}" data-name="${E(n)}"><span>${E(n)}</span><span class="det-check">${selected.has(n)?'✓':''}</span></button>`).join('');panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n))selected.delete(n);else selected.add(n);draw();apply();});};
-  rows.forEach(r=>{const pick=()=>{const n=r.dataset.detName||r.cells?.[0]?.textContent?.trim();showDetail(n);rows.forEach(x=>x.classList.toggle('selected',x===r));};r.addEventListener('click',pick);r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});});
+  [...tbody.querySelectorAll('tr[data-det-generated="1"]')].forEach(x=>x.remove());
+  allNames.filter(n=>!detail[n]).forEach(n=>tbody.insertAdjacentHTML('beforeend',`<tr data-det-generated="1" data-det-group="unaudited" data-det-name="${E(n)}" data-det-status="Not Audited" tabindex="0"><td>${E(n)}</td><td><i class="det-dot na" title="NOT AUDITED"></i></td><td><i class="det-dot na" title="NOT AUDITED"></i></td><td><i class="det-dot na" title="NOT AUDITED"></i></td><td><i class="det-dot na" title="NOT AUDITED"></i></td></tr>`));
+  const rows=[...tbody.querySelectorAll('tr')];
+  const prior=window.__MY4F_DET_SELECTED__;
+  const selected=new Set(prior instanceof Set?[...prior].filter(n=>allNames.includes(n)):allNames);
+  window.__MY4F_DET_SELECTED__=selected;
+  mount.innerHTML=`<details class="analytics-portfolio-fold perf-picker perf-picker-fold" data-picker="deteriorationPicker"><summary class="analytics-picker-summary"><span>Selection Portfolio</span><span class="analytics-selected-name"></span></summary><div class="perf-picker-body analytics-picker-body"><div class="perf-picker-title">Select Portfolio <span class="det-selected-count"></span></div><div class="perf-group-tabs analytics-picker-tabs"></div><div class="perf-group-panel analytics-picker-panel"></div></div></details>`;
+  const wrap=mount.querySelector('[data-picker="deteriorationPicker"]'),panel=wrap.querySelector('.analytics-picker-panel'),tabs=wrap.querySelector('.analytics-picker-tabs'),label=wrap.querySelector('.analytics-selected-name'),count=wrap.querySelector('.det-selected-count');
+  const groups=portfolioFoldGroups(allNames); groups['Health Audit']=audited;
+  let active='All';
+  const showDetail=name=>{const d=detail[name],box=root.querySelector('#detDetail');if(!box)return;if(!d){box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><div class="det-detail-head"><h3>${E(name)}</h3><span class="det-status na">NOT AUDITED</span></div><div class="det-axis-values"><span><b>G1</b><em>⚪</em><strong>NOT AUDITED</strong></span><span><b>G2</b><em>⚪</em><strong>NOT AUDITED</strong></span><span><b>P</b><em>⚪</em><strong>NOT AUDITED</strong></span><span><b>p̄</b><em>⚪</em><strong>NOT AUDITED</strong></span></div><p>Canonical Strategy Healthデータ未監査のため推定しません。FAIL-CLOSEDで表示しています。</p>`;return;}box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><div class="det-detail-head"><h3>${E(name)}</h3><span class="det-status ${E(d.cls)}">${E(d.status)}</span></div><div class="det-axis-values"><span><b>G1</b><em>${dot(d.g1)}</em><strong>${E(d.g1)}</strong></span><span><b>G2</b><em>${dot(d.g2)}</em><strong>${E(d.g2)}</strong></span><span><b>P</b><em>${dot(d.p)}</em><strong>${E(d.p)}</strong></span><span><b>p̄</b><em>${dot(d.pb)}</em><strong>${E(d.pb)}</strong></span></div><p>${E(d.note)}</p>`;};
+  const apply=()=>{rows.forEach(r=>{const n=r.dataset.detName||r.cells?.[0]?.textContent?.trim();r.hidden=!selected.has(n);r.classList.remove('selected');});const n=selected.size;label.textContent=n===allNames.length?'All Portfolios':n===1?[...selected][0]:`${n} Portfolios`;count.textContent=`${n} selected`;if(n===1)showDetail([...selected][0]);else{const box=root.querySelector('#detDetail');if(box)box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><h3>${n===0?'No Portfolio Selected':`${n} Portfolios Selected`}</h3><p>${n===0?'Selection Portfolioから1つ以上選択してください。':'Portfolio Tableで行をタップすると、そのPortfolioの4軸詳細を表示します。'}</p>`;}};
+  const draw=()=>{tabs.innerHTML=Object.keys(groups).map(k=>`<button type="button" class="perf-group-tab ${k===active?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.group;draw()});panel.innerHTML=(groups[active]||[]).map(n=>`<button type="button" class="perf-group-item ${selected.has(n)?'active':''}" data-name="${E(n)}"><span>${E(n)}</span><span class="det-check">${selected.has(n)?'✓':''}</span></button>`).join('');panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(selected.has(n))selected.delete(n);else selected.add(n);window.__MY4F_DET_SELECTED__=selected;draw();apply();});};
+  rows.forEach(r=>{const pick=()=>{const n=r.dataset.detName||r.cells?.[0]?.textContent?.trim();showDetail(n);rows.forEach(x=>x.classList.toggle('selected',x===r));};r.onclick=pick;r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};});
   draw();apply();
+ }
+ window.__refreshDeteriorationPicker=initDeteriorationPicker;
+ initDeteriorationPicker();
 })();
-
