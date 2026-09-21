@@ -650,3 +650,63 @@ function renderMonthlyTrade(d){
   renderMtGroups();
 }
 
+
+/* v92 — robust floating selected-portfolio indicator + touch-release tooltip dismissal. */
+(()=>{
+  const PAGE_PICKERS=[
+    ['monthlyTrade','.mt-strategy-wrap'],
+    ['summaryPage','.analytics-portfolio-fold'],
+    ['metrics','.analytics-portfolio-fold'],
+    ['monthlyReturns','.analytics-portfolio-fold'],
+    ['drawdowns','.analytics-portfolio-fold'],
+    ['rolling','.analytics-portfolio-fold']
+  ];
+  let floatBar=null, activePicker=null;
+  const ensureBar=()=>{
+    if(floatBar) return floatBar;
+    floatBar=document.createElement('div');
+    floatBar.id='v92PortfolioFloat';
+    floatBar.className='v92-portfolio-float';
+    floatBar.innerHTML='<span class="v92-float-label">Selection Portfolio</span><strong class="v92-float-name"></strong>';
+    document.body.appendChild(floatBar);
+    return floatBar;
+  };
+  const selectedName=p=>p?.querySelector('.analytics-selected-name,.mt-selected-name,.mt-picker-selected')?.textContent?.trim()
+    || p?.querySelector('summary')?.textContent?.replace(/Selection Portfolio/ig,'').trim() || '';
+  const current=()=>{
+    for(const [id,sel] of PAGE_PICKERS){
+      const page=document.getElementById(id); if(!page) continue;
+      const cs=getComputedStyle(page); if(cs.display==='none'||page.hidden) continue;
+      const p=page.querySelector(sel); if(p) return p;
+    }
+    return null;
+  };
+  const sync=()=>{
+    const bar=ensureBar(), p=current(); activePicker=p;
+    if(!p || p.open){bar.classList.remove('show');return}
+    const r=p.getBoundingClientRect();
+    const page=p.closest('.app-page,.analytics-page,.monthly-trade-page');
+    const pr=page?.getBoundingClientRect();
+    const passed=r.bottom<8;
+    const stillInPage=!pr || pr.bottom>64;
+    if(passed&&stillInPage){
+      bar.querySelector('.v92-float-name').textContent=selectedName(p);
+      bar.classList.add('show');
+    }else bar.classList.remove('show');
+  };
+  let raf=0; const schedule=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;sync()})};
+  addEventListener('scroll',schedule,{passive:true}); addEventListener('resize',schedule,{passive:true});
+  document.addEventListener('toggle',schedule,true);
+  const mo=new MutationObserver(schedule); mo.observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','hidden','open']});
+  setTimeout(sync,0);
+
+  const clearChartTips=()=>{
+    const tip=document.getElementById('perfTooltip'); if(tip) tip.hidden=true;
+    const cross=document.getElementById('perfCrosshair'); if(cross) cross.setAttribute('visibility','hidden');
+    document.querySelectorAll('.dd-tip,.chart-tooltip,.analytics-tooltip,.perf-tooltip').forEach(el=>{el.hidden=true;el.style.display='none'});
+  };
+  document.addEventListener('pointerup',clearChartTips,true);
+  document.addEventListener('pointercancel',clearChartTips,true);
+  document.addEventListener('touchend',clearChartTips,{capture:true,passive:true});
+  document.addEventListener('touchcancel',clearChartTips,{capture:true,passive:true});
+})();
