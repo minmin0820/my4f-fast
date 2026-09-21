@@ -3182,3 +3182,67 @@ div.ui-update-badge{
 .spec-links a{display:block;text-decoration:none;color:#172033;border:1px solid #dce3ea;border-radius:10px;padding:10px;min-width:0}
 .spec-links a strong,.spec-links a span{display:block}.spec-links a strong{font-size:11px}.spec-links a span{font-size:9px;color:#0879ad;margin-top:3px;overflow-wrap:anywhere}
 @media(max-width:430px){.dash-status-line{gap:4px 8px}.dash-health .health .card small{display:none}.spec-grid,.spec-links{grid-template-columns:1fr}.operation-spec{font-size:11px}}
+
+/* v99 — denser Dashboard status/returns + Specification title/links polish. */
+#syncPanel.sync-panel-compact{
+  margin:0 0 8px!important;padding:6px 9px!important;border:1px solid #d1d5db;border-radius:9px;background:#f8fafc;
+  font-size:9px!important;line-height:1.25!important;display:flex;align-items:center;gap:8px;flex-wrap:wrap
+}
+#syncPanel .sync-title{font-size:10px!important;font-weight:850;white-space:nowrap}
+#syncPanel .sync-meta{display:flex;gap:4px 9px;flex-wrap:wrap;color:#64748b;font-size:8px!important;line-height:1.25!important}
+#syncPanel .sync-meta span{font-size:8px!important}
+.dash-status{padding:7px 9px!important;margin:8px 0 14px!important;border:1px solid #e7ebef;border-radius:10px!important;background:#fbfcfd}
+.dash-action-row{display:flex;align-items:center;gap:7px;min-width:0}
+.dash-action-label{font-size:9px!important;font-weight:850;color:#64748b;white-space:nowrap}
+.dash-status .action{background:transparent!important;padding:0!important;margin:0!important;font-size:10px!important;line-height:1.25!important;border-radius:0!important}
+.dash-status .action strong{font-size:10px!important}
+.dash-status-line{margin:4px 0 3px!important;gap:3px 8px!important}
+.dash-status-line .muted,.dash-rule{font-size:7.5px!important;line-height:1.25!important}
+.dash-health{gap:5px!important;margin-top:2px!important}
+.dash-health-title{font-size:7.5px!important}
+.dash-health .health{gap:4px!important}
+.dash-health .health .card{gap:3px!important;padding:2px 5px!important;border-radius:6px!important}
+.dash-health .health .card .label{font-size:7.5px!important}
+.dash-health .health .card .dot{width:6px!important;height:6px!important;min-width:6px!important;min-height:6px!important}
+.dash-health .health .card small{font-size:7px!important}
+.dash-fineprint{font-size:8px!important;line-height:1.3!important;margin:4px 0 7px!important;color:#8b8d93!important}
+.dash-returns .summary{gap:5px!important}
+.dash-returns .sum{padding:7px 8px!important;min-height:0!important;border-radius:10px!important}
+.dash-returns .sum .title{font-size:8px!important;line-height:1.2!important}
+.dash-returns .sum p{display:flex;justify-content:space-between;align-items:center;gap:4px;margin:4px 0 0!important;font-size:8px!important;line-height:1.2!important}
+.dash-returns .sum b{font-size:10px!important;line-height:1.2!important}
+.dash-returns .bm{margin-top:5px!important;padding:6px 8px!important;border-radius:10px!important;grid-template-columns:25px 1fr 1fr!important;gap:5px!important}
+.dash-returns .bm,.dash-returns .bm span{font-size:8px!important;line-height:1.2!important}
+.dash-returns .bm span{display:grid!important;grid-template-columns:auto auto;align-items:center;justify-content:space-between;gap:4px!important}
+.dash-returns .bm strong{font-size:10px!important;line-height:1.2!important}
+.operation-spec>h2{display:flex;align-items:center;gap:9px;font-size:24px!important;color:#172033;margin:0 0 7px!important}
+.operation-spec>h2::before{content:"";width:5px;height:24px;border-radius:999px;background:#0b8fc2;flex:0 0 auto}
+.operation-spec .spec-intro{font-size:10px!important;line-height:1.4!important;color:#8b9098!important;margin:0 0 12px!important}
+.spec-links{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+@media(max-width:430px){
+  #syncPanel.sync-panel-compact{gap:3px 7px!important;padding:5px 7px!important}
+  #syncPanel .sync-title{font-size:9px!important}
+  #syncPanel .sync-meta,#syncPanel .sync-meta span{font-size:7px!important}
+  .dash-status{padding:6px 7px!important;margin-bottom:11px!important}
+  .dash-health .health .card small{display:none!important}
+  .dash-returns .summary{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .dash-returns .sum{padding:6px 5px!important}
+  .operation-spec>h2{font-size:24px!important}
+  .operation-spec .spec-intro{font-size:9px!important}
+  .spec-links{grid-template-columns:1fr!important}
+}
+
+/* v100 — Four Gods expandable operation definitions */
+.god-accordion{display:grid;gap:7px;margin:8px 0}
+.god-card{border:1px solid #dce3ea;border-radius:11px;background:#fff;overflow:hidden}
+.god-card summary{list-style:none;display:grid;grid-template-columns:minmax(0,1fr) auto 18px;align-items:center;gap:7px;padding:10px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.god-card summary::-webkit-details-marker{display:none}
+.god-name{font-size:12px;font-weight:850;color:#172033;min-width:0}
+.god-strategy{font-size:10px;font-weight:750;color:#0879ad;text-align:right;overflow-wrap:anywhere}
+.god-chevron{font-size:20px;line-height:1;color:#91a0af;text-align:center;transition:transform .15s ease}
+.god-card[open] .god-chevron{transform:rotate(90deg)}
+.god-detail{border-top:1px solid #edf0f3;padding:8px 11px 9px;background:#fbfcfd}
+.operation-spec .god-detail p{font-size:10px;line-height:1.5;margin:0 0 5px;color:#4e5969}
+.operation-spec .god-detail p:last-child{margin-bottom:0}
+.spec-gods-note{font-size:9px!important;line-height:1.45!important;color:#8b9098!important}
+@media(max-width:430px){.god-card summary{grid-template-columns:minmax(0,1fr) 18px}.god-strategy{grid-column:1;font-size:9px;text-align:left;margin-top:-3px}.god-chevron{grid-column:2;grid-row:1/3}.god-name{font-size:11px}}

@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v98">
+<link rel="stylesheet" href="styles.css?v=20260921-v100">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -37,15 +37,15 @@
 <div class="page-scroll"><main>
 <header><div class="header-line"><h1>麒麟「現世」</h1></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
-<div class="update-proof">✓ v98 Dashboard Compact + Operation Spec</div>
-<div id="syncPanel" style="margin:0 0 12px;padding:10px 11px;border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;font-size:13px;line-height:1.45"><div style="font-weight:850">⏳ Live Data Bridge — 確認中</div><div id="syncUpdated" style="margin-top:3px;color:#64748b">最新更新：—</div><div id="syncDetail" style="margin-top:2px;color:#64748b">Python正本との連携状態を確認しています</div></div>
+<div class="update-proof">✓ v99 Dashboard Density + Spec Links</div>
+<div id="syncPanel" class="sync-panel-compact"><div class="sync-title">⏳ Live Data Bridge — 確認中</div><div class="sync-meta"><span id="syncUpdated">最新更新：—</span><span id="syncDetail">Python正本との連携状態を確認しています</span></div></div>
 
-<section class="dash-status"><h2>今月のアクション</h2><div id="action" class="action"></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
+<section class="dash-status"><div class="dash-action-row"><span class="dash-action-label">今月</span><div id="action" class="action"></div></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
 
 <section><div id="allocation" class="fast-anchor"></div><h2>Allocation for <span id="allocMonth">2026-09</span></h2>
 <h3>麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight">R289 Practical 10% ｜ ERC6_NORMAL</p>
 <div id="execDonut" class="donut"></div><div id="execLegend" class="legend"></div>
-<p class="muted">実運用：天界Exactで10%未満のtickerは0% → 残存tickerを再正規化 → 5%刻み・合計100%（R289）。</p>
+<p class="muted dash-fineprint">実運用：天界Exactで10%未満のtickerは0% → 残存tickerを再正規化 → 5%刻み・合計100%（R289）。</p>
 <h3>麒麟「天界」</h3><h4>Four Gods — <span id="godsMonth">2026-09</span></h4><p class="muted tight">ERC6_NORMAL</p>
 <div id="godsDonut" class="donut"></div><div id="godsLegend" class="legend"></div></section>
 
@@ -54,9 +54,9 @@
 <section><h2>4神 リスク状態</h2><div id="risk" class="risk"></div></section>
 <section><h2>KIRIN シグナル</h2><div id="signals" class="signals"></div><details><summary>運用・監査情報</summary><p>DEV=FROZEN。2026-08+はREAL FORWARD。Live ExecutionはR289 Practical 10%。</p></details></section>
 
-<section><h2>月次リターン</h2><p class="muted">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p>
+<section class="dash-returns"><h2>月次リターン</h2><p class="muted dash-fineprint">麒麟「天界」 vs 麒麟「現世」 ｜ Open→Open ｜ 最新価格 <span id="asof"></span></p>
 <div id="summary" class="summary"></div><div id="bm" class="bm"></div>
-<p class="muted">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
+<p class="muted dash-fineprint">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
 <section class="dashboard-only"><h2>直近12か月</h2><div id="months" class="months"></div></section>
 
 <section id="performance" class="app-page"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
@@ -96,16 +96,16 @@
 </section>
 
 <section id="specification" class="app-page operation-spec"><h2>Strategy Specification</h2>
-<p class="sub">実運用・再現用の簡潔な仕様。Fastは表示専用、計算正本はResearch/Python。</p>
+<p class="sub spec-intro">実運用・再現用の簡潔な仕様。Fastは表示専用、計算正本はResearch/Python。</p>
 
 <h3>Four Gods — 4神の作り方</h3>
-<div class="spec-grid">
-<div><strong>青龍 / Seiryu</strong><span>Full5P-Balanced</span><small>Momentum family representative</small></div>
-<div><strong>白虎 / Byakko</strong><span>FrozenVIX</span><small>VIX family representative</small></div>
-<div><strong>朱雀 / Suzaku</strong><span>TEL-3M/30M</span><small>Treasury–Equity Layered DM</small></div>
-<div><strong>玄武 / Genbu</strong><span>MR-Majority-6D/11M/24M</span><small>Mean-Reversion family representative</small></div>
+<div class="god-accordion">
+<details class="god-card"><summary><span class="god-name">青龍 / Seiryu</span><span class="god-strategy">Full5P-Balanced</span><span class="god-chevron">›</span></summary><div class="god-detail"><p><b>役割：</b>Momentum / Growth sleeve。</p><p><b>判定：</b>10D・54D・6M_EX1・12M_EX1・24M_RAW の5つのMomentum判定を使用し、<b>3-of-5以上でRisk-On</b>。</p><p><b>保有：</b>Risk-On時は <code>QQQ 50% + QLD 50%</code>、Risk-Off時は <code>GLD 100%</code>。</p></div></details>
+<details class="god-card"><summary><span class="god-name">白虎 / Byakko</span><span class="god-strategy">FrozenVIX</span><span class="god-chevron">›</span></summary><div class="god-detail"><p><b>役割：</b>VIX / Crisis-response sleeve。</p><p><b>構成：</b><code>Old VIX 15D 25%</code> ＋ <code>Old VIX 20D 25%</code> ＋ <code>New VIX 20D 50%</code>。</p><p>3本のFrozen VIX signalを固定比率で合成し、Fast側では判定を再計算しない。</p></div></details>
+<details class="god-card"><summary><span class="god-name">朱雀 / Suzaku</span><span class="god-strategy">TEL-3M/30M</span><span class="god-chevron">›</span></summary><div class="god-detail"><p><b>役割：</b>Treasury–Equity Layered Dual Momentum sleeve。</p><p><b>各TEL判定：</b><code>TMV &gt; TMF → TMV</code>。そうでなければEquity layerへ進み、<code>TQQQ &gt; TECL → TQQQ</code>、それ以外は <code>TECL</code>。</p><p><b>合成：</b><code>TEL-3M_RAW 50%</code> ＋ <code>TEL-30M_RAW 50%</code>。</p></div></details>
+<details class="god-card"><summary><span class="god-name">玄武 / Genbu</span><span class="god-strategy">MR-Majority-6D/11M/24M</span><span class="god-chevron">›</span></summary><div class="god-detail"><p><b>役割：</b>Mean-Reversion / Stability sleeve。</p><p><b>判定：</b><code>6D</code>・<code>11M_RAW</code>・<code>24M_RAW</code> の3つのMR判定を使用。</p><p><b>Majority：</b>3判定のうち<b>2-of-3以上</b>が示すTargetを採用するFrozen representative。</p></div></details>
 </div>
-<p>各familyのFrozen representativeを1本ずつ使用。運用月 <code>t</code> の判定は完了済みの <code>t-1</code> までの情報だけで行い、月次リバランス。</p>
+<p class="spec-gods-note">各familyのFrozen representativeを1本ずつ使用。運用月 <code>t</code> の判定は完了済みの <code>t-1</code> までの情報だけで行い、月次リバランス。各神をタップすると実運用定義を展開。</p>
 
 <h3>KIRIN — 麒麟の作り方</h3>
 <ol class="spec-flow">
@@ -120,15 +120,17 @@
 <p class="spec-chain"><code>4神 Frozen representatives → t−1 monthly signals → ERC6 → Defense A-state → Attack75 Turbo + TECL/TQQQ selector → Exact ticker expansion（天界） → R289 Practical 10%（現世）</code></p>
 <div class="spec-note"><strong>運用上の固定事項</strong><br>Production = Frozen4F EW。KIRINはFrozen Layer-1 challenger。DEV cutoff = 2026-07-31、2026-08以降 = Real Forward OOS。Forward結果をDEVへ戻さない。Fast側で再計算・再最適化しない。</div>
 
-<h3>GitHub</h3>
+<h3>Links</h3>
 <div class="spec-links">
-<a href="https://github.com/minmin0820/frozen-core" target="_blank" rel="noopener"><strong>Research</strong><span>github.com/minmin0820/frozen-core</span></a>
-<a href="https://github.com/minmin0820/my4f-fast" target="_blank" rel="noopener"><strong>Fast</strong><span>github.com/minmin0820/my4f-fast</span></a>
+<a href="https://github.com/minmin0820/frozen-core" target="_blank" rel="noopener"><strong>Research · GitHub</strong><span>github.com/minmin0820/frozen-core</span></a>
+<a href="https://frozen-core-cxavntxt62po3ts3zjwtu8.streamlit.app" target="_blank" rel="noopener"><strong>Research · Streamlit</strong><span>frozen-core-cxavntxt62po3ts3zjwtu8.streamlit.app</span></a>
+<a href="https://github.com/minmin0820/my4f-fast" target="_blank" rel="noopener"><strong>Fast · GitHub</strong><span>github.com/minmin0820/my4f-fast</span></a>
+<a href="https://minmin0820.github.io/my4f-fast/?utm_source=chatgpt.com#specification" target="_blank" rel="noopener"><strong>Fast · Live</strong><span>minmin0820.github.io/my4f-fast/…#specification</span></a>
 </div>
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260921-v98"></script>
+<script src="app.js?v=20260921-v100"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
