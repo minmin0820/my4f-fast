@@ -3152,3 +3152,33 @@ div.ui-update-badge{
 #annualPage .annual-touch-tooltip .date{font-weight:800;color:#64748b;margin-bottom:3px}
 #annualPage .annual-touch-tooltip .main{color:#087f7d;font-weight:800}
 #annualPage .annual-touch-tooltip .annual-bm{color:#64748b;font-weight:800}
+
+
+/* v98 — compact Dashboard status + operation-focused Strategy Specification. */
+.dash-status{margin-bottom:24px!important}
+.dash-status h2{margin-bottom:9px!important}
+.dash-status .action{padding:9px 12px!important;margin:0 0 7px!important;font-size:13px!important}
+.dash-status-line{display:flex;gap:7px 12px;align-items:center;flex-wrap:wrap;margin:0 1px 7px}
+.dash-status-line .muted{margin:0!important;font-size:10px!important;line-height:1.35!important}
+.dash-rule{font-size:9px;color:#8b8d93;line-height:1.35}
+.dash-health{display:flex;align-items:center;gap:7px;margin-top:4px}
+.dash-health-title{font-size:9px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.04em}
+.dash-health .health{display:flex!important;gap:6px!important}
+.dash-health .health .card{display:flex!important;align-items:center!important;gap:4px!important;background:#f7f7f7!important;border-radius:8px!important;padding:4px 7px!important;min-height:0!important}
+.dash-health .health .card .label{font-size:9px!important;font-weight:800!important;color:#64748b!important}
+.dash-health .health .card .dot{width:8px!important;height:8px!important;min-width:8px!important;min-height:8px!important;margin:0!important}
+.dash-health .health .card small{font-size:8px!important;color:#8b8d93!important}
+.operation-spec{font-size:12px;line-height:1.6}
+.operation-spec>h3{font-size:16px;margin:22px 0 9px}
+.operation-spec p{margin:8px 0 12px}
+.spec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.spec-grid>div{border:1px solid #e1e6eb;border-radius:11px;padding:10px;min-width:0}
+.spec-grid strong,.spec-grid span,.spec-grid small{display:block}
+.spec-grid strong{font-size:11px}.spec-grid span{font-size:11px;font-weight:750;margin-top:3px;overflow-wrap:anywhere}.spec-grid small{font-size:9px;color:#8b8d93;margin-top:2px}
+.spec-flow{margin:0;padding-left:20px}.spec-flow li{margin:0 0 10px;padding-left:2px}.spec-flow code,.spec-chain code{overflow-wrap:anywhere}
+.spec-chain{padding:10px 11px;border-radius:10px;background:#f7f9fb}
+.spec-note{padding:10px 11px;border:1px solid #dce3ea;border-radius:10px;background:#fbfcfd;color:#596579}
+.spec-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spec-links a{display:block;text-decoration:none;color:#172033;border:1px solid #dce3ea;border-radius:10px;padding:10px;min-width:0}
+.spec-links a strong,.spec-links a span{display:block}.spec-links a strong{font-size:11px}.spec-links a span{font-size:9px;color:#0879ad;margin-top:3px;overflow-wrap:anywhere}
+@media(max-width:430px){.dash-status-line{gap:4px 8px}.dash-health .health .card small{display:none}.spec-grid,.spec-links{grid-template-columns:1fr}.operation-spec{font-size:11px}}

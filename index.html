@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v97">
+<link rel="stylesheet" href="styles.css?v=20260921-v98">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -30,8 +30,6 @@
     <button type="button" data-target="rolling">Rolling Returns</button>
     <button type="button" data-target="drawdowns">Drawdowns</button>
     <button type="button" data-target="annual">Annual Returns</button>
-    <button type="button" data-target="allocation">Allocation & Signals</button>
-    <div id="forward" class="fast-anchor"></div><button type="button" data-target="forward">Forward OOS Monitor</button>
     <button type="button" data-target="specification">Strategy Specification</button>
   </nav>
   <div class="fast-menu-foot">Fast UI / Python canonical</div>
@@ -39,12 +37,10 @@
 <div class="page-scroll"><main>
 <header><div class="header-line"><h1>麒麟「現世」</h1></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
-<div class="update-proof">✓ v97 Annual Returns Touch Tooltip</div>
+<div class="update-proof">✓ v98 Dashboard Compact + Operation Spec</div>
 <div id="syncPanel" style="margin:0 0 12px;padding:10px 11px;border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;font-size:13px;line-height:1.45"><div style="font-weight:850">⏳ Live Data Bridge — 確認中</div><div id="syncUpdated" style="margin-top:3px;color:#64748b">最新更新：—</div><div id="syncDetail" style="margin-top:2px;color:#64748b">Python正本との連携状態を確認しています</div></div>
 
-<section><h2>今月のアクション</h2><div id="action" class="action"></div><p id="actionDetail" class="muted"></p><p class="muted">現世ルール：天界Exactで10%未満のtickerは非保有 → survivor再正規化 → 5%刻み・合計100%。</p></section>
-
-<section><h2>健全性 G1 / G2 / P</h2><div id="health" class="health"></div></section>
+<section class="dash-status"><h2>今月のアクション</h2><div id="action" class="action"></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
 
 <section><div id="allocation" class="fast-anchor"></div><h2>Allocation for <span id="allocMonth">2026-09</span></h2>
 <h3>麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight">R289 Practical 10% ｜ ERC6_NORMAL</p>
@@ -53,8 +49,7 @@
 <h3>麒麟「天界」</h3><h4>Four Gods — <span id="godsMonth">2026-09</span></h4><p class="muted tight">ERC6_NORMAL</p>
 <div id="godsDonut" class="donut"></div><div id="godsLegend" class="legend"></div></section>
 
-<section><h2>Forward OOS Monitor</h2><p class="muted">2026-08以降はReal Forward OOS。月ごとに凍結ルールのexactnessを記録し、Forward結果をDEVへ戻しません。</p>
-<table class="oos"><thead><tr><th>Month</th><th>Classification</th><th>DEV retune</th></tr></thead><tbody><tr><td>2026-08</td><td>Real Forward OOS</td><td>NO</td></tr><tr><td>2026-09</td><td>Real Forward OOS</td><td>NO</td></tr></tbody></table></section>
+
 
 <section><h2>4神 リスク状態</h2><div id="risk" class="risk"></div></section>
 <section><h2>KIRIN シグナル</h2><div id="signals" class="signals"></div><details><summary>運用・監査情報</summary><p>DEV=FROZEN。2026-08+はREAL FORWARD。Live ExecutionはR289 Practical 10%。</p></details></section>
@@ -100,48 +95,40 @@
 <section id="annual" class="analytics-page fast-anchor app-page"><h2>Annual Returns</h2><p class="sub">Python正本の年次複利リターン。</p><div id="annualPage"></div></section>
 </section>
 
-<section id="specification" class="app-page"><h2>KIRIN Strategy Specification</h2>
-<p class="muted">旧称 ERC6 + Attack75。将来の再実装でも同じ戦略を再現するための凍結仕様です。</p>
-<details>
-<summary>麒麟（KIRIN）の作り方 — Frozen specification</summary>
+<section id="specification" class="app-page operation-spec"><h2>Strategy Specification</h2>
+<p class="sub">実運用・再現用の簡潔な仕様。Fastは表示専用、計算正本はResearch/Python。</p>
 
-<h3>1. Four Gods representatives</h3>
-<ul>
-<li>Seiryu = <code>Full5P-Balanced</code></li>
-<li>Byakko = <code>FrozenVIX</code></li>
-<li>Suzaku = <code>TEL-3M/30M</code></li>
-<li>Genbu = <code>MR-Majority-6D/11M/24M</code></li>
-</ul>
+<h3>Four Gods — 4神の作り方</h3>
+<div class="spec-grid">
+<div><strong>青龍 / Seiryu</strong><span>Full5P-Balanced</span><small>Momentum family representative</small></div>
+<div><strong>白虎 / Byakko</strong><span>FrozenVIX</span><small>VIX family representative</small></div>
+<div><strong>朱雀 / Suzaku</strong><span>TEL-3M/30M</span><small>Treasury–Equity Layered DM</small></div>
+<div><strong>玄武 / Genbu</strong><span>MR-Majority-6D/11M/24M</span><small>Mean-Reversion family representative</small></div>
+</div>
+<p>各familyのFrozen representativeを1本ずつ使用。運用月 <code>t</code> の判定は完了済みの <code>t-1</code> までの情報だけで行い、月次リバランス。</p>
 
-<h3>2. Monthly information timing</h3>
-<p>運用月 <code>t</code> の判定には、完了済みの <code>t-1</code> までの情報だけを使用。月次リバランス。Forward結果をDEVへ戻さない。DEV cutoff = <code>2026-07-31</code>、Real Forward OOS = <code>2026-08 onward</code>。</p>
+<h3>KIRIN — 麒麟の作り方</h3>
+<ol class="spec-flow">
+<li><b>ERC6</b>：直近6完了月の青龍・白虎・朱雀の月次return covarianceからERC weightを計算。3 Spear合計75%、玄武25%固定。<br><code>青龍=0.75×wS / 白虎=0.75×wB / 朱雀=0.75×wZ / 玄武=0.25</code></li>
+<li><b>Defense A-state</b>：Frozen A-stateがONなら玄武100%。Attack overlayは停止。OFFならERC6 normal。</li>
+<li><b>Attack75 overlay</b>：A-state OFFかつFrozen Attack75 Turbo ONなら75%をTECL/TQQQ selectorへ。残り25%はERC6のnon-Seiryu sleevesへ元比率で比例配分。Turbo OFFならERC6をそのまま使用。</li>
+<li><b>Exact expansion＝天界</b>：最終family allocationを各Frozen familyの実保有tickerへ展開し、Attack75 exposureを統合。ticker単位で集約・正規化したCanonical Exact KIRIN。</li>
+<li><b>Execution overlay＝現世</b>：天界の最終ticker weightで10%未満を非保有 → survivorを再正規化 → 5%刻みにquantize → 合計100%。Frozen R289 Practical 10%。</li>
+</ol>
 
-<h3>3. ERC6 normal allocation</h3>
-<p>直近6完了月の Seiryu / Byakko / Suzaku 月次return covarianceからERC weightを計算。3 Spear合計を <strong>75%</strong>、Genbuを <strong>25%固定</strong>：</p>
-<p><code>Seiryu = 0.75×wS</code> / <code>Byakko = 0.75×wB</code> / <code>Suzaku = 0.75×wZ</code> / <code>Genbu = 0.25</code></p>
+<h3>Overlay / 実運用順序</h3>
+<p class="spec-chain"><code>4神 Frozen representatives → t−1 monthly signals → ERC6 → Defense A-state → Attack75 Turbo + TECL/TQQQ selector → Exact ticker expansion（天界） → R289 Practical 10%（現世）</code></p>
+<div class="spec-note"><strong>運用上の固定事項</strong><br>Production = Frozen4F EW。KIRINはFrozen Layer-1 challenger。DEV cutoff = 2026-07-31、2026-08以降 = Real Forward OOS。Forward結果をDEVへ戻さない。Fast側で再計算・再最適化しない。</div>
 
-<h3>4. Defense A-state</h3>
-<p>ERC6の凍結済みDefense A-stateがONなら、<strong>Genbu 100%</strong>。この状態ではAttack75をブロック。OFFならERC6 normal allocationを使用。</p>
-
-<h3>5. Attack75 Turbo / selector</h3>
-<p>A-stateがOFFでFrozen Attack75 TurboがONの月は、<strong>75%</strong>を既存の <code>TECL/TQQQ selector</code> へ配分。残り<strong>25%</strong>はERC6の<strong>non-Seiryu sleeves</strong>へ元の比率に応じて比例配分。Turbo OFFならERC6 allocationを変更しない。</p>
-
-<h3>6. Exact ticker expansion — 麒麟「天界」</h3>
-<p>上記family allocationを各Frozen familyの実保有tickerへ展開し、Attack75 exposureも統合して、最終ticker targetを集約・正規化。これがCanonical Exact KIRIN＝麒麟「天界」。Execution pruningは行わない。</p>
-
-<h3>7. R289 Practical 10% — 麒麟「現世」</h3>
-<p>天界の<strong>exact final ticker allocation</strong>から、各ticker weightが<strong>10%未満なら0%</strong> → survivorだけで再正規化 → survivorを<strong>5%刻み</strong>へquantize → 合計<strong>100%</strong>。これがLive Execution＝麒麟「現世」。10% thresholdはFrozenで再探索しない。</p>
-
-<h3>8. Frozen order of operations</h3>
-<p><code>Four Gods returns → 6M ERC → A-state → Attack75 Turbo / TECL-TQQQ selector → family allocation → exact ticker holdings（天界） → R289 Practical 10%（現世）</code></p>
-
-<h3>9. Governance</h3>
-<p>Productionは <strong>Frozen4F EW</strong> のまま。KIRINはFrozen Layer-1 challenger / Defense-first Growth Booster Hybrid。2026-08以降はReal Forward OOSで、Forward結果をDEV最適化へ戻さない。R287はhigh-fidelity shadow control、R288 Top-3はnon-adopted challenger。</p>
-</details>
+<h3>GitHub</h3>
+<div class="spec-links">
+<a href="https://github.com/minmin0820/frozen-core" target="_blank" rel="noopener"><strong>Research</strong><span>github.com/minmin0820/frozen-core</span></a>
+<a href="https://github.com/minmin0820/my4f-fast" target="_blank" rel="noopener"><strong>Fast</strong><span>github.com/minmin0820/my4f-fast</span></a>
+</div>
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260921-v97"></script>
+<script src="app.js?v=20260921-v98"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');

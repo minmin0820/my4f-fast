@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const allPages=()=>pageIds.map(id=>document.getElementById(id)).filter(Boolean);
  const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
  function showFastPage(id){
-   const dashboard=id==='top'||id==='allocation'||id==='forward';
+   const dashboard=id==='top';
    allPages().forEach(el=>el.classList.toggle('page-active',!dashboard&&el.id===id));
    document.querySelectorAll('.analytics-shell').forEach(el=>el.style.display=dashboard?'none':'contents');
    dashboardNodes().forEach(el=>el.style.display=dashboard?'':'none');
