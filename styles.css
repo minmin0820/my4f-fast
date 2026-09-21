@@ -3119,3 +3119,25 @@ div.ui-update-badge{
 #rollingPage .rolling-touch-tooltip .main{color:#087f7d;font-weight:800}
 #rollingPage .rolling-touch-tooltip .bm{color:#64748b;font-weight:800}
 #rollingPage .rolling-crosshair{stroke:#9aa7b8;stroke-width:1;stroke-dasharray:3 3;visibility:hidden}
+
+
+/* v96 — allow normal vertical page scrolling even when the Performance comparison period row is touched. */
+#performance .perf-periods,
+#performance .perf-periods .perf-period{
+  touch-action:pan-x pan-y!important;
+}
+
+/* v96 — Rolling CAGR tooltip BM uses the same plain text treatment as the main value.
+   Dedicated class avoids legacy/global .bm pill/border rules. */
+#rollingPage .rolling-touch-tooltip .rolling-bm{
+  color:#64748b!important;
+  font-weight:800!important;
+  display:block!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0!important;
+}

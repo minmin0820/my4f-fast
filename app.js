@@ -367,7 +367,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
      const x=L+(W-L-R)*i/Math.max(1,n-1);
      cross.setAttribute('x1',x);cross.setAttribute('x2',x);cross.style.visibility='visible';
      const f=v=>Number.isFinite(+v)?`${+v>=0?'+':''}${(+v).toFixed(2)}%`:'—';
-     tip.innerHTML=`<div class="date">${E(row[0])}</div><div class="main">${E(mainName)} ${f(row[1])}</div><div class="bm">${E(bmName)} ${f(row[2])}</div>`;
+     tip.innerHTML=`<div class="date">${E(row[0])}</div><div class="main">${E(mainName)} ${f(row[1])}</div><div class="rolling-bm">${E(bmName)} ${f(row[2])}</div>`;
      tip.hidden=false;
      const px=Math.max(6,Math.min(wrap.clientWidth-tip.offsetWidth-6,(clientX-wrap.getBoundingClientRect().left)+10));
      tip.style.left=px+'px'; tip.style.top='10px';
