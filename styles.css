@@ -3141,3 +3141,14 @@ div.ui-update-badge{
   padding:0!important;
   margin:0!important;
 }
+
+
+/* v97 — Annual Returns touch tooltip */
+#annualPage .annual-chart-wrap{position:relative}
+#annualPage .annual-bar-svg{touch-action:pan-y}
+#annualPage .annual-crosshair{stroke:#94a3b8;stroke-width:1;stroke-dasharray:3 3;visibility:hidden;pointer-events:none}
+#annualPage .annual-touch-tooltip{position:absolute;z-index:8;max-width:72%;padding:9px 11px;border:1px solid #d7dee7;border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(15,23,42,.10);font-size:13px;line-height:1.35;pointer-events:none;white-space:nowrap}
+#annualPage .annual-touch-tooltip[hidden]{display:none!important}
+#annualPage .annual-touch-tooltip .date{font-weight:800;color:#64748b;margin-bottom:3px}
+#annualPage .annual-touch-tooltip .main{color:#087f7d;font-weight:800}
+#annualPage .annual-touch-tooltip .annual-bm{color:#64748b;font-weight:800}

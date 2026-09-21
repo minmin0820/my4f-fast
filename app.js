@@ -524,12 +524,43 @@ function renderFastAnalytics(d,bmName=FAST_BM){
    let s=`<div class="annual-chart-wrap"><svg viewBox="0 0 ${W} ${H}" class="annual-bar-svg">`;
    for(let tv=tickMin;tv<=tickMax+step*.001;tv+=step){const ty=Y(tv);s+=`<line x1="${L}" x2="${W-R}" y1="${ty}" y2="${ty}" class="${Math.abs(tv)<step*.001?'zero':'annual-grid'}"/><text x="${L-8}" y="${ty+5}" text-anchor="end" class="annual-y-label">${Math.round(tv)}%</text>`}
    rows.forEach((x,i)=>{const cx=L+group*(i+.5),y1=Y(x[1]),y2=Y(x[2]);s+=`<rect x="${cx-bw-1}" y="${Math.min(y1,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y1))}" class="annual-main-bar"/><rect x="${cx+1}" y="${Math.min(y2,zero)}" width="${bw}" height="${Math.max(1,Math.abs(zero-y2))}" class="annual-bm-bar"/>`;if(i%Math.max(1,Math.ceil(rows.length/8))===0)s+=`<text x="${cx}" y="${H-10}" text-anchor="middle">${E(x[0])}</text>`});
-   return s+`</svg><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
+   return s+`<line class="annual-crosshair" x1="${L}" x2="${L}" y1="${T}" y2="${H-B}"/></svg><div class="annual-touch-tooltip" hidden></div><div class="compare-legend"><span class="main-key">${E(mainName)}</span><span class="bm-key">${E(bmName)}</span></div></div>`;
+ }
+ function bindAnnualBarTooltip(root,mainRows,bmRows,mainName,bmName){
+   const wrap=root?.querySelector('.annual-chart-wrap'),svg=wrap?.querySelector('.annual-bar-svg'),tip=wrap?.querySelector('.annual-touch-tooltip'),cross=wrap?.querySelector('.annual-crosshair');
+   if(!wrap||!svg||!tip||!cross)return;
+   const bmMap=new Map((bmRows||[]).map(x=>[String(x[0]),Number(x[1])]));
+   const rows=(mainRows||[]).map(x=>[String(x[0]),Number(x[1]),bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])&&Number.isFinite(x[2]));
+   if(!rows.length)return;
+   const W=760,L=74,R=18,T=12,B=42,n=rows.length;
+   const show=ev=>{
+     const r=svg.getBoundingClientRect(); if(!r.width)return;
+     const clientX=ev.touches?.[0]?.clientX ?? ev.clientX; if(!Number.isFinite(clientX))return;
+     const vx=(clientX-r.left)/r.width*W;
+     const group=(W-L-R)/n;
+     const i=Math.max(0,Math.min(n-1,Math.floor((vx-L)/group)));
+     const row=rows[i]; if(!row)return;
+     const x=L+group*(i+.5); cross.setAttribute('x1',x);cross.setAttribute('x2',x);cross.style.visibility='visible';
+     const f=v=>`${v>=0?'+':''}${v.toFixed(2)}%`;
+     tip.innerHTML=`<div class="date">${E(row[0])}</div><div class="main">${E(mainName)} ${f(row[1])}</div><div class="annual-bm">${E(bmName)} ${f(row[2])}</div>`;
+     tip.hidden=false;
+     const wr=wrap.getBoundingClientRect(),px=Math.max(6,Math.min(wrap.clientWidth-tip.offsetWidth-6,clientX-wr.left+10));
+     tip.style.left=px+'px';tip.style.top='10px';
+   };
+   const hide=()=>{tip.hidden=true;cross.style.visibility='hidden'};
+   svg.addEventListener('pointerdown',show,{passive:true});
+   svg.addEventListener('pointermove',ev=>{if(ev.pointerType==='touch'||ev.pointerType==='pen'||ev.pointerType==='mouse'||ev.buttons)show(ev)},{passive:true});
+   svg.addEventListener('touchstart',show,{passive:true});
+   svg.addEventListener('touchmove',show,{passive:true});
+   svg.addEventListener('pointerup',hide,{passive:true});svg.addEventListener('pointercancel',hide,{passive:true});
+   svg.addEventListener('touchend',hide,{passive:true});svg.addEventListener('touchcancel',hide,{passive:true});
+   svg.addEventListener('pointerleave',hide,{passive:true});
  }
  bind(document.getElementById('annualPage'),(n,b)=>{
    const r=a[n]?.annual||[],br=a[bmName]?.annual||[],bmMap=new Map(br.map(x=>[x[0],x[1]]));
    let wm=1,wb=1;const balance=new Map(),bbalance=new Map();[...r].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wm*=1+Number(x[1])/100;balance.set(x[0],wm*100000)});[...br].sort((x,y)=>x[0].localeCompare(y[0])).forEach(x=>{wb*=1+Number(x[1])/100;bbalance.set(x[0],wb*100000)});
    b.innerHTML=`<div id="annualBmSwitch"></div>${annualBars(r,br,n,bmName)}<h3 class="subsection-title">Annual Returns <span class="years-count">(${r.length} years)</span></h3><div class="analytics-table-scroll"><table class="analytics-table annual-compare-table"><thead><tr><th>Year</th><th>${E(n)}<br>Return</th><th>${E(bmName)}<br>Return</th></tr></thead><tbody>${[...r].reverse().map(x=>`<tr><td>${E(x[0])}</td><td class="${Number(x[1])>=0?'ret-pos':'ret-neg'}">${fmt(x[1])}</td><td class="${Number(bmMap.get(x[0]))>=0?'ret-pos':'ret-neg'}">${fmt(bmMap.get(x[0]))}</td></tr>`).join('')}</tbody></table></div>`;
+   bindAnnualBarTooltip(b,r,br,n,bmName);
    bmSwitch('annualBmSwitch',bmName,next=>{FAST_BM=next;renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);});
  },true);
 
