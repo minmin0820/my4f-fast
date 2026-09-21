@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v121">
+<link rel="stylesheet" href="styles.css?v=20260921-v122">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -38,7 +38,7 @@
 <div class="page-scroll"><main>
 <header><div class="header-line"><h1>麒麟「現世」</h1></div><p>Monthly rebalance ｜ 2026-08+ Real Forward OOS</p></header>
 
-<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v121 Research → Fast Health Bridge</div>
+<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v122 Research → Fast Health Bridge</div>
 <div id="syncPanel" class="sync-panel-compact"><div class="sync-title">⏳ Live Data Bridge — 確認中</div><div class="sync-meta"><span id="syncUpdated">最新更新：—</span><span id="syncDetail">Python正本との連携状態を確認しています</span></div></div></div>
 
 <section class="dash-status"><div class="dash-action-row"><span class="dash-action-label">今月</span><div id="action" class="action"></div></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
@@ -121,11 +121,11 @@
     <h3>Health Detail</h3>
     <p>Portfolio Tableの行をタップすると、4軸の意味と現在の判定を表示します。</p>
   </div>
-  <details class="det-guide" open><summary>Health Axis Guide</summary><div class="det-guide-grid">
-    <div><b>G1</b><span>12-point slope of erosion long-mean</span><small>慢性的edge侵食の長期平均が悪化方向へ傾いているか。</small></div>
-    <div><b>G2</b><span>12M p_erosion</span><small>直近12か月のerosion確率による慢性的劣化監視。</small></div>
-    <div><b>P</b><span>6 / 12 / 24M deterioration</span><small>複数時間窓の直近弱体化を統合したclassification。</small></div>
-    <div><b>p̄</b><span>Primary 5-split consistency</span><small>期間分割をまたいだabsolute consistency。Strong / GREENは一貫性を維持。</small></div>
+  <details class="det-guide" open><summary>Health Axis Guide <small>各カードをタップすると実運用上の解釈を表示</small></summary><div class="det-guide-grid">
+    <details class="det-guide-card"><summary><b>G1</b><span>12-point slope of erosion long-mean</span><small>慢性的edge侵食の長期平均が悪化方向へ傾いているか。</small><em>タップして解説</em></summary><div class="det-guide-explain"><strong>実運用：構造劣化の早期警戒</strong><p>長期edgeが最近12ポイントにわたって悪化方向へ傾いているかを見る軸です。🟢は明確な下向き傾向なし、🟡は軽い悪化方向、🟠は明確な悪化方向。G2がまだ緑でもG1が悪化した場合は、慢性劣化が確定する前の予兆として重点監視します。</p></div></details>
+    <details class="det-guide-card"><summary><b>G2</b><span>12M p_erosion</span><small>直近12か月のerosion確率による慢性的劣化監視。</small><em>タップして解説</em></summary><div class="det-guide-explain"><strong>実運用：現在の慢性劣化状態</strong><p>過去のedgeと比べ、現在の長期的edgeが実際に侵食された状態へ入っているかを見る軸です。G1が「悪化している方向か」、G2は「すでに悪化した水準か」という違いです。G1とG2が同時に悪化する場合は構造的erosion仮説を優先して再監査します。</p></div></details>
+    <details class="det-guide-card"><summary><b>P</b><span>6 / 12 / 24M deterioration</span><small>複数時間窓の直近弱体化を統合したclassification。</small><em>タップして解説</em></summary><div class="det-guide-explain"><strong>実運用：直近の弱体化警報</strong><p>6・12・24か月という複数時間窓で最近のperformance deteriorationを監視します。Pだけが🟠でも長期edgeの破綻とは限りません。G1/G2が緑なら「歴史的構造は保たれているが最近弱い」と解釈し、Productionを即変更せずForward OOSを重点監視します。</p></div></details>
+    <details class="det-guide-card"><summary><b>p̄</b><span>Primary 5-split consistency</span><small>期間分割をまたいだabsolute consistency。Strong / GREENは一貫性を維持。</small><em>タップして解説</em></summary><div class="det-guide-explain"><strong>実運用：歴史的一貫性の土台</strong><p>edgeが特定の一期間だけに依存せず、Primary期間を分割しても一貫して存在するかを見る軸です。Strong / 🟢なら、Pの悪化が出ても「歴史的には一貫した戦略の最近の不調」と区別できます。p̄まで弱い場合は、他の劣化警報をより重く受け止めて再監査します。</p></div></details>
   </div></details>
   <div class="det-governance"><b>Governance</b><span>Healthは非ランキング・非選択。現在のstrategy conditionを記述する監視線であり、Production変更シグナルではありません。</span></div>
 </section>
@@ -180,7 +180,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260921-v121"></script>
+<script src="app.js?v=20260921-v122"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');

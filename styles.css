@@ -3528,3 +3528,74 @@ body.fast-subpage-view #deterioration.page-active {
   #deterioration .det-table td:first-child{font-size:11.5px!important;line-height:1.2!important;padding-left:5px!important;padding-right:8px!important}
   #deterioration .det-table th,.det-table td{height:auto!important;min-height:52px!important}
 }
+
+/* v122 — Deterioration guide accordions, compact annotation, governance overlap fix. */
+#deterioration.deterioration-page > .sub{
+  font-size:10px!important;
+  line-height:1.45!important;
+  color:#8b96a5!important;
+  margin:0 0 10px!important;
+}
+#deterioration .det-guide>summary{
+  display:flex!important;
+  align-items:baseline!important;
+  flex-wrap:wrap!important;
+  gap:5px 8px!important;
+}
+#deterioration .det-guide>summary small{
+  font-size:8.5px!important;
+  font-weight:600!important;
+  color:#94a3b8!important;
+}
+#deterioration .det-guide-grid>details.det-guide-card{
+  display:block!important;
+  min-width:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:#f8fafc!important;
+  overflow:hidden!important;
+}
+#deterioration .det-guide-card>summary{
+  list-style:none!important;
+  cursor:pointer!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:12px 10px 10px!important;
+  min-height:96px!important;
+}
+#deterioration .det-guide-card>summary::-webkit-details-marker{display:none!important}
+#deterioration .det-guide-card>summary b{font-size:14px!important;line-height:1.15!important;color:#0b8fc2!important}
+#deterioration .det-guide-card>summary span{margin-top:3px!important;font-size:10px!important;line-height:1.3!important;font-weight:700!important;color:#334155!important}
+#deterioration .det-guide-card>summary small{margin-top:4px!important;font-size:9px!important;line-height:1.4!important;color:#7c8798!important}
+#deterioration .det-guide-card>summary em{margin-top:7px!important;font-size:8px!important;line-height:1!important;font-style:normal!important;font-weight:700!important;color:#0b8fc2!important}
+#deterioration .det-guide-card>summary em::before{content:'＋ ';font-weight:900}
+#deterioration .det-guide-card[open]>summary em::before{content:'− '}
+#deterioration .det-guide-explain{
+  border-top:1px solid #e5edf3!important;
+  padding:11px 12px 13px!important;
+  text-align:left!important;
+  background:#fff!important;
+}
+#deterioration .det-guide-explain strong{display:block!important;font-size:10px!important;color:#172033!important;margin-bottom:5px!important}
+#deterioration .det-guide-explain p{margin:0!important;font-size:9.5px!important;line-height:1.65!important;color:#64748b!important}
+#deterioration .det-governance{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:start!important;
+  column-gap:10px!important;
+  row-gap:4px!important;
+  min-width:0!important;
+}
+#deterioration .det-governance b{white-space:nowrap!important;min-width:max-content!important}
+#deterioration .det-governance span{display:block!important;min-width:0!important;overflow-wrap:anywhere!important;word-break:normal!important}
+@media(max-width:700px){
+  #deterioration.deterioration-page > .sub{font-size:9.5px!important;line-height:1.5!important}
+  #deterioration .det-guide-card>summary{min-height:90px!important;padding:11px 9px 9px!important}
+  #deterioration .det-governance{grid-template-columns:1fr!important;gap:3px!important;padding:11px 12px!important}
+  #deterioration .det-governance b{font-size:10px!important}
+  #deterioration .det-governance span{font-size:9.5px!important;line-height:1.55!important}
+}
