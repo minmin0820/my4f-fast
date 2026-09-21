@@ -3255,3 +3255,27 @@ div.ui-update-badge{
 .dash-returns .sum p{min-width:0!important}
 .operation-spec .god-flow{padding:7px 8px!important;margin:6px 0!important;border-radius:8px!important;background:#f7f9fb!important;line-height:1.55!important}
 .operation-spec .god-flow code{white-space:normal!important;overflow-wrap:anywhere!important}
+\n\n/* v105 — Dashboard recent-12-month KIRIN label must remain horizontal. */
+#months .month .return-scroll{width:100%!important;overflow:visible!important}
+#months .month .row{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:44px 40px minmax(48px,1fr) 40px minmax(48px,1fr)!important;
+  column-gap:5px!important;
+}
+#months .month .row .lab,
+#months .month .row .name{
+  writing-mode:horizontal-tb!important;
+  text-orientation:mixed!important;
+  white-space:nowrap!important;
+  word-break:keep-all!important;
+  overflow-wrap:normal!important;
+}
+#months .month .row strong{white-space:nowrap!important;min-width:0!important}
+@media(max-width:430px){
+  #months .month .row{
+    grid-template-columns:40px 36px minmax(45px,1fr) 36px minmax(45px,1fr)!important;
+    column-gap:4px!important;
+  }
+  #months .month .row .lab,#months .month .row .name,#months .month .row strong{font-size:11px!important}
+}
