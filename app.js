@@ -574,7 +574,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const openMenu=()=>{menu.classList.add('open');menu.setAttribute('aria-hidden','false');back.hidden=false;requestAnimationFrame(()=>back.classList.add('show'));btn.setAttribute('aria-expanded','true');document.body.classList.add('menu-open')};
  const closeMenu=()=>{menu.classList.remove('open');menu.setAttribute('aria-hidden','true');back.classList.remove('show');btn.setAttribute('aria-expanded','false');document.body.classList.remove('menu-open');setTimeout(()=>{if(!menu.classList.contains('open'))back.hidden=true},180)};
 
- const pageIds=['monthlyTrade','summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','specification'];
+ const pageIds=['monthlyTrade','summaryPage','performance','metrics','monthlyReturns','rolling','drawdowns','annual','deterioration','specification'];
  const allPages=()=>pageIds.map(id=>document.getElementById(id)).filter(Boolean);
  const dashboardNodes=()=>[...document.querySelectorAll('main > section:not(.app-page):not(.analytics-shell), main > .dashboard-only')];
  function showFastPage(id){
@@ -598,6 +598,21 @@ document.addEventListener('DOMContentLoaded',()=>{
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 });
 
+
+// v111 Deterioration Monitor — display-only interaction. Research/Python remains canonical.
+function initDeteriorationMonitor(){
+  const page=document.getElementById('deterioration'); if(!page)return;
+  const chips=[...page.querySelectorAll('.det-chip')], clear=page.querySelector('.det-clear');
+  const rows=[...page.querySelectorAll('.det-table tbody tr')];
+  const apply=(key)=>{
+    chips.forEach(b=>b.classList.toggle('active',b.dataset.detFilter===key));
+    rows.forEach(r=>{r.hidden=key!=='all' && r.dataset.detGroup!==key;});
+  };
+  chips.forEach(b=>b.addEventListener('click',()=>apply(b.dataset.detFilter||'all')));
+  clear?.addEventListener('click',()=>apply('all'));
+  apply('all');
+}
+document.addEventListener('DOMContentLoaded',initDeteriorationMonitor);
 
 // v82 Monthly Trade — visibly compact collapsed Selection Portfolio bar; behavior/data unchanged. Display-only; Python snapshot remains canonical.
 let monthlyTradeSelected='麒麟「現世」';
