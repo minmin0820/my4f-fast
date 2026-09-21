@@ -3665,3 +3665,13 @@ body.fast-subpage-view #deterioration.page-active {
 @media(max-width:600px){
  .page-asof-note,.analytics-page .page-asof-note,#performance > .page-asof-note,#monthlyTrade > .page-asof-note{font-size:9.5px!important;line-height:1.45!important;}
 }
+
+/* v137 Monthly Trade only: KIRIN HANKO / 反攻 badge */
+.mt-overlay-badge.is-hanko{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
+
+/* v138 — Monthly Trade overlay semantic colors (display only) */
+.mt-overlay-badge.is-astate{background:#fee2e2;color:#b91c1c;border-color:#fecaca}
+.mt-overlay-badge.is-booster{background:#ede9fe;color:#6d28d9;border-color:#ddd6fe}
+.mt-overlay-badge.is-promotion{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.mt-overlay-badge.is-hanko{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
+.mt-overlay-badge.is-other{background:#f3f4f6;color:#4b5563;border-color:#e5e7eb}
