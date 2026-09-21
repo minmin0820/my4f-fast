@@ -1,4 +1,4 @@
-// v128 — Research/Python analytics contract restored for Annual Returns / Drawdowns.
+// v129 — unified compact as-of annotations + dashboard retrieval timestamp restoration.
 const C={GLD:'#efb83f',TMV:'#9a7fe8',XLU:'#28b5aa',Seiryu:'#36afe0',Byakko:'#9a7fe8',Suzaku:'#31c996',Genbu:'#f7a00a'};
 const FALLBACK=['#4f86f7','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4','#84cc16','#ec4899'];
 const colorFor=k=>C[k]||FALLBACK[Math.abs([...String(k)].reduce((a,c)=>a+c.charCodeAt(0),0))%FALLBACK.length];
@@ -36,6 +36,19 @@ fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.
  const by=d.benchmarks?.ytd||{};
  document.getElementById('bm').innerHTML=`<b>BM</b><span>SPY YTD<strong>${pct(by.SPY)}</strong></span><span>TQQQ YTD<strong>${pct(by.TQQQ)}</strong></span>`;
  window.__MY4F_SNAPSHOT__=d;
+ // v129 — one canonical as-of annotation across pages; display-only.
+ const pageAsof=String(d.asof||d.updated_at||d.generated_at||'—').slice(0,10);
+ document.querySelectorAll('[data-page-asof]').forEach(el=>{el.textContent=`as of ${pageAsof}`});
+ // Restore Dashboard retrieval timestamps from canonical snapshot metadata only.
+ const dt=document.getElementById('dashboardDataTimes');
+ if(dt){
+   const meta=d.retrieval_times||d.data_retrieved||d.source_timestamps||{};
+   const sync=d.sync||{};
+   const bm=meta.BM||meta.bm||meta.benchmark||sync.bm_retrieved_at_jst||sync.benchmark_retrieved_at_jst||sync.generated_at_jst||sync.generated_at||'—';
+   const pf=meta['My Portfolio']||meta.my_portfolio||meta.portfolio||sync.portfolio_retrieved_at_jst||sync.my_portfolio_retrieved_at_jst||sync.generated_at_jst||sync.generated_at||'—';
+   const short=x=>{const z=String(x||'—');const m=z.match(/(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})(?::\d{2})?/);return m?`${m[1]} ${m[2]}`:z};
+   dt.textContent=`Data retrieved: BM ${short(bm)} ｜ My Portfolio ${short(pf)}`;
+ }
  if(window.__refreshDeteriorationPicker) window.__refreshDeteriorationPicker();
  renderResearchPerformance(d.performance);
  renderFastAnalytics(d);

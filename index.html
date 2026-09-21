@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260921-v128">
+<link rel="stylesheet" href="styles.css?v=20260921-v129">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -38,7 +38,7 @@
 <div class="page-scroll"><main>
 <header class="dashboard-header"><div class="header-line"><h1>Dashboard</h1></div><p id="dashboardDataTimes" class="dashboard-data-times">Data retrieved: BM — ｜ My Portfolio —</p></header>
 
-<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v128 Research → Fast Health Bridge</div>
+<div class="dashboard-only dashboard-top-status"><div class="update-proof">✓ v129 Research → Fast Health Bridge</div>
 <div id="syncPanel" class="sync-panel-compact"><div class="sync-title">⏳ Live Data Bridge — 確認中</div><div class="sync-meta"><span id="syncUpdated">最新更新：—</span><span id="syncDetail">Python正本との連携状態を確認しています</span></div></div></div>
 
 <section class="dash-status"><div class="dash-action-row"><span class="dash-action-label">今月</span><div id="action" class="action"></div></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
@@ -60,7 +60,7 @@
 <p class="muted dash-fineprint">● 天界・現世とも同じ最新価格から独立計算。MTD / YTDは最新取得価格までの暫定値。2026-08以降はReal Forward OOS。</p></section>
 <section class="dashboard-only"><h2>直近12か月</h2><div id="months" class="months"></div></section>
 
-<section id="performance" class="app-page"><h2>Research Performance</h2><p class="muted">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。</p>
+<section id="performance" class="app-page"><h2>Research Performance</h2><p class="page-asof-note">Research版Performanceと同じFrozen Python系列。Fast側では再計算・最適化しません。 <span data-page-asof></span></p>
 <div id="perfChips" class="perf-chips"></div>
 <details class="perf-picker perf-picker-fold">
   <summary class="perf-picker-summary">
@@ -85,15 +85,15 @@
 
 <section id="monthlyTrade" class="monthly-trade-page app-page">
 <h2>Monthly Trade</h2>
-<p class="muted">麒麟「現世」｜Monthly Rebalance</p>
+<p class="page-asof-note">Monthly Rebalance <span data-page-asof></span></p>
 <div id="monthlyTradeContent"></div>
 </section>
-<section id="summaryPage" class="analytics-page fast-anchor app-page"><h2>Summary</h2><p class="sub">選択PortfolioとBenchmarkの共通期間サマリー。Portfolio / BMを切替。</p><div id="summaryComparePage"></div></section>
-<section class="analytics-shell"><section id="metrics" class="analytics-page fast-anchor app-page"><h2>Metrics</h2><p class="sub">Python正本の全期間指標。</p><div id="metricsPage"></div></section>
-<section id="monthlyReturns" class="analytics-page fast-anchor app-page"><h2>Monthly Returns</h2><p class="sub">麒麟「現世」とBenchmarkの月次比較。BMはSPY / TQQQを切替。</p><div id="monthlyReturnsPage"></div></section>
-<section id="rolling" class="analytics-page fast-anchor app-page"><h2>Rolling Returns</h2><p class="sub">1Y累積 / 3Y・5Y年率。Current / Median / P10 / Min / Positive rate。</p><div id="rollingPage"></div></section>
-<section id="drawdowns" class="analytics-page fast-anchor app-page"><h2>Drawdowns</h2><p class="sub">Python正本で生成した月次Drawdown系列。</p><div id="drawdownsPage"></div></section>
-<section id="annual" class="analytics-page fast-anchor app-page"><h2>Annual Returns</h2><p class="sub">Python正本の年次複利リターン。</p><div id="annualPage"></div></section>
+<section id="summaryPage" class="analytics-page fast-anchor app-page"><h2>Summary</h2><p class="sub page-asof-note">選択PortfolioとBenchmarkの共通期間サマリー。Portfolio / BMを切替。 <span data-page-asof></span></p><div id="summaryComparePage"></div></section>
+<section class="analytics-shell"><section id="metrics" class="analytics-page fast-anchor app-page"><h2>Metrics</h2><p class="sub page-asof-note">Python正本の全期間指標。 <span data-page-asof></span></p><div id="metricsPage"></div></section>
+<section id="monthlyReturns" class="analytics-page fast-anchor app-page"><h2>Monthly Returns</h2><p class="sub page-asof-note">麒麟「現世」とBenchmarkの月次比較。BMはSPY / TQQQを切替。 <span data-page-asof></span></p><div id="monthlyReturnsPage"></div></section>
+<section id="rolling" class="analytics-page fast-anchor app-page"><h2>Rolling Returns</h2><p class="sub page-asof-note">1Y累積 / 3Y・5Y年率。Current / Median / P10 / Min / Positive rate。 <span data-page-asof></span></p><div id="rollingPage"></div></section>
+<section id="drawdowns" class="analytics-page fast-anchor app-page"><h2>Drawdowns</h2><p class="sub page-asof-note">Python正本で生成した月次Drawdown系列。 <span data-page-asof></span></p><div id="drawdownsPage"></div></section>
+<section id="annual" class="analytics-page fast-anchor app-page"><h2>Annual Returns</h2><p class="sub page-asof-note">Python正本の年次複利リターン。 <span data-page-asof></span></p><div id="annualPage"></div></section>
 </section>
 
 <section id="deterioration" class="analytics-page fast-anchor app-page deterioration-page">
@@ -187,7 +187,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260921-v128"></script>
+<script src="app.js?v=20260921-v129"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
