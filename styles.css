@@ -2927,3 +2927,85 @@ div.ui-update-badge{
   #performance .perf-bm-label,#performance .perf-bm-btn{min-height:32px;font-size:11px;padding:6px 10px}
   #performance .perf-bm-btn{min-width:58px}
 }
+
+/* v88 — Performance control density only. No data/selection logic changes. */
+#performance .perf-bm-picker{
+  margin:1px 0 6px!important;
+  padding:1px!important;
+  border-radius:9px!important;
+}
+#performance .perf-bm-label,
+#performance .perf-bm-btn{
+  min-height:28px!important;
+  height:28px!important;
+  padding:4px 9px!important;
+  border-radius:8px!important;
+  font-size:11px!important;
+  line-height:18px!important;
+}
+#performance .perf-bm-label{padding-right:6px!important}
+#performance .perf-bm-btn{min-width:50px!important}
+
+#performance .perf-start-row-outside{
+  gap:5px!important;
+  margin:6px 0 6px!important;
+  line-height:1!important;
+}
+#performance .perf-start-row-outside label{line-height:28px!important}
+#performance #perfStartYear{
+  min-width:70px!important;
+  width:70px!important;
+  min-height:28px!important;
+  height:28px!important;
+  padding:2px 20px 2px 8px!important;
+  border-width:1.5px!important;
+  border-radius:8px!important;
+  font-size:11px!important;
+  line-height:22px!important;
+}
+#performance #perfStartYear option{
+  padding:2px 4px!important;
+  font-size:12px!important;
+}
+
+/* Closed portfolio bar: remove unused vertical space. */
+#performance .perf-picker-fold{
+  margin:5px 0 6px!important;
+  padding:0!important;
+}
+#performance .perf-picker-fold > .perf-picker-summary{
+  min-height:38px!important;
+  padding:7px 10px!important;
+  margin:0!important;
+  line-height:22px!important;
+}
+/* Expanded picker: keep the same controls, but tighten the container and gaps. */
+#performance .perf-picker-fold[open]{padding:0!important}
+#performance .perf-picker-fold[open] > .perf-picker-summary{
+  min-height:34px!important;
+  padding:6px 10px!important;
+}
+#performance .perf-picker-fold > .perf-picker-body{
+  padding:5px 8px 6px!important;
+  margin:0!important;
+}
+#performance .perf-picker-fold .perf-picker-title{
+  margin:0 0 4px!important;
+  line-height:1.1!important;
+}
+#performance .perf-picker-fold .perf-group-tabs{
+  gap:4px!important;
+  padding:0 0 3px!important;
+  margin:0!important;
+}
+#performance .perf-picker-fold .perf-group-panel{
+  gap:4px!important;
+  margin:1px 0 2px!important;
+}
+@media(max-width:430px){
+  #performance .perf-bm-label,#performance .perf-bm-btn{
+    min-height:27px!important;height:27px!important;padding:3px 8px!important;font-size:10.5px!important;
+  }
+  #performance .perf-bm-btn{min-width:47px!important}
+  #performance #perfStartYear{min-width:66px!important;width:66px!important;height:27px!important;min-height:27px!important}
+}
