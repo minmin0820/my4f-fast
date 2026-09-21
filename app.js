@@ -13,18 +13,11 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260921-v124`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260918-live1`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
  for(const key of ['execution','gods']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
  document.getElementById('asof').textContent=d.asof||'—';['allocMonth','execMonth','godsMonth'].forEach(id=>document.getElementById(id).textContent=m);
- const dataTimes=document.getElementById('dashboardDataTimes');
- if(dataTimes){
-   const syncTime=d?.sync?.generated_at_jst||d?.sync?.generated_at||d?.generated_at_jst||d?.generated_at||d?.asof||'—';
-   const bmTime=d?.benchmarks?.retrieved_at_jst||d?.benchmarks?.retrieved_at||d?.performance?.benchmark_retrieved_at_jst||d?.performance?.benchmark_retrieved_at||syncTime;
-   const myTime=d?.portfolio_retrieved_at_jst||d?.portfolio_retrieved_at||d?.performance?.portfolio_retrieved_at_jst||d?.performance?.portfolio_retrieved_at||syncTime;
-   dataTimes.textContent=`Data retrieved: BM ${bmTime} ｜ My Portfolio ${myTime}`;
- }
  const changed=d.action?.changed;
  const actionText=changed===true?'🟠 保有アセット変更あり':changed===false?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 月次リバランス — 先月target確認待ち';
  document.getElementById('action').innerHTML=`<strong>${actionText}</strong>`;
@@ -180,7 +173,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  if(!Object.keys(a).length){
    ['rollingPage','drawdownsPage','annualPage'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<div class="analytics-empty">FAIL-CLOSED · Research/Python analytics snapshot unavailable</div>'});
  }
- const names=ss.map(x=>x.name).filter(n=>a[n]);
+ const names=ss.map(x=>x.name).filter(n=>Array.isArray(p?.history?.[n])&&p.history[n].length); // v127: Summary selector must not disappear when analytics is absent
  const fmt=v=>(v==null||!Number.isFinite(Number(v)))?'—':`${Number(v)>=0?'+':''}${Number(v).toFixed(2)}%`;
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pick=id=>`<div class="analytics-chips">${names.map((n,i)=>`<button data-series="${E(n)}" class="${i?'':'active'}">${E(n)}</button>`).join('')}</div><div id="${id}Body"></div>`;
@@ -302,23 +295,44 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
  function bind(root,fn,fold=false){if(!root)return;let selected=names.includes('麒麟「現世」')?'麒麟「現世」':names[0];const renderShell=()=>{root.innerHTML=fold?`${portfolioFoldHTML(root.id+'Picker',names,selected)}<div id="${root.id}Body"></div>`:pick(root.id);const body=root.querySelector(`#${root.id}Body`);if(fold){wirePortfolioFold(root,root.id+'Picker',names,selected,next=>{selected=next;renderShell();fn(selected,root.querySelector(`#${root.id}Body`))});fn(selected,body)}else{const bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}};renderShell()}
  bind(document.getElementById('rollingPage'),(n,b)=>{
+   const hist=p?.history||{}, mainRows=Array.isArray(hist[n])?hist[n]:[], bmRows=Array.isArray(hist[bmName])?hist[bmName]:[];
+   const clean=arr=>arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
+   const M=clean(mainRows), B=clean(bmRows), bmMap=new Map(B);
+   const common=M.map(x=>[x[0],x[1],bmMap.get(x[0])]).filter(x=>Number.isFinite(x[2]));
    const windows=[3,6,12,24,36,60,84,120];
    const label=w=>w<12?`${w} months`:w===12?'1 year':`${w/12} years`;
-   const R=a[n]?.rolling||{}, BR=a[bmName]?.rolling||{};
+   const roll=(rows,w)=>{
+     const out=[];
+     for(let i=w-1;i<rows.length;i++){
+       let prod=1; for(let j=i-w+1;j<=i;j++)prod*=1+rows[j][1];
+       const v=w<12?(prod-1):(Math.pow(prod,12/w)-1);
+       out.push([rows[i][0],v*100]);
+     }
+     return out;
+   };
+   const stats=arr=>{
+     const v=arr.map(x=>x[1]).filter(Number.isFinite).sort((a,b)=>a-b);
+     if(!v.length)return null;
+     const avg=v.reduce((s,x)=>s+x,0)/v.length;
+     const med=v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2;
+     const q=.1*(v.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=v[lo]+(v[hi]-v[lo])*(q-lo);
+     return {avg,high:v.at(-1),low:v[0],median:med,p10,positive:100*v.filter(x=>x>0).length/v.length};
+   };
    const fmtp=v=>Number.isFinite(+v)?`${+v>=0?'+':''}${(+v).toFixed(2)}%`:'—';
-   const statTable=(title,src,dist=false)=>`<div class="bam-roll-section"><h3>${E(title)}</h3><div class="bam-roll-table"><div class="bam-roll-row head"><span>Period</span>${dist?'<span>Median</span><span>P10</span><span>Positive</span>':'<span>Current</span><span>Median</span><span>Low</span>'}</div>${windows.map(w=>{const x=src[String(w)];if(!x)return'';return`<div class="bam-roll-row"><span>${label(w)}</span>${dist?`<span>${fmtp(x.median)}</span><span class="${Number(x.p10)<0?'neg':''}">${fmtp(x.p10)}</span><span>${Number(x.positive_rate).toFixed(2)}%</span>`:`<span>${fmtp(x.current)}</span><span>${fmtp(x.median)}</span><span class="${Number(x.min)<0?'neg':''}">${fmtp(x.min)}</span>`}</div>`}).join('')}</div></div>`;
-   b.innerHTML=`<div id="rollingBmSwitch"></div><div class="bam-roll-wrap"><div class="metrics-definition">Research/Python canonical · Fast recalculation prohibited</div><h2 class="bam-roll-h2">Summary Statistics</h2>${statTable(n,R,false)}${statTable(bmName,BR,false)}<h2 class="bam-roll-h2">Distribution</h2>${statTable(n,R,true)}${statTable(bmName,BR,true)}<div class="bam-roll-chart-section"><h2 class="bam-roll-h2">Rolling CAGR Chart</h2><div class="bam-roll-tabs">${[12,36,60,84,120].map(w=>`<button data-w="${w}" class="${w===36?'active':''}">${w/12}Y</button>`).join('')}</div><div id="bamRollingChart"></div></div></div>`;
+   const statTable=(title,rows,dist=false)=>`<div class="bam-roll-section"><h3>${E(title)}</h3><div class="bam-roll-table"><div class="bam-roll-row head"><span>Period</span>${dist?'<span>Median</span><span>P10</span><span>Positive</span>':'<span>Average</span><span>High</span><span>Low</span>'}</div>${windows.map(w=>{const s=stats(roll(rows,w));if(!s)return'';return`<div class="bam-roll-row"><span>${label(w)}</span>${dist?`<span>${fmtp(s.median)}</span><span class="${s.p10<0?'neg':''}">${fmtp(s.p10)}</span><span>${s.positive.toFixed(2)}%</span>`:`<span>${fmtp(s.avg)}</span><span>${fmtp(s.high)}</span><span class="${s.low<0?'neg':''}">${fmtp(s.low)}</span>`}</div>`}).join('')}</div></div>`;
+   b.innerHTML=`<div id="rollingBmSwitch"></div><div class="bam-roll-wrap"><h2 class="bam-roll-h2">Summary Statistics</h2>${statTable(n,M,false)}${statTable(bmName,B,false)}<h2 class="bam-roll-h2">Distribution</h2>${statTable(n,M,true)}${statTable(bmName,B,true)}<div class="bam-roll-chart-section"><h2 class="bam-roll-h2">Rolling CAGR Chart</h2><div class="bam-roll-tabs">${[12,36,60,84,120].map(w=>`<button data-w="${w}" class="${w===36?'active':''}">${w/12}Y</button>`).join('')}</div><div id="bamRollingChart"></div></div></div>`;
    bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
    const chartBox=b.querySelector('#bamRollingChart');
    const draw=w=>{
      b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.classList.toggle('active',+x.dataset.w===w));
-     const mr=R[String(w)]?.history||[], br=BR[String(w)]?.history||[], mp=new Map(br), both=mr.map(x=>[x[0],x[1],mp.get(x[0])]).filter(x=>Number.isFinite(Number(x[1]))&&Number.isFinite(Number(x[2])));
-     const wins=both.filter(x=>Number(x[1])>Number(x[2])).length,winrate=both.length?100*wins/both.length:NaN;
-     let best=null,worst=null;both.forEach(x=>{if(!best||Number(x[1])>Number(best[1]))best=x;if(!worst||Number(x[1])<Number(worst[1]))worst=x});
+     const mr=roll(M,w), br=roll(B,w), mp=new Map(br), both=mr.map(x=>[x[0],x[1],mp.get(x[0])]).filter(x=>Number.isFinite(x[2]));
+     const wins=both.filter(x=>x[1]>x[2]).length, winrate=both.length?100*wins/both.length:NaN;
+     let best=null,worst=null; both.forEach(x=>{if(!best||x[1]>best[1])best=x;if(!worst||x[1]<worst[1])worst=x});
      chartBox.innerHTML=`<div class="bam-roll-chart-title">Annualized Rolling Return - ${w/12} ${w===12?'Year':'Years'}</div>${compareChart(both,n,bmName)}<div class="bam-roll-kpis"><div><span>Win Rate vs ${E(bmName)}</span><b>${Number.isFinite(winrate)?winrate.toFixed(1)+'%':'—'}</b></div><div><span>Sample Count</span><b>${both.length}</b></div><div><span>Best Window</span><b>${best?fmtp(best[1]):'—'}</b><small>${best?E(best[0])+' · '+E(bmName)+' '+fmtp(best[2]):''}</small></div><div><span>Worst Window</span><b>${worst?fmtp(worst[1]):'—'}</b><small>${worst?E(worst[0])+' · '+E(bmName)+' '+fmtp(worst[2]):''}</small></div></div>`;
      bindRollingChartTooltip(chartBox,both,n,bmName);
    };
-   b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));draw(36);
+   b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));
+   draw(36);
  },true);
  function compareChart(rows,mainName,bmName){
    if(!rows?.length)return'<div class="analytics-empty">データなし</div>';
