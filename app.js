@@ -176,21 +176,9 @@ function renderPerfChart(portfolios,hist,period='ALL',logScale=true,periodMode='
 function renderFastAnalytics(d,bmName=FAST_BM){
  const p=d?.performance,ss=p?.series||[];
  let a=p?.analytics||{};
- // Compatibility fallback: derive analytics from published frozen monthly history.
- // Supports current canonical object format {Series: [[YYYY-MM, returnPct], ...]} and legacy rows.
- if(!Object.keys(a).length && p?.history && typeof p.history==='object'){
-   const by={};
-   if(Array.isArray(p.history)){
-     p.history.forEach(r=>Object.keys(r||{}).filter(k=>k!=='month').forEach(k=>{const v=Number(r[k]);if(Number.isFinite(v))(by[k]??=[]).push([String(r.month),v/100]);}));
-   }else{
-     Object.entries(p.history).forEach(([n,arr])=>{if(Array.isArray(arr))by[n]=arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1]));});
-   }
-   Object.entries(by).forEach(([n,rows])=>{
-     rows.sort((x,y)=>x[0].localeCompare(y[0])); let w=1,peak=1; const dd=[],annual={},rolling={};
-     rows.forEach(([m,r])=>{w*=1+r;peak=Math.max(peak,w);dd.push([m,(w/peak-1)*100]);const y=m.slice(0,4);annual[y]=(annual[y]??1)*(1+r);});
-     [12,36,60].forEach(win=>{if(rows.length<win)return;const h=[];for(let i=win-1;i<rows.length;i++){let prod=1;for(let j=i-win+1;j<=i;j++)prod*=1+rows[j][1];const rr=(win===12?prod-1:Math.pow(prod,12/win)-1)*100;h.push([rows[i][0],rr]);}const vs=h.map(x=>x[1]).sort((x,y)=>x-y),q=.1*(vs.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=vs[lo]+(vs[hi]-vs[lo])*(q-lo),mid=(vs.length-1)/2,ml=Math.floor(mid),mh=Math.ceil(mid),median=(vs[ml]+vs[mh])/2;rolling[String(win)]={current:h.at(-1)[1],median,p10,min:vs[0],positive_rate:100*vs.filter(v=>v>0).length/vs.length,history:h};});
-     a[n]={annual:Object.entries(annual).sort((x,y)=>x[0].localeCompare(y[0])).map(([y,v])=>[y,(v-1)*100]),drawdown:dd,rolling};
-   });
+ // v126: analytics are Research/Python canonical. Fast must not reconstruct them.
+ if(!Object.keys(a).length){
+   ['rollingPage','drawdownsPage','annualPage'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<div class="analytics-empty">FAIL-CLOSED · Research/Python analytics snapshot unavailable</div>'});
  }
  const names=ss.map(x=>x.name).filter(n=>a[n]);
  const fmt=v=>(v==null||!Number.isFinite(Number(v)))?'—':`${Number(v)>=0?'+':''}${Number(v).toFixed(2)}%`;
@@ -314,44 +302,23 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
  function bind(root,fn,fold=false){if(!root)return;let selected=names.includes('麒麟「現世」')?'麒麟「現世」':names[0];const renderShell=()=>{root.innerHTML=fold?`${portfolioFoldHTML(root.id+'Picker',names,selected)}<div id="${root.id}Body"></div>`:pick(root.id);const body=root.querySelector(`#${root.id}Body`);if(fold){wirePortfolioFold(root,root.id+'Picker',names,selected,next=>{selected=next;renderShell();fn(selected,root.querySelector(`#${root.id}Body`))});fn(selected,body)}else{const bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}};renderShell()}
  bind(document.getElementById('rollingPage'),(n,b)=>{
-   const hist=p?.history||{}, mainRows=Array.isArray(hist[n])?hist[n]:[], bmRows=Array.isArray(hist[bmName])?hist[bmName]:[];
-   const clean=arr=>arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
-   const M=clean(mainRows), B=clean(bmRows), bmMap=new Map(B);
-   const common=M.map(x=>[x[0],x[1],bmMap.get(x[0])]).filter(x=>Number.isFinite(x[2]));
    const windows=[3,6,12,24,36,60,84,120];
    const label=w=>w<12?`${w} months`:w===12?'1 year':`${w/12} years`;
-   const roll=(rows,w)=>{
-     const out=[];
-     for(let i=w-1;i<rows.length;i++){
-       let prod=1; for(let j=i-w+1;j<=i;j++)prod*=1+rows[j][1];
-       const v=w<12?(prod-1):(Math.pow(prod,12/w)-1);
-       out.push([rows[i][0],v*100]);
-     }
-     return out;
-   };
-   const stats=arr=>{
-     const v=arr.map(x=>x[1]).filter(Number.isFinite).sort((a,b)=>a-b);
-     if(!v.length)return null;
-     const avg=v.reduce((s,x)=>s+x,0)/v.length;
-     const med=v.length%2?v[(v.length-1)/2]:(v[v.length/2-1]+v[v.length/2])/2;
-     const q=.1*(v.length-1),lo=Math.floor(q),hi=Math.ceil(q),p10=v[lo]+(v[hi]-v[lo])*(q-lo);
-     return {avg,high:v.at(-1),low:v[0],median:med,p10,positive:100*v.filter(x=>x>0).length/v.length};
-   };
+   const R=a[n]?.rolling||{}, BR=a[bmName]?.rolling||{};
    const fmtp=v=>Number.isFinite(+v)?`${+v>=0?'+':''}${(+v).toFixed(2)}%`:'—';
-   const statTable=(title,rows,dist=false)=>`<div class="bam-roll-section"><h3>${E(title)}</h3><div class="bam-roll-table"><div class="bam-roll-row head"><span>Period</span>${dist?'<span>Median</span><span>P10</span><span>Positive</span>':'<span>Average</span><span>High</span><span>Low</span>'}</div>${windows.map(w=>{const s=stats(roll(rows,w));if(!s)return'';return`<div class="bam-roll-row"><span>${label(w)}</span>${dist?`<span>${fmtp(s.median)}</span><span class="${s.p10<0?'neg':''}">${fmtp(s.p10)}</span><span>${s.positive.toFixed(2)}%</span>`:`<span>${fmtp(s.avg)}</span><span>${fmtp(s.high)}</span><span class="${s.low<0?'neg':''}">${fmtp(s.low)}</span>`}</div>`}).join('')}</div></div>`;
-   b.innerHTML=`<div id="rollingBmSwitch"></div><div class="bam-roll-wrap"><h2 class="bam-roll-h2">Summary Statistics</h2>${statTable(n,M,false)}${statTable(bmName,B,false)}<h2 class="bam-roll-h2">Distribution</h2>${statTable(n,M,true)}${statTable(bmName,B,true)}<div class="bam-roll-chart-section"><h2 class="bam-roll-h2">Rolling CAGR Chart</h2><div class="bam-roll-tabs">${[12,36,60,84,120].map(w=>`<button data-w="${w}" class="${w===36?'active':''}">${w/12}Y</button>`).join('')}</div><div id="bamRollingChart"></div></div></div>`;
+   const statTable=(title,src,dist=false)=>`<div class="bam-roll-section"><h3>${E(title)}</h3><div class="bam-roll-table"><div class="bam-roll-row head"><span>Period</span>${dist?'<span>Median</span><span>P10</span><span>Positive</span>':'<span>Current</span><span>Median</span><span>Low</span>'}</div>${windows.map(w=>{const x=src[String(w)];if(!x)return'';return`<div class="bam-roll-row"><span>${label(w)}</span>${dist?`<span>${fmtp(x.median)}</span><span class="${Number(x.p10)<0?'neg':''}">${fmtp(x.p10)}</span><span>${Number(x.positive_rate).toFixed(2)}%</span>`:`<span>${fmtp(x.current)}</span><span>${fmtp(x.median)}</span><span class="${Number(x.min)<0?'neg':''}">${fmtp(x.min)}</span>`}</div>`}).join('')}</div></div>`;
+   b.innerHTML=`<div id="rollingBmSwitch"></div><div class="bam-roll-wrap"><div class="metrics-definition">Research/Python canonical · Fast recalculation prohibited</div><h2 class="bam-roll-h2">Summary Statistics</h2>${statTable(n,R,false)}${statTable(bmName,BR,false)}<h2 class="bam-roll-h2">Distribution</h2>${statTable(n,R,true)}${statTable(bmName,BR,true)}<div class="bam-roll-chart-section"><h2 class="bam-roll-h2">Rolling CAGR Chart</h2><div class="bam-roll-tabs">${[12,36,60,84,120].map(w=>`<button data-w="${w}" class="${w===36?'active':''}">${w/12}Y</button>`).join('')}</div><div id="bamRollingChart"></div></div></div>`;
    bmSwitch('rollingBmSwitch',bmName,next=>{FAST_BM=next;renderMonthlyReturnsPage(window.__MY4F_SNAPSHOT__,next);renderFastAnalytics(window.__MY4F_SNAPSHOT__,next);});
    const chartBox=b.querySelector('#bamRollingChart');
    const draw=w=>{
      b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.classList.toggle('active',+x.dataset.w===w));
-     const mr=roll(M,w), br=roll(B,w), mp=new Map(br), both=mr.map(x=>[x[0],x[1],mp.get(x[0])]).filter(x=>Number.isFinite(x[2]));
-     const wins=both.filter(x=>x[1]>x[2]).length, winrate=both.length?100*wins/both.length:NaN;
-     let best=null,worst=null; both.forEach(x=>{if(!best||x[1]>best[1])best=x;if(!worst||x[1]<worst[1])worst=x});
+     const mr=R[String(w)]?.history||[], br=BR[String(w)]?.history||[], mp=new Map(br), both=mr.map(x=>[x[0],x[1],mp.get(x[0])]).filter(x=>Number.isFinite(Number(x[1]))&&Number.isFinite(Number(x[2])));
+     const wins=both.filter(x=>Number(x[1])>Number(x[2])).length,winrate=both.length?100*wins/both.length:NaN;
+     let best=null,worst=null;both.forEach(x=>{if(!best||Number(x[1])>Number(best[1]))best=x;if(!worst||Number(x[1])<Number(worst[1]))worst=x});
      chartBox.innerHTML=`<div class="bam-roll-chart-title">Annualized Rolling Return - ${w/12} ${w===12?'Year':'Years'}</div>${compareChart(both,n,bmName)}<div class="bam-roll-kpis"><div><span>Win Rate vs ${E(bmName)}</span><b>${Number.isFinite(winrate)?winrate.toFixed(1)+'%':'—'}</b></div><div><span>Sample Count</span><b>${both.length}</b></div><div><span>Best Window</span><b>${best?fmtp(best[1]):'—'}</b><small>${best?E(best[0])+' · '+E(bmName)+' '+fmtp(best[2]):''}</small></div><div><span>Worst Window</span><b>${worst?fmtp(worst[1]):'—'}</b><small>${worst?E(worst[0])+' · '+E(bmName)+' '+fmtp(worst[2]):''}</small></div></div>`;
      bindRollingChartTooltip(chartBox,both,n,bmName);
    };
-   b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));
-   draw(36);
+   b.querySelectorAll('.bam-roll-tabs button').forEach(x=>x.onclick=()=>draw(+x.dataset.w));draw(36);
  },true);
  function compareChart(rows,mainName,bmName){
    if(!rows?.length)return'<div class="analytics-empty">データなし</div>';
