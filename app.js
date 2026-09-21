@@ -790,38 +790,31 @@ function renderMonthlyTrade(d){
   document.addEventListener('touchcancel',clearChartTips,{capture:true,passive:true});
 })();
 
-// v114 — Deterioration Monitor uses the same Selection Portfolio control as analytics pages.
+// v115 — Deterioration Monitor: shared Selection Portfolio UI + canonical R273HB detail.
 (function initDeteriorationPicker(){
   const root=document.getElementById('deterioration');
   const mount=document.getElementById('detPortfolioPicker');
   if(!root||!mount)return;
   const rows=[...root.querySelectorAll('.det-table tbody tr')];
-  const names=rows.map(r=>r.cells?.[0]?.textContent?.trim()).filter(Boolean);
+  const names=rows.map(r=>r.dataset.detName||r.cells?.[0]?.textContent?.trim()).filter(Boolean);
   if(!names.length)return;
-  const ALL='All Portfolios';
-  let selected=ALL;
+  const ALL='All Portfolios'; let selected=ALL;
   mount.innerHTML=portfolioFoldHTML('deteriorationPicker',[ALL,...names],selected);
   const wrap=mount.querySelector('[data-picker="deteriorationPicker"]');
   const tabs=wrap?.querySelector('.analytics-picker-tabs');
   const panel=wrap?.querySelector('.analytics-picker-panel');
   if(!wrap||!tabs||!panel)return;
-  const groups={
-    'All':[ALL,...names],
-    'シン四神':[ALL,...names.filter(n=>n.includes('シン四つ目'))],
-    'シン忍法':[ALL,...names.filter(n=>n.includes('シン分身'))],
-    '奥義':[ALL,...names.filter(n=>n.includes('奥義'))]
-  };
-  let active='All';
+  const groups={'All':[ALL,...names],'Strategy Health':[ALL,...names]}; let active='All';
   const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const apply=()=>{
-    rows.forEach(r=>{const n=r.cells?.[0]?.textContent?.trim();r.hidden=selected!==ALL&&n!==selected;});
-    const label=wrap.querySelector('.analytics-selected-name');if(label)label.textContent=selected;
+  const detail={
+    'Bunshin':{status:'MIXED',cls:'mixed',g1:'YELLOW',g2:'GREEN',p:'MIXED / YELLOW',pb:'Strong / GREEN',note:'G1とPに注意信号。G2とp̄はGREENを維持。単独でstrategy failureを意味しない。'},
+    'R181':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
+    'ERC6':{status:'DETERIORATING',cls:'bad',g1:'GREEN',g2:'GREEN',p:'DETERIORATING / ORANGE',pb:'Strong / GREEN',note:'Pのみ劣化警告。G1・G2・p̄はGREENを維持しており、P-only warningとして監視する。'},
+    'R255 Split':{status:'GOOD',cls:'good',g1:'GREEN',g2:'GREEN',p:'GOOD / GREEN',pb:'Strong / GREEN',note:'4軸すべてGREEN。Frozen Health-Dot snapshotでは明確な劣化警告なし。'}
   };
-  const draw=()=>{
-    tabs.innerHTML=Object.keys(groups).map(k=>`<button type="button" class="perf-group-tab ${k===active?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');
-    tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.group;draw();});
-    panel.innerHTML=(groups[active]||[]).map(n=>`<button type="button" class="perf-group-item ${n===selected?'active':''}" data-name="${E(n)}">${E(n)}</button>`).join('');
-    panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.name;wrap.open=false;apply();draw();});
-  };
+  const showDetail=name=>{const d=detail[name],box=root.querySelector('#detDetail');if(!d||!box)return;box.innerHTML=`<div class="det-detail-kicker">CURRENT HEALTH</div><div class="det-detail-head"><h3>${E(name)}</h3><span class="det-status ${E(d.cls)}">${E(d.status)}</span></div><div class="det-axis-values"><span><b>G1</b>${E(d.g1)}</span><span><b>G2</b>${E(d.g2)}</span><span><b>P</b>${E(d.p)}</span><span><b>p̄</b>${E(d.pb)}</span></div><p>${E(d.note)}</p>`;};
+  const apply=()=>{rows.forEach(r=>{const n=r.dataset.detName||r.cells?.[0]?.textContent?.trim();r.hidden=selected!==ALL&&n!==selected;r.classList.toggle('selected',selected!==ALL&&n===selected);});const label=wrap.querySelector('.analytics-selected-name');if(label)label.textContent=selected;if(selected!==ALL)showDetail(selected);};
+  const draw=()=>{tabs.innerHTML=Object.keys(groups).map(k=>`<button type="button" class="perf-group-tab ${k===active?'active':''}" data-group="${E(k)}">${E(k)}</button>`).join('');tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.group;draw();});panel.innerHTML=(groups[active]||[]).map(n=>`<button type="button" class="perf-group-item ${n===selected?'active':''}" data-name="${E(n)}">${E(n)}</button>`).join('');panel.querySelectorAll('button').forEach(b=>b.onclick=()=>{selected=b.dataset.name;wrap.open=false;apply();draw();});};
+  rows.forEach(r=>{const pick=()=>{selected=r.dataset.detName||r.cells?.[0]?.textContent?.trim();apply();draw();showDetail(selected);};r.addEventListener('click',pick);r.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}});});
   draw();apply();
 })();

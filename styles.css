@@ -3461,3 +3461,17 @@ body.fast-subpage-view #deterioration.page-active {
 @media(max-width:700px){
   #deterioration.deterioration-page h2{font-size:32px!important;line-height:1.14!important}
 }
+
+/* v115 — Deterioration Monitor: shared title treatment + R273HB health detail */
+#deterioration.deterioration-page h2{display:flex!important;align-items:center!important;gap:9px!important;font-size:24px!important;color:#172033!important}
+#deterioration.deterioration-page h2::before{content:"";width:5px;height:24px;border-radius:999px;background:#0b8fc2;flex:0 0 auto}
+#deterioration .det-table tbody tr{cursor:pointer;transition:background .15s ease}
+#deterioration .det-table tbody tr:hover,#deterioration .det-table tbody tr.selected{background:#f3f9fc}
+.det-detail{margin:16px 0 12px;padding:15px 16px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}
+.det-detail-kicker{font-size:9px;font-weight:800;letter-spacing:.14em;color:#94a3b8;margin-bottom:5px}
+.det-detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.det-detail h3{margin:0;font-size:17px;color:#172033}.det-detail p{margin:10px 0 0;font-size:11px;line-height:1.6;color:#64748b}
+.det-status{font-size:9px;font-weight:800;letter-spacing:.08em;padding:5px 8px;border-radius:999px}.det-status.good{color:#08783f;background:#e9f9f0}.det-status.mixed{color:#946800;background:#fff7d8}.det-status.bad{color:#b64a0a;background:#fff0e7}
+.det-axis-values{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}.det-axis-values span{display:flex;flex-direction:column;gap:3px;padding:8px;border-radius:10px;background:#f8fafc;font-size:9px;color:#64748b;min-width:0}.det-axis-values b{font-size:11px;color:#172033}
+.det-guide{margin:12px 0;border-top:1px solid #e5e7eb;padding-top:10px}.det-guide>summary{font-size:13px;font-weight:800;color:#172033;cursor:pointer}.det-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.det-guide-grid>div{padding:11px;border-radius:12px;background:#f8fafc}.det-guide-grid b{display:block;font-size:14px;color:#0b8fc2}.det-guide-grid span{display:block;margin-top:2px;font-size:10px;font-weight:700;color:#334155}.det-guide-grid small{display:block;margin-top:5px;font-size:9px;line-height:1.5;color:#7c8798}
+.det-governance{display:flex;gap:8px;align-items:flex-start;margin-top:12px;padding:10px 12px;border-radius:12px;background:#f7f9fb;color:#64748b;font-size:9.5px;line-height:1.5}.det-governance b{color:#334155;white-space:nowrap}
+@media(max-width:700px){#deterioration.deterioration-page h2{font-size:30px!important;line-height:1.15!important}#deterioration.deterioration-page h2::before{width:5px;height:29px}.det-axis-values{grid-template-columns:repeat(2,minmax(0,1fr))}.det-guide-grid{grid-template-columns:1fr}.det-detail{padding:13px}.det-counts{grid-template-columns:repeat(2,minmax(0,1fr))}.det-counts span:last-child{grid-column:auto}}
