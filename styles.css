@@ -3310,3 +3310,31 @@ div.ui-update-badge{
   #months .month .row .name{font-size:12px!important}
   #months .month .row strong{font-size:13px!important}
 }
+\n\n/* v108 — Four Gods role emblems: typography + restrained four-god palette */
+.operation-spec .god-card summary{grid-template-columns:minmax(0,1fr) 18px!important;position:relative;padding:12px 13px 11px 16px!important}
+.operation-spec .god-card summary::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:#aab4bf}
+.operation-spec .god-card:nth-of-type(1) summary::before{background:#087f8c}
+.operation-spec .god-card:nth-of-type(2) summary::before{background:#7b8794}
+.operation-spec .god-card:nth-of-type(3) summary::before{background:#b9472f}
+.operation-spec .god-card:nth-of-type(4) summary::before{background:#514c78}
+.operation-spec .god-title{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:2px}
+.operation-spec .god-name{font-size:12px!important;font-weight:850!important;letter-spacing:.01em!important;color:#172033!important}
+.operation-spec .god-role{display:block;font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:800;line-height:1.15;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+.operation-spec .god-role em{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;font-size:9px;font-style:normal;font-weight:700;letter-spacing:.06em;text-transform:none;opacity:.82}
+.operation-spec .role-vanguard{color:#087f8c}
+.operation-spec .role-aegis{color:#65717e}
+.operation-spec .role-phoenix{color:#b9472f}
+.operation-spec .role-anchor{color:#514c78}
+.operation-spec .god-strategy{font-size:9.5px!important;font-weight:700!important;line-height:1.2!important;color:#6f7b88!important;text-align:left!important;letter-spacing:.01em!important;margin:1px 0 0!important;overflow-wrap:anywhere}
+.operation-spec .god-chevron{grid-column:2!important;grid-row:1!important;align-self:center!important}
+.operation-spec .god-card:nth-of-type(1)[open] .god-detail{background:linear-gradient(180deg,#f4fbfb 0,#fbfcfd 34px)}
+.operation-spec .god-card:nth-of-type(2)[open] .god-detail{background:linear-gradient(180deg,#f7f9fa 0,#fbfcfd 34px)}
+.operation-spec .god-card:nth-of-type(3)[open] .god-detail{background:linear-gradient(180deg,#fff8f5 0,#fbfcfd 34px)}
+.operation-spec .god-card:nth-of-type(4)[open] .god-detail{background:linear-gradient(180deg,#f8f7fc 0,#fbfcfd 34px)}
+@media(max-width:430px){
+ .operation-spec .god-card summary{padding:11px 12px 10px 15px!important}
+ .operation-spec .god-name{font-size:11.5px!important}
+ .operation-spec .god-role{font-size:10px!important;letter-spacing:.15em!important}
+ .operation-spec .god-role em{font-size:8.5px!important}
+ .operation-spec .god-strategy{font-size:9px!important}
+}
