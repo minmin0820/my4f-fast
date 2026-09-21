@@ -3429,3 +3429,14 @@ body.fast-subpage-view .app-page.page-active{display:block!important}
 body.fast-subpage-view[data-fast-page="deterioration"] #deterioration{display:block!important;visibility:visible!important;opacity:1!important}
 body.fast-dashboard-view .dashboard-top-status{display:block!important}
 #deterioration{min-height:60vh}
+
+/* v113 — deterministic subpage visibility + dashboard-only status */
+body.fast-subpage-view .dashboard-top-status,
+body.fast-subpage-view .dashboard-only { display:none !important; }
+body.fast-dashboard-view .dashboard-top-status { display:block !important; }
+body.fast-subpage-view #deterioration.page-active {
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  min-height:70vh;
+}
