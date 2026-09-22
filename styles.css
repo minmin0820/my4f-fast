@@ -1805,3 +1805,117 @@ body.fast-subpage header,body.fast-subpage footer{display:none}
     font-weight:700!important;
   }
 }
+
+/* Fast v47 — Monthly Trade */
+.monthly-trade-page{overflow:hidden}.monthly-trade-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:14px}.monthly-trade-head h2{margin:0;font-size:28px;line-height:1.05}.monthly-trade-head p{margin:5px 0 0}.monthly-trade-asof{font-size:12px;color:#68788d;white-space:nowrap}.mt-current{border:1px solid #d9e0e7;border-radius:16px;padding:16px;background:#fff}.mt-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:#6c7b8d}.mt-month{font-size:25px;font-weight:800;margin-top:3px}.mt-position{font-size:21px;line-height:1.55;color:#076f9f;margin-top:9px}.mt-comma{color:#65758a}.mt-return{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid #e5e9ee;margin-top:12px;padding-top:11px}.mt-return span{font-size:12px;color:#68788d;font-weight:700}.mt-return strong{font-size:25px;font-variant-numeric:tabular-nums}.mt-return.neg strong{color:#d73535}.mt-action{margin-top:10px;border-radius:13px;padding:12px 14px;background:#f4f7f9;font-size:13px;line-height:1.45}.mt-action.changed{background:#fff7e8}.mt-action-label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#607086;margin-bottom:3px}.mt-prev{margin-top:5px;color:#6d7b8d;font-size:11px;overflow-wrap:anywhere}.mt-exec-title{font-size:14px;font-weight:800;margin:17px 2px 7px}.mt-exec-grid{border-top:1px solid #253547}.mt-exec-row{display:flex;justify-content:space-between;align-items:center;padding:12px 5px;border-bottom:1px solid #253547;font-size:18px}.mt-exec-row span{color:#076f9f;font-weight:750}.mt-exec-row strong{font-variant-numeric:tabular-nums}.mt-note{font-size:10px;color:#778597;line-height:1.45;margin-top:10px}@media(max-width:520px){.monthly-trade-head h2{font-size:25px}.monthly-trade-asof{font-size:10px}.mt-current{padding:14px}.mt-position{font-size:19px}.mt-return strong{font-size:23px}}
+
+/* Fast v47 — Monthly Trade is a normal app-page controlled by the canonical router */
+@media(max-width:700px){
+ #summaryPage .strategy-chip,#summaryPage .portfolio-chip,#summaryPage button[data-strategy],
+ #performance .perf-group-tab,#performance .perf-group-item,#performance .strategy-chip,#performance .portfolio-chip,
+ #metrics .strategy-chip,#metrics .portfolio-chip,#metrics button[data-strategy],
+ #monthlyReturns .strategy-chip,#monthlyReturns .portfolio-chip,#monthlyReturns button[data-strategy],
+ #rolling .strategy-chip,#rolling .portfolio-chip,#rolling button[data-strategy],
+ #drawdowns .strategy-chip,#drawdowns .portfolio-chip,#drawdowns button[data-strategy],
+ #annual .strategy-chip,#annual .portfolio-chip,#annual button[data-strategy]{
+  min-height:28px!important;height:28px!important;padding:3px 8px!important;margin:1px!important;
+  border-radius:8px!important;font-size:11px!important;line-height:1!important;width:auto!important;
+ }
+ #summaryPage .bm-switch,#metrics .bm-switch,#monthlyReturns .bm-switch,#rolling .bm-switch,#drawdowns .bm-switch,#annual .bm-switch,
+ #summaryPage [class*="benchmark"] button,#metrics [class*="benchmark"] button,#monthlyReturns [class*="benchmark"] button,
+ #rolling [class*="benchmark"] button,#drawdowns [class*="benchmark"] button,#annual [class*="benchmark"] button{
+  min-height:28px!important;height:28px!important;padding:3px 8px!important;font-size:11px!important;line-height:1!important;
+ }
+ #perfStartYear{height:28px!important;min-height:28px!important;font-size:11px!important;padding:2px 6px!important}
+}
+
+/* Fast v47 routing safety */
+#monthlyTrade.app-page:not(.page-active){display:none!important}
+#monthlyTrade.app-page.page-active{display:block!important}
+
+/* Fast v48 — restore frozen compact portfolio-selector geometry.
+   Scoped to selector/control containers only; no other page layout changes. */
+@media(max-width:700px){
+  #annual :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #drawdowns :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #rolling :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #monthlyReturns :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #metrics :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button,
+  #summaryPage :is(.portfolio-selector,.portfolio-select,.strategy-selector,.strategy-select,.selector-row,.chip-row,.strategy-chips,.portfolio-chips,.analytics-controls) button{
+    width:auto!important; min-width:0!important; min-height:28px!important; height:28px!important;
+    padding:3px 8px!important; margin:1px!important; border-radius:8px!important;
+    font-size:11px!important; line-height:1!important;
+  }
+  #annual button[class*="chip"],#drawdowns button[class*="chip"],#rolling button[class*="chip"],
+  #monthlyReturns button[class*="chip"],#metrics button[class*="chip"],#summaryPage button[class*="chip"]{
+    width:auto!important;min-width:0!important;min-height:28px!important;height:28px!important;
+    padding:3px 8px!important;margin:1px!important;border-radius:8px!important;font-size:11px!important;line-height:1!important;
+  }
+}
+
+/* Fast v49 — Monthly Trade page only. All other UI remains Frozen v48. */
+#monthlyTrade{padding-bottom:18px}
+.monthly-trade-title-row{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:14px}
+.monthly-trade-title-row h2{margin:0;font-size:28px;line-height:1.05}
+.monthly-trade-title-row p{margin:5px 0 0}
+#monthlyTrade .monthly-trade-asof{font-size:11px;color:#748296;white-space:nowrap}
+#monthlyTrade .mt-status{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:12px;background:#eefaf2;color:#16823d;font-size:14px;line-height:1.35;margin-bottom:12px}
+#monthlyTrade .mt-status.changed{background:#fff7e8;color:#8a5a00}
+#monthlyTrade .mt-status-dot{width:13px;height:13px;border-radius:50%;background:#20c96b;flex:0 0 auto}
+#monthlyTrade .mt-status.changed .mt-status-dot{background:#f4a62a}
+#monthlyTrade .mt-ticket{border:1px solid #d9e0e7;border-radius:15px;overflow:hidden;background:#fff}
+#monthlyTrade .mt-ticket-head{display:flex;justify-content:space-between;align-items:flex-end;padding:14px 14px 11px;border-bottom:1px solid #e3e8ee}
+#monthlyTrade .mt-ticket-head>div:first-child{display:flex;flex-direction:column;gap:2px}
+#monthlyTrade .mt-ticket-head>div:first-child strong{font-size:23px}
+#monthlyTrade .mt-label{font-size:10px;font-weight:850;letter-spacing:.11em;color:#738195}
+#monthlyTrade .mt-mtd{display:flex;flex-direction:column;align-items:flex-end}
+#monthlyTrade .mt-mtd span{font-size:10px;color:#738195;font-weight:750}
+#monthlyTrade .mt-mtd strong{font-size:22px;font-variant-numeric:tabular-nums}
+#monthlyTrade .mt-mtd.neg strong{color:#d53b36}
+#monthlyTrade .mt-holding-row{display:grid;grid-template-columns:1fr auto;align-items:center;padding:13px 14px;border-bottom:1px solid #e3e8ee}
+#monthlyTrade .mt-holding-row span{font-size:20px;font-weight:760;color:#08729f}
+#monthlyTrade .mt-holding-row strong{font-size:20px;font-variant-numeric:tabular-nums}
+#monthlyTrade .mt-total{display:flex;justify-content:space-between;padding:10px 14px;background:#f8fafc;font-size:13px}
+#monthlyTrade .mt-change{margin-top:12px;padding:12px 14px;border:1px solid #e1e6ec;border-radius:12px}
+#monthlyTrade .mt-prev-value{margin-top:5px;font-size:14px;line-height:1.45;color:#4c5b6d;overflow-wrap:anywhere}
+#monthlyTrade .mt-guide{display:flex;flex-direction:column;gap:4px;margin-top:14px;padding:11px 13px;border-radius:12px;background:#f6f7f9;font-size:11px;line-height:1.5;color:#6d7b8d}
+#monthlyTrade .mt-guide strong{font-size:12px;color:#2f3a48}
+@media(max-width:520px){
+ #monthlyTrade .monthly-trade-title-row h2{font-size:26px}
+ #monthlyTrade .mt-holding-row{padding:12px 13px}
+ #monthlyTrade .mt-holding-row span,#monthlyTrade .mt-holding-row strong{font-size:19px}
+}
+
+
+/* Fast v50 — exact frozen compact portfolio selector fix.
+   Only the generated .analytics-chips controls are touched. */
+@media(max-width:700px){
+  #annual .analytics-chips,
+  #drawdowns .analytics-chips,
+  #rolling .analytics-chips,
+  #monthlyReturns .analytics-chips,
+  #summaryPage .analytics-chips{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:3px!important;
+    margin:6px 0 8px!important;
+  }
+
+  #annual .analytics-chips button,
+  #drawdowns .analytics-chips button,
+  #rolling .analytics-chips button,
+  #monthlyReturns .analytics-chips button,
+  #summaryPage .analytics-chips button{
+    width:auto!important;
+    min-width:0!important;
+    min-height:28px!important;
+    height:28px!important;
+    padding:3px 8px!important;
+    margin:0!important;
+    border-radius:8px!important;
+    font-size:11px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+    flex:0 0 auto!important;
+  }
+}
