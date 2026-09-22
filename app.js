@@ -14,7 +14,7 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260922-v145`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260922-v146`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
@@ -102,7 +102,7 @@ function wirePortfolioFold(root,id,names,selected,onSelect){
 function renderMonthlyReturnsPage(d,bm='SPY'){
  const root=document.getElementById('monthlyReturnsPage');if(!root)return;
  const hist=d?.performance?.history||{},names=Object.keys(hist).filter(n=>Array.isArray(hist[n])&&hist[n].length);
- let main=(window.__MY4F_MONTHLY_PORTFOLIO__&&names.includes(window.__MY4F_MONTHLY_PORTFOLIO__))?window.__MY4F_MONTHLY_PORTFOLIO__:(names.includes('麒麟「現世」')?'麒麟「現世」':names[0]);
+ let main=(window.__MY4F_MONTHLY_PORTFOLIO__&&names.includes(window.__MY4F_MONTHLY_PORTFOLIO__))?window.__MY4F_MONTHLY_PORTFOLIO__:(names.includes('麒麟（現世）')?'麒麟（現世）':names[0]);
  const mainRows=Array.isArray(hist[main])?hist[main]:[],bmRows=Array.isArray(hist[bm])?hist[bm]:[];
  const bmMap=new Map(bmRows.map(x=>[String(x[0]),Number(x[1])]));
  const rows=mainRows.map(x=>[String(x[0]),Number(x[1]),bmMap.get(String(x[0]))]).filter(x=>Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -195,8 +195,8 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  const mt=document.getElementById('metricsPage');
  let SUMMARY_PORTFOLIO=(window.__MY4F_SUMMARY_PORTFOLIO__ && names.includes(window.__MY4F_SUMMARY_PORTFOLIO__))
    ? window.__MY4F_SUMMARY_PORTFOLIO__
-   : (names.includes('麒麟「現世」')?'麒麟「現世」':names.find(n=>!['SPY','TQQQ'].includes(n))||names[0]);
- let METRIC_PORTFOLIO=(ss.find(x=>x.name==='麒麟「現世」')?.name||ss.find(x=>!['SPY','TQQQ'].includes(x.name))?.name||ss[0]?.name);
+   : (names.includes('麒麟（現世）')?'麒麟（現世）':names.find(n=>!['SPY','TQQQ'].includes(n))||names[0]);
+ let METRIC_PORTFOLIO=(ss.find(x=>x.name==='麒麟（現世）')?.name||ss.find(x=>!['SPY','TQQQ'].includes(x.name))?.name||ss[0]?.name);
  function metricHistory(name){
    const raw=p?.history?.[name];
    if(!Array.isArray(raw))return[];
@@ -308,7 +308,7 @@ function renderFastAnalytics(d,bmName=FAST_BM){
  }
  drawMetrics();
  function chart(rows){if(!rows?.length)return'<div class="analytics-empty">データなし</div>';const vs=rows.map(x=>+x[1]),mn=Math.min(0,...vs),mx=Math.max(0,...vs),W=720,H=250,L=48,R=12,T=14,B=28,n=rows.length,span=(mx-mn)||1,pts=rows.map((r,i)=>`${L+(W-L-R)*i/Math.max(1,n-1)},${T+(H-T-B)*(1-(+r[1]-mn)/span)}`).join(' '),zy=T+(H-T-B)*(1-(0-mn)/span);return`<svg viewBox="0 0 ${W} ${H}" class="analytics-svg"><line x1="${L}" x2="${W-R}" y1="${zy}" y2="${zy}" class="zero"/><polyline points="${pts}" class="aline"/><text x="${L}" y="${H-7}">${E(rows[0][0])}</text><text x="${W-R}" y="${H-7}" text-anchor="end">${E(rows[n-1][0])}</text></svg>`}
- function bind(root,fn,fold=false){if(!root)return;let selected=names.includes('麒麟「現世」')?'麒麟「現世」':names[0];const renderShell=()=>{root.innerHTML=fold?`${portfolioFoldHTML(root.id+'Picker',names,selected)}<div id="${root.id}Body"></div>`:pick(root.id);const body=root.querySelector(`#${root.id}Body`);if(fold){wirePortfolioFold(root,root.id+'Picker',names,selected,next=>{selected=next;renderShell();fn(selected,root.querySelector(`#${root.id}Body`))});fn(selected,body)}else{const bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}};renderShell()}
+ function bind(root,fn,fold=false){if(!root)return;let selected=names.includes('麒麟（現世）')?'麒麟（現世）':names[0];const renderShell=()=>{root.innerHTML=fold?`${portfolioFoldHTML(root.id+'Picker',names,selected)}<div id="${root.id}Body"></div>`:pick(root.id);const body=root.querySelector(`#${root.id}Body`);if(fold){wirePortfolioFold(root,root.id+'Picker',names,selected,next=>{selected=next;renderShell();fn(selected,root.querySelector(`#${root.id}Body`))});fn(selected,body)}else{const bs=[...root.querySelectorAll('button')],go=n=>{bs.forEach(b=>b.classList.toggle('active',b.dataset.series===n));fn(n,body)};bs.forEach(b=>b.onclick=()=>go(b.dataset.series));if(names[0])go(names[0])}};renderShell()}
  bind(document.getElementById('rollingPage'),(n,b)=>{
    const hist=p?.history||{}, mainRows=Array.isArray(hist[n])?hist[n]:[], bmRows=Array.isArray(hist[bmName])?hist[bmName]:[];
    const clean=arr=>arr.map(x=>[String(x?.[0]??''),Number(x?.[1])/100]).filter(x=>/^\d{4}-\d{2}/.test(x[0])&&Number.isFinite(x[1])).sort((a,b)=>a[0].localeCompare(b[0]));
@@ -626,20 +626,20 @@ function initDeteriorationMonitor(){
 document.addEventListener('DOMContentLoaded',initDeteriorationMonitor);
 
 // v82 Monthly Trade — visibly compact collapsed Selection Portfolio bar; behavior/data unchanged. Display-only; Python snapshot remains canonical.
-let monthlyTradeSelected='麒麟「現世」';
+let monthlyTradeSelected='麒麟（現世）';
 
 function renderMonthlyTrade(d){
   const root=document.getElementById('monthlyTradeContent'); if(!root)return;
   const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const perf=d.performance||{}, histories=perf.history||{};
-  const preferred=['Frozen Core','Frozen v3.45','Frozen 4F','4F Attack75','4F Promotion100','麒麟「天界」','麒麟「現世」','SPY','TQQQ'];
+  const preferred=['Frozen Core','Frozen v3.45','Frozen 4F','4F Attack75','4F Promotion100','麒麟（天界）','麒麟（現世）','SPY','TQQQ'];
   const strategies=preferred.filter(k=>Array.isArray(histories[k])&&histories[k].length);
   Object.keys(histories).forEach(k=>{if(Array.isArray(histories[k])&&histories[k].length&&!strategies.includes(k))strategies.push(k)});
-  if(!strategies.includes(monthlyTradeSelected)) monthlyTradeSelected=strategies.includes('麒麟「現世」')?'麒麟「現世」':(strategies[0]||'麒麟「現世」');
+  if(!strategies.includes(monthlyTradeSelected)) monthlyTradeSelected=strategies.includes('麒麟（現世）')?'麒麟（現世）':(strategies[0]||'麒麟（現世）');
 
   const hist=(histories[monthlyTradeSelected]||[]).slice().sort((a,b)=>String(b[0]).localeCompare(String(a[0])));
   const canonicalTrade=d.monthly_trade_history_by_strategy?.[monthlyTradeSelected] || 
-    (monthlyTradeSelected==='麒麟「現世」' && Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : []);
+    (monthlyTradeSelected==='麒麟（現世）' && Array.isArray(d.monthly_trade_history) ? d.monthly_trade_history : []);
   const tradeMap=new Map((canonicalTrade||[]).map(r=>[String(r.month||'').slice(0,7),r]));
   const currentMonth=String(d.month||'').slice(0,7);
 
@@ -668,7 +668,7 @@ function renderMonthlyTrade(d){
     const key=String(mo).slice(0,7), tr=tradeMap.get(key)||{};
     let pos=tr.position||tr.positions||tr.execution||null;
     let start=tr.position_start||tr.start||'—';
-    if(key===currentMonth && monthlyTradeSelected==='麒麟「現世」' && !pos){
+    if(key===currentMonth && monthlyTradeSelected==='麒麟（現世）' && !pos){
       pos=d.execution||null; start=d.execution_start||'—';
     }
     return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth,
