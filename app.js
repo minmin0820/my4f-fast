@@ -1,5 +1,5 @@
 // v135 — KIRIN-series HANKO + canonical full DEV Position Start/Position history.
-const C={GLD:'#efb83f',TMV:'#9a7fe8',XLU:'#28b5aa',Seiryu:'#36afe0',Byakko:'#9a7fe8',Suzaku:'#31c996',Genbu:'#f7a00a'};
+const C={GLD:'#efb83f',TMV:'#9a7fe8',XLU:'#28b5aa',SPXL:'#4f6ff7',TQQQ:'#ff7a00',TECL:'#2ca63c',SPY:'#ef3340',QQQ:'#6246ea',QLD:'#00a7c4',TLT:'#7a869a',VIX:'#e83e9b',Seiryu:'#36afe0',Byakko:'#9a7fe8',Suzaku:'#31c996',Genbu:'#f7a00a'};
 const FALLBACK=['#4f86f7','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4','#84cc16','#ec4899'];
 const colorFor=k=>C[k]||FALLBACK[Math.abs([...String(k)].reduce((a,c)=>a+c.charCodeAt(0),0))%FALLBACK.length];
 const pct=x=>x==null?'—':`${Number(x)>=0?'+':''}${Number(x).toFixed(2)}%`;
@@ -14,7 +14,7 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260923-v155`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260923-v156`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
@@ -28,7 +28,7 @@ fetch(`kirin_snapshot.json?v=20260923-v155`,{cache:'no-store'}).then(r=>{if(!r.o
    const state=(raw.includes('orange')||raw.includes('🟠')||raw.includes('deterior'))?'orange':(raw.includes('yellow')||raw.includes('🟡')||raw.includes('mixed'))?'yellow':'green';
    return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`;
  }).join('');
- // v155 — Dashboard Portfolio Selector. Display-only: expose every portfolio with a canonical Position for the displayed month.
+ // v156 — Dashboard Portfolio Selector + stable asset color map. Display-only: expose every portfolio with a canonical Position for the displayed month.
  const mt=d.monthly_trade_history_by_strategy||{};
  const portfolioNames=Object.keys(mt).filter(n=>Array.isArray(mt[n])&&mt[n].some(r=>String(r?.month||'')===m&&r?.position));
  const defaultPortfolio=portfolioNames.includes('麒麟（天界）')?'麒麟（天界）':(portfolioNames.includes('麒麟（現世）')?'麒麟（現世）':portfolioNames[0]);
