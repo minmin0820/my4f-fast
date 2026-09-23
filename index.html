@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="My4F Fast">
 <link rel="manifest" href="manifest.webmanifest?v=20260919-1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=20260919-1">
-<link rel="stylesheet" href="styles.css?v=20260922-v153">
+<link rel="stylesheet" href="styles.css?v=20260923-v154">
 </head>
 <body>
 <button id="fastMenuButton" class="fast-menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">☰</button>
@@ -38,13 +38,14 @@
 <div class="page-scroll"><main>
 <header class="dashboard-header"><div class="header-line"><h1>Dashboard</h1></div><p id="dashboardDataTimes" class="dashboard-data-times">Data retrieved: BM — ｜ My Portfolio —</p></header>
 
-<div class="dashboard-only dashboard-top-status"><div id="fastBuildBadge" class="update-proof">✓ Fast v153｜変更内容：From枠幅のみ修正</div>
+<div class="dashboard-only dashboard-top-status"><div id="fastBuildBadge" class="update-proof">✓ Fast v154｜変更内容：Portfolio Selector追加</div>
 <div id="syncPanel" class="sync-panel-compact"><div class="sync-title">⏳ Live Data Bridge — 確認中</div><div class="sync-meta"><span id="syncUpdated">最新更新：—</span><span id="syncDetail">Python正本との連携状態を確認しています</span></div></div></div>
 
 <section class="dash-status"><div class="dash-action-row"><span class="dash-action-label">今月</span><div id="action" class="action"></div></div><div class="dash-status-line"><span id="actionDetail" class="muted"></span><span class="dash-rule">現世：&lt;10%除外 → 再正規化 → 5%刻み</span></div><div class="dash-health"><span class="dash-health-title">Health</span><div id="health" class="health"></div></div></section>
 
 <section><div id="allocation" class="fast-anchor"></div><h2>Allocation for <span id="allocMonth">2026-09</span></h2>
-<h3>麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight dash-allocation-note">R289 Practical 10% ｜ ERC6_NORMAL</p>
+<div class="dash-portfolio-selector"><label for="dashPortfolioSelect">Portfolio</label><select id="dashPortfolioSelect" aria-label="Dashboard portfolio selector"></select></div>
+<h3 id="dashPortfolioTitle">麒麟「現世」</h3><h4>Execution Holdings — <span id="execMonth">2026-09</span></h4><p class="muted tight dash-allocation-note">R289 Practical 10% ｜ ERC6_NORMAL</p>
 <div id="execDonut" class="donut"></div><div id="execLegend" class="legend"></div>
 <p class="muted dash-fineprint">実運用：天界Exactで10%未満のtickerは0% → 残存tickerを再正規化 → 5%刻み・合計100%（R289）。</p>
 <h3>麒麟シリーズ｜天界</h3><h4>Four Gods — <span id="godsMonth">2026-09</span></h4><p class="muted tight dash-allocation-note">ERC6_NORMAL</p>
@@ -187,7 +188,7 @@
 </section>
 <footer>Fast UI・表示専用。研究計算・凍結ルールは既存Python側を正本とします。</footer>
 </main></div>
-<script src="app.js?v=20260922-v153"></script>
+<script src="app.js?v=20260923-v154"></script>
 <script>
 (function(){
  const panel=document.getElementById('syncPanel'), updated=document.getElementById('syncUpdated'), detail=document.getElementById('syncDetail');
