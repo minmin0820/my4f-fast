@@ -3689,3 +3689,18 @@ body.fast-subpage-view #deterioration.page-active {
 .dash-portfolio-selector label{display:block!important;width:100%!important;font-size:11px!important;font-weight:800!important;color:#64748b!important;white-space:normal!important}
 .dash-portfolio-selector select{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:10px 36px 10px 11px!important;border:1px solid #d7e1e8!important;border-radius:11px!important;background-color:#fff!important;color:#292d38!important;font:600 12px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif!important}
 @media(max-width:700px){.dash-portfolio-selector{gap:5px!important;margin:2px 0 11px!important}.dash-portfolio-selector label{font-size:10px!important}.dash-portfolio-selector select{font-size:11px!important;padding:10px 34px 10px 10px!important}}
+
+
+/* v160 — Dashboard Portfolio selector: center selected text only; keep native dropdown arrow. */
+.dash-portfolio-selector select{
+  text-align:center!important;
+  text-align-last:center!important;
+  padding-left:36px!important;
+  padding-right:36px!important;
+}
+.dash-portfolio-selector select option{
+  text-align:center;
+}
+@media(max-width:700px){
+  .dash-portfolio-selector select{padding-left:34px!important;padding-right:34px!important;}
+}
