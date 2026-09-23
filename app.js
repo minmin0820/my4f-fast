@@ -14,7 +14,7 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=Object.entries(obj).map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${Number(v).toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260923-v154`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260923-v155`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
@@ -28,12 +28,14 @@ fetch(`kirin_snapshot.json?v=20260923-v154`,{cache:'no-store'}).then(r=>{if(!r.o
    const state=(raw.includes('orange')||raw.includes('🟠')||raw.includes('deterior'))?'orange':(raw.includes('yellow')||raw.includes('🟡')||raw.includes('mixed'))?'yellow':'green';
    return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`;
  }).join('');
- // v154 — Dashboard Portfolio Selector. Display-only: use canonical Position ledger from snapshot.
+ // v155 — Dashboard Portfolio Selector. Display-only: expose every portfolio with a canonical Position for the displayed month.
  const mt=d.monthly_trade_history_by_strategy||{};
- const kirinNames=Object.keys(mt).filter(n=>/麒麟/.test(n)&&Array.isArray(mt[n])&&mt[n].some(r=>String(r?.month||'')===m&&r?.position));
- const defaultPortfolio=kirinNames.includes('麒麟（現世）')?'麒麟（現世）':kirinNames[0];
+ const portfolioNames=Object.keys(mt).filter(n=>Array.isArray(mt[n])&&mt[n].some(r=>String(r?.month||'')===m&&r?.position));
+ const defaultPortfolio=portfolioNames.includes('麒麟（天界）')?'麒麟（天界）':(portfolioNames.includes('麒麟（現世）')?'麒麟（現世）':portfolioNames[0]);
  const select=document.getElementById('dashPortfolioSelect');
  const title=document.getElementById('dashPortfolioTitle');
+ const note=document.querySelector('.dash-allocation-note');
+ const fine=document.querySelector('.dash-fineprint');
  const renderDashPortfolio=name=>{
    const row=(mt[name]||[]).find(r=>String(r?.month||'')===m&&r?.position);
    if(!row||!row.position) return; // fail closed: never infer Position.
@@ -41,10 +43,14 @@ fetch(`kirin_snapshot.json?v=20260923-v154`,{cache:'no-store'}).then(r=>{if(!r.o
    const total=Object.values(pos).reduce((a,b)=>a+b,0);
    if(!Object.keys(pos).length||Math.abs(total-100)>1e-5) return;
    if(title) title.textContent=name;
-   donut('exec',pos,name.replace(/^麒麟[・（「]?|（現世）$|「現世」$/g,'')||'現世');
+   const isPractical=/（現世）|「現世」/.test(name);
+   if(note) note.textContent=isPractical?'R289 Practical / Canonical Position':'Canonical Position / Display only';
+   if(fine) fine.textContent=isPractical?'実運用：snapshotに保存された当月canonical Positionを表示。Fast側で計算・推定しません。':'snapshotに保存された当月canonical Positionを表示。Fast側で計算・推定しません。';
+   const center=name.length>13?'Portfolio':name.replace(/^麒麟[・（「]?|（現世）$|「現世」$/g,'')||name;
+   donut('exec',pos,center);
  };
- if(select&&kirinNames.length){
-   select.innerHTML=kirinNames.map(n=>`<option value="${esc(n)}" ${n===defaultPortfolio?'selected':''}>${esc(n)}</option>`).join('');
+ if(select&&portfolioNames.length){
+   select.innerHTML=portfolioNames.map(n=>`<option value="${esc(n)}" ${n===defaultPortfolio?'selected':''}>${esc(n)}</option>`).join('');
    select.onchange=()=>renderDashPortfolio(select.value);
    renderDashPortfolio(defaultPortfolio);
  }else{ donut('exec',d.execution||{},'現世'); }
