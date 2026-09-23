@@ -19,7 +19,7 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=entries.map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${v.toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260923-v161`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260923-v162`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
@@ -723,6 +723,19 @@ function renderMonthlyTrade(d){
   };
 
   const overlayMap=((d.monthly_trade_overlay_by_strategy||{})[monthlyTradeSelected])||{};
+  // v162 — Overlay badges are data-driven. Historical/future overlays published by Python
+  // are rendered automatically from monthly_trade_overlay_by_strategy. For the current
+  // Real Forward month, KRO/R314 is also read from the canonical hanko status because
+  // the legacy 麒麟・反攻 overlay map may lag the current-month row. Never infer from Return/Position.
+  const overlayFor=key=>{
+    const published=overlayMap[key];
+    if(published) return String(published);
+    if(key===currentMonth && /反攻/.test(monthlyTradeSelected) && d.hanko?.fire===true){
+      const asset=String(d.hanko?.asset||'').trim();
+      return `反攻${asset?` ${asset}`:''}`;
+    }
+    return '';
+  };
   const rows=hist.map(([mo,r])=>{
     const key=String(mo).slice(0,7), tr=tradeMap.get(key)||{};
     let pos=tr.position||tr.positions||tr.execution||null;
@@ -741,7 +754,7 @@ function renderMonthlyTrade(d){
       pos=d.execution||null; start=d.execution_start||'—';
     }
     return {month:key, return_pct:r, position:pos, position_start:start, mtd:key===currentMonth,
-      overlay:(overlayMap[key]||''),
+      overlay:overlayFor(key),
       incomplete:(!pos || start==='—')};
   });
 
