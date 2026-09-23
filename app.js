@@ -19,7 +19,7 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=entries.map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${v.toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260923-v158`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260923-v159`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
@@ -41,7 +41,14 @@ fetch(`kirin_snapshot.json?v=20260923-v158`,{cache:'no-store'}).then(r=>{if(!r.o
  };
  const renderPortfolioSummary=(name,currentRow)=>{
    const rows=mt[name]||[];
-   const previousRow=rows.find(r=>String(r?.month||'')===prev&&r?.position);
+   let previousRow=rows.find(r=>String(r?.month||'')===prev&&r?.position);
+   // v159 — The legacy 麒麟・反攻 series omits the 2026-08 row in the snapshot,
+   // while its frozen parent practical series carries the canonical pre-KRO position.
+   // Use that published parent row only for the missing previous-month display; never calculate/infer holdings.
+   if(!previousRow && name==='麒麟・反攻（現世）'){
+     previousRow=(mt['麒麟（現世）']||[]).find(r=>String(r?.month||'')===prev&&r?.position)
+       || (mt['麒麟・玄武の盾・反攻（現世）']||[]).find(r=>String(r?.month||'')===prev&&r?.position);
+   }
    const curA=posAssets(currentRow), prevA=posAssets(previousRow);
    let actionText='⚪ 前月データなし — 変更判定 N/A';
    if(previousRow){
