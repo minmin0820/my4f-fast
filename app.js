@@ -19,20 +19,41 @@ function donut(id,obj,title){
  document.getElementById(id+'Donut').innerHTML=`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="72" fill="none" stroke="#f2f2f2" stroke-width="34"/>${paths}<circle cx="100" cy="100" r="51" fill="#fff"/><text x="100" y="97" text-anchor="middle" class="center-title">${esc(title)}</text><text x="100" y="111" text-anchor="middle" class="center-sub">Allocation</text>${labels}</svg>`;
  document.getElementById(id+'Legend').innerHTML=entries.map(([k,v])=>`<span style="--c:${colorFor(k)}">${esc(k)} ${v.toFixed(1)}%</span>`).join('')
 }
-fetch(`kirin_snapshot.json?v=20260923-v157`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
+fetch(`kirin_snapshot.json?v=20260923-v158`,{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(`snapshot ${r.status}`);return r.json()}).then(d=>{
  if(d.schema_version!=='kirin-fast-1.0')throw Error('unsupported snapshot schema');
   for(const key of ['execution','gods','hanko_execution']){const vals=Object.values(d[key]||{}).map(Number);if(vals.length&&Math.abs(vals.reduce((a,b)=>a+b,0)-100)>1e-6)throw Error(`${key} total audit failed`);}
  const m=d.month||'2026-09', prev=d.previous_month||'2026-08';
  document.getElementById('asof').textContent=d.asof||'—';['allocMonth','execMonth','godsMonth'].forEach(id=>document.getElementById(id).textContent=m);
- const changed=d.action?.changed;
- const actionText=changed===true?'🟠 保有アセット変更あり':changed===false?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 月次リバランス — 先月target確認待ち';
- document.getElementById('action').innerHTML=`<strong>${actionText}</strong>`;
- document.getElementById('actionDetail').textContent=`先月: ${d.action?.previous||'—'} → 今月: ${d.action?.current||'—'}`;
- document.getElementById('health').innerHTML=['G1','G2','P'].map((x,i)=>{
-   const raw=String(d.health?.[i]??'green').toLowerCase();
-   const state=(raw.includes('orange')||raw.includes('🟠')||raw.includes('deterior'))?'orange':(raw.includes('yellow')||raw.includes('🟡')||raw.includes('mixed'))?'yellow':'green';
-   return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${['long-term','erosion','overall'][i]}</small></div>`;
- }).join('');
+ // v158 — Portfolio Summary is rendered from the selected portfolio's canonical snapshot rows.
+ // Do not infer missing Position/Health in Fast; missing source data is shown as N/A.
+ const fmtPos=row=>{
+   if(!row?.position) return '—';
+   const xs=Object.entries(row.position).map(([k,v])=>[k,Number(v)*100]).filter(([,v])=>Number.isFinite(v)&&v>0);
+   return xs.length?xs.map(([k,v])=>`${k} ${v.toFixed(1)}%`).join(' / '):'—';
+ };
+ const posAssets=row=>new Set(Object.entries(row?.position||{}).filter(([,v])=>Number(v)>0).map(([k])=>k));
+ const sameSet=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
+ const healthState=raw=>{const x=String(raw||'').toLowerCase();return (x.includes('orange')||x.includes('deterior'))?'orange':(x.includes('yellow')||x.includes('mixed')||x.includes('watch'))?'yellow':x.includes('green')||x.includes('good')?'green':'gray'};
+ const renderHealth=h=>{
+   const root=document.getElementById('health'); if(!root)return;
+   const vals=h?[h.g1?.color,h.g2?.color,h.p?.color]:[null,null,null];
+   root.innerHTML=['G1','G2','P'].map((x,i)=>{const state=healthState(vals[i]);return `<div class="card"><span class="label">${x}</span><i class="dot ${state}" aria-label="${state}"></i><small>${h?['long-term','erosion','overall'][i]:'N/A'}</small></div>`}).join('');
+ };
+ const renderPortfolioSummary=(name,currentRow)=>{
+   const rows=mt[name]||[];
+   const previousRow=rows.find(r=>String(r?.month||'')===prev&&r?.position);
+   const curA=posAssets(currentRow), prevA=posAssets(previousRow);
+   let actionText='⚪ 前月データなし — 変更判定 N/A';
+   if(previousRow){
+     actionText=sameSet(curA,prevA)?'🟢 保有アセット変更なし — 配分のみリバランス':'🟠 保有アセット変更あり';
+   }
+   const action=document.getElementById('action'); if(action)action.innerHTML=`<strong>${actionText}</strong>`;
+   const detail=document.getElementById('actionDetail'); if(detail)detail.textContent=`先月: ${fmtPos(previousRow)} → 今月: ${fmtPos(currentRow)}`;
+   const rule=document.querySelector('.dash-rule');
+   if(rule) rule.textContent=/（現世）|「現世」/.test(name)?'現世：snapshot canonical Position / R289適用済み':'天界・研究系：snapshot canonical Position / Display only';
+   const h=d.strategy_health?.portfolios?.[name];
+   renderHealth(h&&h.audit_status==='CALCULATED'?h:null);
+ };
  // v156 — Dashboard Portfolio Selector + stable asset color map. Display-only: expose every portfolio with a canonical Position for the displayed month.
  const mt=d.monthly_trade_history_by_strategy||{};
  const portfolioNames=Object.keys(mt).filter(n=>Array.isArray(mt[n])&&mt[n].some(r=>String(r?.month||'')===m&&r?.position));
@@ -53,6 +74,7 @@ fetch(`kirin_snapshot.json?v=20260923-v157`,{cache:'no-store'}).then(r=>{if(!r.o
    if(fine) fine.textContent=isPractical?'実運用：snapshotに保存された当月canonical Positionを表示。Fast側で計算・推定しません。':'snapshotに保存された当月canonical Positionを表示。Fast側で計算・推定しません。';
    const center=name.length>13?'Portfolio':name.replace(/^麒麟[・（「]?|（現世）$|「現世」$/g,'')||name;
    donut('exec',pos,center);
+   renderPortfolioSummary(name,row);
  };
  if(select&&portfolioNames.length){
    select.innerHTML=portfolioNames.map(n=>`<option value="${esc(n)}" ${n===defaultPortfolio?'selected':''}>${esc(n)}</option>`).join('');
